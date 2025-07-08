@@ -1,0 +1,109 @@
+import { InstallScript } from './components/InstallScript/InstallScript';
+import * as demos from './demos';
+
+## Installation
+
+<InstallScript packages="@gfazioli/mantine-list-view-table" />
+
+After installation import package styles at the root of your application:
+
+```tsx
+import '@gfazioli/mantine-list-view-table/styles.css';
+```
+
+You can import styles within a layer `@layer mantine-list-view-table` by importing `@gfazioli/mantine-list-view-table/styles.layer.css` file.
+
+```tsx
+import '@gfazioli/mantine-list-view-table/styles.layer.css';
+```
+
+## Usage
+
+The `ListViewTable` component  brings advanced table functionality inspired by the List View found in macOS Finder. Building on the core features of the [Mantine Table component](https://mantine.dev/core/table/), it offers a familiar and intuitive interface for displaying lists of items in a structured, table-like format. Notably, it allows users to **reorder columns** and **resize** them dynamically, giving greater flexibility and control over data presentation. This makes it an excellent choice for applications that require a modern, customizable list view with enhanced interactivity.
+
+<Demo data={demos.configurator} />
+
+## Column Width Constraints
+
+You can control column widths using `width`, `minWidth`, and `maxWidth` properties. The component automatically adjusts initial widths to respect these constraints and prevents resizing beyond the specified limits.
+
+### Minimum Width
+
+Use `minWidth` to ensure columns don't become too narrow. When the initial `width` is smaller than `minWidth`, the component automatically adjusts to the minimum value.
+
+<Demo data={demos.minWidth} />
+
+### Maximum Width
+
+Use `maxWidth` to prevent columns from becoming too wide. When the initial `width` is larger than `maxWidth`, the component automatically adjusts to the maximum value.
+
+<Demo data={demos.maxWidth} />
+
+### Both Minimum and Maximum Width
+
+You can combine `minWidth` and `maxWidth` to create precise width constraints. The component will adjust initial widths to fit within these bounds and restrict resizing to the specified range.
+
+<Demo data={demos.minAndMaxWidth} />
+
+## Scroll Area Integration
+
+The `ListViewTable` works seamlessly with Mantine's `ScrollArea` component. This is useful when you want to create a fixed-height table with scrollable content while maintaining the table's sticky header functionality.
+
+When used inside a `ScrollArea`, the `stickyHeader` prop will make the table header stick to the top of the scroll area, providing a consistent user experience during scrolling.
+
+<Demo data={demos.scrollArea} />
+
+## Advanced Features
+
+The `ListViewTable` component provides internal implementations for sorting, column reordering, and column resizing by default. However, developers can take full control over these features when needed for custom business logic or integration with external state management.
+
+### External Sorting Control
+
+By default, the component handles sorting internally when you click on sortable column headers. However, you can override this behavior to implement custom sorting logic, integrate with external APIs, or manage sorting state in your application's state management system.
+
+When you provide both `sortStatus` and `onSort` props, the component will use external sorting mode. You'll need to handle the data sorting logic yourself and update the `sortStatus` when the user clicks on column headers.
+
+<Demo data={demos.externalSorting} />
+
+### External Column Reordering and Resizing
+
+Similarly, column reordering and resizing are handled internally by default. You can override these behaviors by providing `onColumnReorder` and `onColumnResize` callbacks. This is useful when you need to persist column configurations, sync with external state, or implement custom reordering logic.
+
+The component will still provide the visual feedback and drag-and-drop functionality, but you'll have full control over how the state changes are handled.
+
+<Demo data={demos.externalReorderingAndResizing} />
+
+## Sticky Header
+
+The `stickyHeader` prop enables the table header to remain fixed at the top of the viewport (or scroll container) when the user scrolls through the table content. This is particularly useful for long tables where you want to keep the column headers visible at all times.
+
+The sticky header feature works both with the document scroll and when the table is used inside a `ScrollArea`. When enabled, the header will maintain its position and remain accessible during scrolling, improving the user experience by providing constant context about the data structure.
+
+You can also use the `stickyHeaderOffset` prop to adjust the sticky header position when your page has a fixed navigation bar or header. This ensures the table header doesn't overlap with other fixed elements on the page.
+
+<Demo data={demos.stickyHeader} />
+
+## Table States
+
+The `ListViewTable` component provides built-in support for common table states to enhance user experience during data loading and when no data is available.
+
+### Loading State
+
+When data is being fetched or processed, you can show a loading indicator by setting the `loading` prop to `true`. This displays a spinner overlay while maintaining the table structure and headers.
+
+<Demo data={demos.loadingState} />
+
+### Empty State
+
+When no data is available to display, you can provide a custom empty state message using the `emptyText` prop. This gives users clear feedback when the table has no content to show.
+
+<Demo data={demos.emptyState} />
+
+## Vertical Variant
+
+The `ListViewTable` component supports the `variant="vertical"` prop from Mantine Table, which displays data in a key-value format where each row represents a property-value pair. This is particularly useful for displaying detailed information about a single item, such as configuration settings, user profiles, or metadata.
+
+When using the vertical variant, consider setting `layout="fixed"` to ensure consistent column widths and a more structured appearance.
+
+<Demo data={demos.verticalVariant} />
+

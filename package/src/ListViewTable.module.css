@@ -1,0 +1,169 @@
+.root {
+  height: var(--list-view-height, auto);
+  width: var(--list-view-width, 100%);
+  position: relative;
+}
+
+.table {
+  min-width: 100%;
+  table-layout: fixed;
+  width: 100%;
+}
+
+/* Header base: let Mantine handle sticky positioning and borders via props */
+.header {
+  background: var(--mantine-color-white);
+  box-shadow: none;
+}
+
+/* Header cell hover: only when dragging is active */
+.headerCell[data-dragging='true']:hover,
+.headerCell[data-drag-over='true']:hover {
+  background: var(--mantine-color-gray-1);
+}
+
+.headerCell[data-dragging='true'] {
+  opacity: 0.5;
+}
+
+.headerCell[data-drag-over='true'] {
+  background: var(--mantine-color-blue-1);
+  border-color: var(--mantine-color-blue-5);
+}
+
+.headerTitle {
+  display: flex;
+  align-items: center;
+  gap: var(--mantine-spacing-xs);
+  min-height: 40px;
+  text-align: inherit;
+  color: inherit;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  width: 100%;
+}
+
+.headerTitle:disabled {
+  cursor: default;
+}
+
+.sortIcon {
+  flex-shrink: 0;
+  transition: opacity 150ms ease;
+}
+
+.dragHandle {
+  cursor: grab;
+  color: var(--mantine-color-gray-6);
+  transition: color 150ms ease;
+}
+
+.dragHandle:hover {
+  color: var(--mantine-color-blue-6);
+}
+
+.dragHandle:active {
+  cursor: grabbing;
+}
+
+.resizeHandle {
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: 4px;
+  height: 100%;
+  background: transparent;
+  cursor: col-resize;
+  border-radius: 256px;
+  transition: background-color 150ms ease;
+}
+
+.resizeHandle:hover {
+  background: var(--mantine-color-blue-5);
+}
+
+.body {
+  position: relative;
+}
+
+.row {
+  transition: background-color 150ms ease;
+}
+
+.cell {
+  /* Let Mantine handle basic cell styling, only add custom overrides */
+  vertical-align: middle;
+  overflow: hidden;
+}
+
+.emptyState {
+  padding: var(--mantine-spacing-xl);
+  text-align: center;
+  color: var(--mantine-color-gray-6);
+}
+
+.loader {
+  padding: var(--mantine-spacing-xl);
+}
+
+/* Dark theme support */
+[data-mantine-color-scheme='dark'] .header {
+  background: var(--mantine-color-dark-7);
+  border: none;
+  box-shadow: none;
+}
+
+[data-mantine-color-scheme='dark'] .headerCell {
+  background: transparent;
+  color: var(--mantine-color-dark-0);
+}
+
+[data-mantine-color-scheme='dark'] .headerCell[data-dragging='true']:hover,
+[data-mantine-color-scheme='dark'] .headerCell[data-drag-over='true']:hover {
+  background: var(--mantine-color-dark-5);
+}
+
+[data-mantine-color-scheme='dark'] .headerCell[data-drag-over='true'] {
+  background: var(--mantine-color-blue-8);
+  border-color: var(--mantine-color-blue-4);
+}
+
+[data-mantine-color-scheme='dark'] .emptyState {
+  color: var(--mantine-color-dark-2);
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .dragHandle {
+    display: none;
+  }
+
+  .resizeHandle {
+    width: 8px;
+  }
+}
+
+/* Focus and hover styles for header cells */
+.headerCell:hover {
+  background: var(--mantine-color-gray-0);
+  transition: background-color 150ms ease;
+}
+
+.headerTitle:focus {
+  outline: none;
+}
+
+.headerCell[data-focused='true'] {
+  background: var(--mantine-color-blue-0);
+  box-shadow: 0 0 0 1px var(--mantine-color-blue-3);
+}
+
+[data-mantine-color-scheme='dark'] .headerCell:hover {
+  background: var(--mantine-color-dark-5);
+}
+
+[data-mantine-color-scheme='dark'] .headerCell[data-focused='true'] {
+  background: var(--mantine-color-blue-8);
+  box-shadow: 0 0 0 1px var(--mantine-color-blue-6);
+}
