@@ -20,7 +20,7 @@ This component is created on top of the [Mantine](https://mantine.dev/) library.
 [![Mantine UI Library](https://img.shields.io/badge/-MANTINE_UI_LIBRARY-blue?style=for-the-badge&labelColor=black&logo=mantine
 )](https://mantine.dev/)
 
-It provides the capability to generate a dynamic list-view-table effect, enabling the display of a wide variety of content in a visually engaging manner. This effect can enhance the overall user experience by drawing attention to important information, announcements, or promotions, allowing for a more interactive and captivating presentation.
+This component extends Mantine UI by adding advanced table features inspired by the List View in macOS Finder. It enhances the Mantine Table component with a familiar, intuitive interface for displaying item lists in a structured, table-like format. Users can reorder and resize columns dynamically, providing greater flexibility and control over data presentation. This makes it ideal for applications needing a modern, customizable list view with enhanced interactivity.
 
 [![Mantine Extensions](https://img.shields.io/badge/-Watch_the_Video-blue?style=for-the-badge&labelColor=black&logo=youtube
 )](https://www.youtube.com/playlist?list=PL85tTROKkZrWyqCcmNCdWajpx05-cTal4)
@@ -53,23 +53,62 @@ import '@gfazioli/mantine-list-view-table/styles.css';
 
 ```tsx
 import { ListViewTable } from '@gfazioli/mantine-list-view-table';
+import { Badge, Text } from '@mantine/core';
 
 function Demo() {
-  function BoxComponent({ children, ...props }: { children: ReactNode; [key: string]: any }) {
-    return (
-      <Box {...props} p="md" w="200px" c="white" style={{ borderRadius: '8px' }}>
-        {children}
-      </Box>
-    );
-  }
+  const data = [
+    { id: 1, name: 'Documents', type: 'folder', size: '--', modified: '2024-06-01', kind: 'Folder' },
+    { id: 2, name: 'README.md', type: 'file', size: '2.1 KB', modified: '2024-06-02', kind: 'Markdown' },
+    { id: 3, name: 'package.json', type: 'file', size: '1.8 KB', modified: '2024-06-03', kind: 'JSON' },
+    { id: 4, name: 'src', type: 'folder', size: '--', modified: '2024-06-04', kind: 'Folder' },
+  ];
+
+  const columns = [
+    {
+      key: 'name',
+      title: 'Name',
+      sortable: true,
+      renderCell: (record) => (
+        <Text fw={record.type === 'folder' ? 600 : 400}>{record.name}</Text>
+      ),
+    },
+    {
+      key: 'kind',
+      title: 'Kind',
+      sortable: true,
+      width: 120,
+      renderCell: (record) => (
+        <Badge variant="light" color={record.type === 'folder' ? 'blue' : 'gray'} size="sm">
+          {record.kind}
+        </Badge>
+      ),
+    },
+    {
+      key: 'size',
+      title: 'Size',
+      sortable: true,
+      textAlign: 'right',
+      width: 180,
+    },
+    {
+      key: 'modified',
+      title: 'Date Modified',
+      sortable: true,
+      width: 120,
+    },
+  ];
 
   return (
-    <ListViewTable {...props} w={560} h={300}>
-      <BoxComponent bg="red">Hello World #1</BoxComponent>
-      <BoxComponent bg="cyan">Hope you like it #2</BoxComponent>
-      <BoxComponent bg="blue">Have a nice day #3</BoxComponent>
-      <BoxComponent bg="lime">Goodbye #4</BoxComponent>
-    </ListViewTable>
+    <ListViewTable
+      columns={columns}
+      data={data}
+      rowKey="id"
+      withTableBorder
+      highlightOnHover
+      onRowClick={(record) => {
+        console.log('Clicked:', record.name);
+      }}
+    />
   );
 }
 ```
