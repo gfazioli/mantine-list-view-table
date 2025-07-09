@@ -20,7 +20,7 @@ This component is created on top of the [Mantine](https://mantine.dev/) library.
 [![Mantine UI Library](https://img.shields.io/badge/-MANTINE_UI_LIBRARY-blue?style=for-the-badge&labelColor=black&logo=mantine
 )](https://mantine.dev/)
 
-This component extends Mantine UI by adding advanced table features inspired by the List View in macOS Finder. It enhances the Mantine Table component with a familiar, intuitive interface for displaying item lists in a structured, table-like format. Users can reorder and resize columns dynamically, providing greater flexibility and control over data presentation. This makes it ideal for applications needing a modern, customizable list view with enhanced interactivity.
+This component extends [Mantine UI](https://mantine.dev/) by adding advanced table features inspired by the List View in macOS Finder. It enhances the [Mantine Table component](https://mantine.dev/core/table/) with a familiar, intuitive interface for displaying item lists in a structured, table-like format. Users can **reorder** and **resize** columns dynamically, providing greater flexibility and control over data presentation. This makes it ideal for applications needing a modern, customizable list view with enhanced interactivity.
 
 [![Mantine Extensions](https://img.shields.io/badge/-Watch_the_Video-blue?style=for-the-badge&labelColor=black&logo=youtube
 )](https://www.youtube.com/playlist?list=PL85tTROKkZrWyqCcmNCdWajpx05-cTal4)
