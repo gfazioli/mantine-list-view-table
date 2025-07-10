@@ -42,5 +42,5 @@
   },
   "repository": "https://github.com/gfazioli/mantine-list-view-table.git",
   "types": "./dist/types/index.d.ts",
-  "version": "0.9.0"
+  "version": "0.9.1"
 }
