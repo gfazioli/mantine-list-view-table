@@ -184,19 +184,10 @@ export const configurator: MantineDemo = {
       libraryValue: 'middle',
     },
     {
-      prop: 'height',
-      type: 'number',
-      initialValue: 400,
-      libraryValue: 'auto',
-      min: 200,
-      max: 800,
-      step: 50,
-    },
-    {
       prop: 'stripedColor',
       type: 'color',
-      initialValue: '#f0f0f0',
-      libraryValue: '#f0f0f0',
+      initialValue: '',
+      libraryValue: '',
     },
   ],
 };
