@@ -1,5 +1,5 @@
 import React from 'react';
-import { Badge, Box, ScrollArea, Stack, Switch, Text } from '@mantine/core';
+import { Badge, Box, ScrollArea, Stack, Switch, Table, Text } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import { ListViewTable, ListViewTableColumn, ListViewTableSortStatus } from './ListViewTable';
 
@@ -1310,5 +1310,360 @@ export function WithStickyHeaderOffset() {
         }}
       />
     </Box>
+  );
+}
+
+export function WidthConstraintsWithoutResizing() {
+  // Create columns with various width, minWidth, and maxWidth settings
+  const constrainedColumns: ListViewTableColumn[] = [
+    {
+      key: 'name',
+      title: 'Name (Auto)',
+      // width: 100,
+      // No width specified, should use auto width
+      renderCell: (record: any) => (
+        <Text fw={record.type === 'folder' ? 600 : 400}>{record.name}</Text>
+      ),
+    },
+    {
+      key: 'kind',
+      title: 'Kind (Auto)',
+      // No width specified, should use auto width
+      renderCell: (record: any) => (
+        <Badge variant="light" color={record.type === 'folder' ? 'blue' : 'gray'} size="sm">
+          {record.kind}
+        </Badge>
+      ),
+    },
+    {
+      key: 'size',
+      title: 'Size (Auto)',
+      textAlign: 'right',
+      // width: 100,
+      // No width specified, should use auto width
+    },
+    {
+      key: 'modified',
+      title: 'Modified (Fixed 100px)',
+      width: 100, // Fixed width at 100px
+    },
+  ];
+
+  return (
+    <div>
+      <Text size="sm" c="dimmed" mb="md">
+        This story demonstrates width behavior with column resizing and drag disabled. Only the last
+        column has a fixed width, all others use auto width:
+      </Text>
+
+      <ul style={{ fontSize: '14px', color: 'var(--mantine-color-dimmed)', marginBottom: '16px' }}>
+        <li>
+          <b>Name:</b> Auto width (no constraints)
+        </li>
+        <li>
+          <b>Kind:</b> Auto width (no constraints)
+        </li>
+        <li>
+          <b>Size:</b> Auto width (no constraints)
+        </li>
+        <li>
+          <b>Modified:</b> Fixed width: 100px (should be exactly 100px)
+        </li>
+      </ul>
+
+      <Text size="sm" c="dimmed" mb="md">
+        Since resizing and dragging are disabled, you cannot modify the column widths. The last
+        column should have exactly 100px width applied in the styles.
+      </Text>
+
+      <ListViewTable
+        columns={constrainedColumns}
+        data={sampleData}
+        rowKey="id"
+        withTableBorder
+        withColumnBorders
+        highlightOnHover
+        // enableColumnResizing={false}
+        enableColumnReordering={false}
+        onRowClick={(record) => {
+          // eslint-disable-next-line no-console
+          console.log('Clicked:', record.name);
+        }}
+      />
+    </div>
+  );
+}
+
+export function MixedWidthConstraints() {
+  // Create columns with mixed width constraints: auto, fixed, auto, fixed
+  const mixedColumns: ListViewTableColumn[] = [
+    {
+      key: 'name',
+      title: 'Name (Auto)',
+      // No width specified, should use auto width
+      renderCell: (record: any) => (
+        <Text fw={record.type === 'folder' ? 600 : 400}>{record.name}</Text>
+      ),
+    },
+    {
+      key: 'kind',
+      title: 'Kind (120px)',
+      width: 120, // Fixed width at 120px
+      renderCell: (record: any) => (
+        <Badge variant="light" color={record.type === 'folder' ? 'blue' : 'gray'} size="sm">
+          {record.kind}
+        </Badge>
+      ),
+    },
+    {
+      key: 'size',
+      title: 'Size (Auto)',
+      textAlign: 'right',
+      // No width specified, should use auto width
+    },
+    {
+      key: 'modified',
+      title: 'Modified (200px)',
+      width: 200, // Fixed width at 200px
+    },
+  ];
+
+  return (
+    <div>
+      <Text size="sm" c="dimmed" mb="md">
+        This story demonstrates mixed width constraints: auto + fixed + auto + fixed. Since at least
+        one column is auto, the last column should maintain its fixed width:
+      </Text>
+
+      <ul style={{ fontSize: '14px', color: 'var(--mantine-color-dimmed)', marginBottom: '16px' }}>
+        <li>
+          <b>Name:</b> Auto width (flexible)
+        </li>
+        <li>
+          <b>Kind:</b> Fixed width: 120px
+        </li>
+        <li>
+          <b>Size:</b> Auto width (flexible)
+        </li>
+        <li>
+          <b>Modified:</b> Fixed width: 200px (should be exactly 200px)
+        </li>
+      </ul>
+
+      <Text size="sm" c="dimmed" mb="md">
+        Since there are auto-width columns, the table remains flexible and the last column can
+        maintain its specified 200px width.
+      </Text>
+
+      <ListViewTable
+        columns={mixedColumns}
+        data={sampleData}
+        rowKey="id"
+        withTableBorder
+        withColumnBorders
+        highlightOnHover
+        enableColumnReordering={false}
+        onRowClick={(record) => {
+          // eslint-disable-next-line no-console
+          console.log('Clicked:', record.name);
+        }}
+      />
+    </div>
+  );
+}
+
+export function WithScrollContainer() {
+  // Create columns with wider widths to force horizontal scrolling
+  const wideColumns: ListViewTableColumn[] = [
+    {
+      key: 'name',
+      title: 'Name',
+      sortable: true,
+      width: 200,
+      // No sticky property - allow all columns to scroll together
+      renderCell: (record: any) => (
+        <Text fw={record.type === 'folder' ? 600 : 400}>{record.name}</Text>
+      ),
+    },
+    {
+      key: 'kind',
+      title: 'Kind',
+      sortable: true,
+      width: 150,
+      renderCell: (record: any) => (
+        <Badge variant="light" color={record.type === 'folder' ? 'blue' : 'gray'} size="sm">
+          {record.kind}
+        </Badge>
+      ),
+    },
+    {
+      key: 'size',
+      title: 'Size',
+      sortable: true,
+      textAlign: 'right',
+      width: 120,
+    },
+    {
+      key: 'modified',
+      title: 'Date Modified',
+      sortable: true,
+      width: 180,
+    },
+    {
+      key: 'extra1',
+      title: 'Extra Column 1',
+      width: 150,
+      renderCell: () => <Text size="sm">Extra content 1</Text>,
+    },
+    {
+      key: 'extra2',
+      title: 'Extra Column 2',
+      width: 150,
+      renderCell: () => <Text size="sm">Extra content 2</Text>,
+    },
+    {
+      key: 'extra3',
+      title: 'Extra Column 3',
+      width: 150,
+      renderCell: () => <Text size="sm">Extra content 3</Text>,
+    },
+  ];
+
+  return (
+    <div>
+      <Text size="sm" c="dimmed" mb="md">
+        This story demonstrates the use of <b>Table.ScrollContainer</b> component from Mantine to
+        handle horizontal scrolling when the table content is wider than the container.
+      </Text>
+
+      <Text size="sm" c="dimmed" mb="md">
+        The ScrollContainer has a <b>minWidth of 800px</b>, so if your screen is smaller or the
+        table content exceeds this width, you'll see horizontal scrollbars. All columns will scroll
+        together horizontally for a smooth viewing experience.
+      </Text>
+
+      <Text size="sm" c="dimmed" mb="md">
+        Column resizing is <b>disabled</b> in this example to maintain fixed column widths and rely
+        on horizontal scrolling for overflow content.
+      </Text>
+
+      <Table.ScrollContainer minWidth={800}>
+        <ListViewTable
+          columns={wideColumns}
+          data={sampleData}
+          rowKey="id"
+          withTableBorder
+          withColumnBorders
+          highlightOnHover
+          enableColumnResizing={false}
+          onRowClick={(record) => {
+            // eslint-disable-next-line no-console
+            console.log('Clicked:', record.name);
+          }}
+        />
+      </Table.ScrollContainer>
+
+      <Text size="xs" c="dimmed" mt="md">
+        <b>Note:</b> Try resizing your browser window to see the horizontal scroll behavior. All
+        columns will scroll together smoothly.
+      </Text>
+    </div>
+  );
+}
+
+export function WithScrollContainerAndStickyColumn() {
+  // Create columns with wider widths and a sticky first column
+  const wideColumnsWithSticky: ListViewTableColumn[] = [
+    {
+      key: 'name',
+      title: 'Name',
+      sortable: true,
+      width: 200,
+      sticky: true, // This column will remain visible during horizontal scroll
+      renderCell: (record: any) => (
+        <Text fw={record.type === 'folder' ? 600 : 400}>{record.name}</Text>
+      ),
+    },
+    {
+      key: 'kind',
+      title: 'Kind',
+      sortable: true,
+      width: 150,
+      renderCell: (record: any) => (
+        <Badge variant="light" color={record.type === 'folder' ? 'blue' : 'gray'} size="sm">
+          {record.kind}
+        </Badge>
+      ),
+    },
+    {
+      key: 'size',
+      title: 'Size',
+      sortable: true,
+      textAlign: 'right',
+      width: 120,
+    },
+    {
+      key: 'modified',
+      title: 'Date Modified',
+      sortable: true,
+      width: 180,
+    },
+    {
+      key: 'extra1',
+      title: 'Extra Column 1',
+      width: 150,
+      renderCell: () => <Text size="sm">Extra content 1</Text>,
+    },
+    {
+      key: 'extra2',
+      title: 'Extra Column 2',
+      width: 150,
+      renderCell: () => <Text size="sm">Extra content 2</Text>,
+    },
+    {
+      key: 'extra3',
+      title: 'Extra Column 3',
+      width: 150,
+      renderCell: () => <Text size="sm">Extra content 3</Text>,
+    },
+  ];
+
+  return (
+    <div>
+      <Text size="sm" c="dimmed" mb="md">
+        This story demonstrates <b>Table.ScrollContainer</b> with a <b>sticky first column</b>. The
+        Name column will remain visible while other columns scroll horizontally.
+      </Text>
+
+      <Text size="sm" c="dimmed" mb="md">
+        This is useful when you have an important identifier column (like Name, ID, etc.) that
+        should always remain visible for context.
+      </Text>
+
+      <Text size="sm" c="dimmed" mb="md">
+        Column resizing is <b>disabled</b> to maintain the fixed layout.
+      </Text>
+
+      <Table.ScrollContainer minWidth={800}>
+        <ListViewTable
+          columns={wideColumnsWithSticky}
+          data={sampleData}
+          rowKey="id"
+          withTableBorder
+          withColumnBorders
+          highlightOnHover
+          enableColumnResizing={false}
+          onRowClick={(record) => {
+            // eslint-disable-next-line no-console
+            console.log('Clicked:', record.name);
+          }}
+        />
+      </Table.ScrollContainer>
+
+      <Text size="xs" c="dimmed" mt="md">
+        <b>Note:</b> Scroll horizontally to see how the Name column stays fixed while other columns
+        scroll.
+      </Text>
+    </div>
   );
 }

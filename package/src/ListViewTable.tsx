@@ -735,12 +735,34 @@ export const ListViewTable = factory<ListViewTableFactory>((_props, ref) => {
     }
   }, [data, visibleColumns]);
 
-  // Helper: get column width (in px for all except last column)
+  // Helper: get column width (in px for all except last column in certain cases)
   const getColumnWidth = (col: ListViewTableColumn, idx: number): string | undefined => {
-    if (idx === visibleColumns.length - 1) {
-      return undefined;
-    } // last column: auto
     const w = columnWidths[col.key as string] || col.width;
+
+    // For the last column, we need to be smart about when to force auto width
+    if (idx === visibleColumns.length - 1) {
+      // Check if ALL columns (including this last one) would have explicit widths
+      const allColumnsHaveWidths = visibleColumns.every((column) => {
+        const columnWidth = columnWidths[column.key as string] || column.width;
+        return columnWidth !== undefined;
+      });
+
+      // Only force last column to auto if:
+      // 1. ALL columns would have fixed widths AND
+      // 2. Column resizing is enabled (meaning the table needs to be flexible)
+      // This prevents the table from becoming completely rigid when resizing is needed
+      if (allColumnsHaveWidths && enableColumnResizing) {
+        return undefined; // auto width
+      }
+
+      // If at least one other column is auto, OR resizing is disabled,
+      // allow last column to have its specified width
+      // This supports these use cases:
+      // 1. All auto columns + last fixed column
+      // 2. Mixed auto/fixed columns + last fixed column
+      // 3. All fixed columns with resizing disabled (e.g., in ScrollContainer)
+    }
+
     if (typeof w === 'number') {
       return `${w}px`;
     }
