@@ -1,6 +1,9 @@
 # Mantine ListViewTable Component
 
-https://github.com/user-attachments/assets/285cdda3-cd62-46a3-b028-816c34217530
+
+https://github.com/user-attachments/assets/a220d834-6787-429a-aab3-15e0c504f39c
+
+
 
 ---
 
