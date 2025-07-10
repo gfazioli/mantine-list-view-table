@@ -101,6 +101,7 @@ function Demo() {
         rowKey="id"
         stickyHeader
         onRowClick={(record) => {
+          // eslint-disable-next-line no-console
           console.log('Clicked:', record.name);
         }}
       />

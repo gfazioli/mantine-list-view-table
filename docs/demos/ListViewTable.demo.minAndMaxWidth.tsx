@@ -85,6 +85,7 @@ function Demo() {
       highlightOnHover
       enableColumnResizing
       onColumnResize={(columnKey, width) => {
+        // eslint-disable-next-line no-console
         console.log(`Column '${columnKey}' resized to: ${width}px`);
       }}
     />

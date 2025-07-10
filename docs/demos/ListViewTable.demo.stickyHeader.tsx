@@ -178,6 +178,7 @@ function Demo() {
       stickyHeader
       stickyHeaderOffset={60}
       onRowClick={(record) => {
+        // eslint-disable-next-line no-console
         console.log('Clicked:', record.name);
       }}
     />

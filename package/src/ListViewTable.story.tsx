@@ -180,7 +180,7 @@ export function WithTabularNums() {
           console.log('Clicked:', record.name);
         }}
       />
-      <Switch checked={opened} onChange={(event) => handlers.toggle()} />
+      <Switch checked={opened} onChange={() => handlers.toggle()} />
     </Stack>
   );
 }

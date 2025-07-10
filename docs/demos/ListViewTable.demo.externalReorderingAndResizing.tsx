@@ -76,10 +76,12 @@ function Demo() {
     const [movedColumn] = newColumns.splice(fromIndex, 1);
     newColumns.splice(toIndex, 0, movedColumn);
     setCurrentColumns(newColumns);
+    // eslint-disable-next-line no-console
     console.log('Column reordered from', fromIndex, 'to', toIndex);
   };
 
   const handleColumnResize = (columnKey: string, width: number) => {
+    // eslint-disable-next-line no-console
     console.log('Column resized:', columnKey, 'to width:', width);
   };
 
@@ -95,6 +97,7 @@ function Demo() {
       onColumnReorder={handleColumnReorder}
       onColumnResize={handleColumnResize}
       onRowClick={(record) => {
+        // eslint-disable-next-line no-console
         console.log('Clicked:', record.name);
       }}
     />

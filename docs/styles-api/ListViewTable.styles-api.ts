@@ -4,7 +4,6 @@ import type { StylesApiData } from '../components/styles-api.types';
 export const ListViewTableStylesApi: StylesApiData<ListViewTableFactory> = {
   selectors: {
     root: 'Root container element',
-    container: 'ScrollArea container',
     table: 'Table element',
     header: 'Table header',
     headerCell: 'Header cell (th)',
