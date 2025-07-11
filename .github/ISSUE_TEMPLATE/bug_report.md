@@ -2,8 +2,9 @@
 name: Bug Report
 about: Report a bug or unexpected behavior in the Mantine List View Table component
 title: "[Bug] "
-labels: ["bug", "triage"]
-assignees: []
+labels: bug
+assignees: ''
+
 ---
 
 ## Describe the bug
