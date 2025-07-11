@@ -61,6 +61,22 @@ You can combine auto-width and fixed-width columns in the same table. This is pa
 
 <Demo data={demos.mixedWidthConstraints} />
 
+## Horizontal Scrolling with Table.ScrollContainer
+
+When your table content is wider than the available container width, you can use Mantine's [`Table.ScrollContainer`](https://mantine.dev/core/table/#scroll-container) component to enable smooth horizontal scrolling. This is especially useful for tables with many columns or when you need to maintain fixed column widths.
+
+### Basic Horizontal Scrolling
+
+Wrap your `ListViewTable` with `Table.ScrollContainer` and set a `minWidth` to enable horizontal scrolling when the content exceeds the container width. All columns will scroll together horizontally.
+
+<Demo data={demos.scrollContainer} />
+
+### Horizontal Scrolling with Sticky Columns
+
+You can combine horizontal scrolling with sticky columns to keep important identifier columns (like names or IDs) visible while other columns scroll horizontally. Set `sticky: true` on the columns you want to remain fixed.
+
+<Demo data={demos.scrollContainerWithSticky} />
+
 ## Scroll Area Integration
 
 The `ListViewTable` works seamlessly with Mantine's `ScrollArea` component. This is useful when you want to create a fixed-height table with scrollable content while maintaining the table's sticky header functionality.
