@@ -167,3 +167,34 @@
   background: var(--mantine-color-blue-8);
   box-shadow: 0 0 0 1px var(--mantine-color-blue-6);
 }
+
+/* Sticky column styles with blur overlay effect */
+.stickyColumn {
+  position: sticky !important; /* Override any other position declarations */
+  left: 0;
+  z-index: 10;
+  background: inherit;
+}
+
+/* Apply blur effect directly to th and td elements */
+.table th.stickyHeaderColumn::before,
+.table td.stickyColumn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 100%;
+  backdrop-filter: blur(3px);
+  -webkit-backdrop-filter: blur(3px);
+  z-index: -1;
+  pointer-events: none;
+}
+
+/* Header sticky column */
+.stickyHeaderColumn {
+  position: sticky !important; /* Override any other position declarations */
+  left: 0;
+  z-index: 11; /* Higher than body sticky columns */
+  background: inherit;
+}

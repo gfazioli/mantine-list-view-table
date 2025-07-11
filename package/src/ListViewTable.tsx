@@ -43,7 +43,9 @@ export type ListViewTableStylesNames =
   | 'row'
   | 'cell'
   | 'emptyState'
-  | 'loader';
+  | 'loader'
+  | 'stickyColumn'
+  | 'stickyHeaderColumn';
 
 export type ListViewTableCssVariables = {
   root: '--list-view-height' | '--list-view-width';
@@ -813,11 +815,12 @@ export const ListViewTable = factory<ListViewTableFactory>((_props, ref) => {
       const width = getColumnWidth(column, index);
       const isFocused = focusedColumn === index;
 
-      // Get base styles and add conditional classes for focus state
+      // Get base styles and add conditional classes for focus state and sticky columns
       const headerCellStyles = getStyles('headerCell');
+      const stickyHeaderClass = column.sticky ? getStyles('stickyHeaderColumn').className : '';
       const className = isFocused
-        ? `${headerCellStyles.className} ${headerCellStyles.className}--focused`
-        : headerCellStyles.className;
+        ? `${headerCellStyles.className} ${headerCellStyles.className}--focused ${stickyHeaderClass}`
+        : `${headerCellStyles.className} ${stickyHeaderClass}`;
 
       return (
         <Table.Th
@@ -832,7 +835,7 @@ export const ListViewTable = factory<ListViewTableFactory>((_props, ref) => {
             textAlign: column.textAlign,
             position: column.sticky ? 'sticky' : 'relative',
             left: column.sticky ? 0 : undefined,
-            zIndex: column.sticky ? 1 : undefined,
+            zIndex: column.sticky ? 11 : undefined, // Higher z-index for sticky headers
           }}
           draggable={enableColumnReordering && column.draggable !== false}
           onDragStart={(e) => handleColumnDragStart(index, e)}
@@ -947,6 +950,10 @@ export const ListViewTable = factory<ListViewTableFactory>((_props, ref) => {
           ? column.cellClassName(record, rowIndex)
           : column.cellClassName;
 
+      // Combine custom cell className with sticky class if needed
+      const stickyColumnClass = column.sticky ? getStyles('stickyColumn').className : '';
+      const finalCellClassName = [cellClassName, stickyColumnClass].filter(Boolean).join(' ');
+
       const cellStyle =
         typeof column.cellStyle === 'function'
           ? column.cellStyle(record, rowIndex)
@@ -956,7 +963,7 @@ export const ListViewTable = factory<ListViewTableFactory>((_props, ref) => {
         <Table.Td
           key={column.key as React.Key}
           {...getStyles('cell')}
-          className={cellClassName}
+          className={finalCellClassName}
           style={{
             width,
             minWidth: column.minWidth,
@@ -967,7 +974,7 @@ export const ListViewTable = factory<ListViewTableFactory>((_props, ref) => {
             overflow: column.ellipsis ? 'hidden' : 'visible',
             position: column.sticky ? 'sticky' : 'relative',
             left: column.sticky ? 0 : undefined,
-            zIndex: column.sticky ? 1 : undefined,
+            zIndex: column.sticky ? 10 : undefined, // z-index for sticky body cells
             verticalAlign,
             ...cellStyle,
           }}
