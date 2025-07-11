@@ -6,6 +6,8 @@ export { loadingState } from './ListViewTable.demo.loadingState';
 export { maxWidth } from './ListViewTable.demo.maxWidth';
 export { minAndMaxWidth } from './ListViewTable.demo.minAndMaxWidth';
 export { minWidth } from './ListViewTable.demo.minWidth';
+export { mixedWidthConstraints } from './ListViewTable.demo.mixedWidthConstraints';
 export { scrollArea } from './ListViewTable.demo.scrollArea';
 export { stickyHeader } from './ListViewTable.demo.stickyHeader';
 export { verticalVariant } from './ListViewTable.demo.verticalVariant';
+export { widthConstraintsWithoutResizing } from './ListViewTable.demo.widthConstraintsWithoutResizing';

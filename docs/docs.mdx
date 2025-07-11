@@ -45,6 +45,22 @@ You can combine `minWidth` and `maxWidth` to create precise width constraints. T
 
 <Demo data={demos.minAndMaxWidth} />
 
+## Column Width Behavior
+
+The `ListViewTable` component provides flexible column width management that adapts to different scenarios. Understanding how width calculation works will help you create the optimal layout for your data.
+
+### Auto Width vs Fixed Width
+
+When no `width` is specified for a column, it automatically adjusts to the content and available space. When a `width` is specified, the column maintains that exact width. You can mix both approaches within the same table.
+
+<Demo data={demos.widthConstraintsWithoutResizing} />
+
+### Mixed Width Scenarios
+
+You can combine auto-width and fixed-width columns in the same table. This is particularly useful when you have some columns that need consistent sizing (like actions or status) and others that should adapt to content (like names or descriptions).
+
+<Demo data={demos.mixedWidthConstraints} />
+
 ## Scroll Area Integration
 
 The `ListViewTable` works seamlessly with Mantine's `ScrollArea` component. This is useful when you want to create a fixed-height table with scrollable content while maintaining the table's sticky header functionality.

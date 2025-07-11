@@ -1,5 +1,4 @@
-import React from 'react';
-import { ListViewTable, ListViewTableSortStatus } from '@gfazioli/mantine-list-view-table';
+import { ListViewTable } from '@gfazioli/mantine-list-view-table';
 import { Badge, Text } from '@mantine/core';
 import { MantineDemo } from '@mantinex/demo';
 
@@ -35,17 +34,15 @@ const data = [
 const columns = [
   {
     key: 'name',
-    title: 'Name',
-    sortable: true,
+    title: 'Name (Auto)',
     renderCell: (record: any) => (
       <Text fw={record.type === 'folder' ? 600 : 400}>{record.name}</Text>
     ),
   },
   {
     key: 'kind',
-    title: 'Kind',
-    sortable: true,
-    width: 120,
+    title: 'Kind (120px)',
+    width: 120, // Fixed width at 120px
     renderCell: (record: any) => (
       <Badge variant="light" color={record.type === 'folder' ? 'blue' : 'gray'} size="sm">
         {record.kind}
@@ -54,85 +51,45 @@ const columns = [
   },
   {
     key: 'size',
-    title: 'Size',
-    sortable: true,
+    title: 'Size (Auto)',
     textAlign: 'right' as const,
-    width: 180,
   },
   {
     key: 'modified',
-    title: 'Date Modified',
-    sortable: true,
-    width: 120,
+    title: 'Modified (200px)',
+    width: 200, // Fixed width at 200px
   },
 ];
 
 function Demo() {
-  const [sortStatus, setSortStatus] = React.useState<ListViewTableSortStatus>({
-    columnKey: 'name',
-    direction: 'asc',
-  });
-
-  const sortedData = React.useMemo(() => {
-    const sorted = [...data].sort((a, b) => {
-      const aValue = a[sortStatus.columnKey as keyof typeof a];
-      const bValue = b[sortStatus.columnKey as keyof typeof b];
-
-      if (sortStatus.direction === 'desc') {
-        return String(bValue).localeCompare(String(aValue));
-      }
-      return String(aValue).localeCompare(String(bValue));
-    });
-    return sorted;
-  }, [sortStatus]);
-
   return (
     <ListViewTable
       columns={columns}
-      data={sortedData}
+      data={data}
       rowKey="id"
       withTableBorder
+      withColumnBorders
       highlightOnHover
-      sortStatus={sortStatus}
-      onSort={setSortStatus}
+      enableColumnReordering={false}
     />
   );
 }
 
 const code = `
-import { ListViewTable, ListViewTableSortStatus } from '@gfazioli/mantine-list-view-table';
+import { ListViewTable } from '@gfazioli/mantine-list-view-table';
 import { Badge, Text } from '@mantine/core';
-import React from 'react';
-import [ data, columns ] from './data';
+import { data, columns } from './data';
 
 function Demo() {
-  const [sortStatus, setSortStatus] = React.useState<ListViewTableSortStatus>({
-    columnKey: 'name',
-    direction: 'asc',
-  });
-
-  const sortedData = React.useMemo(() => {
-    const sorted = [...data].sort((a, b) => {
-      const aValue = a[sortStatus.columnKey as keyof typeof a];
-      const bValue = b[sortStatus.columnKey as keyof typeof b];
-
-      if (sortStatus.direction === 'desc') {
-        return String(bValue).localeCompare(String(aValue));
-      }
-      return String(aValue).localeCompare(String(bValue));
-    });
-    return sorted;
-  }, [sortStatus]);
-
   return (
     <ListViewTable
       columns={columns}
-      data={sortedData}
+      data={data}
       rowKey="id"
       withTableBorder
+      withColumnBorders
       highlightOnHover
-      sortStatus={sortStatus}
-      onSort={setSortStatus}
+      enableColumnReordering={false}
     />
   );
 }
@@ -150,17 +107,16 @@ export const data = [
 export const columns = [
   {
     key: 'name',
-    title: 'Name',
-    sortable: true,
+    title: 'Name (Auto)',
+    // No width specified - uses auto width (flexible)
     renderCell: (record: any) => (
       <Text fw={record.type === 'folder' ? 600 : 400}>{record.name}</Text>
     ),
   },
   {
     key: 'kind',
-    title: 'Kind',
-    sortable: true,
-    width: 120,
+    title: 'Kind (120px)',
+    width: 120, // Fixed width at 120px
     renderCell: (record: any) => (
       <Badge variant="light" color={record.type === 'folder' ? 'blue' : 'gray'} size="sm">
         {record.kind}
@@ -169,21 +125,19 @@ export const columns = [
   },
   {
     key: 'size',
-    title: 'Size',
-    sortable: true,
+    title: 'Size (Auto)',
     textAlign: 'right',
-    width: 180,
+    // No width specified - uses auto width (flexible)
   },
   {
     key: 'modified',
-    title: 'Date Modified',
-    sortable: true,
-    width: 120,
+    title: 'Modified (200px)',
+    width: 200, // Fixed width at 200px
   },
 ];
 `;
 
-export const externalSorting: MantineDemo = {
+export const mixedWidthConstraints: MantineDemo = {
   type: 'code',
   component: Demo,
   defaultExpanded: false,

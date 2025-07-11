@@ -7,7 +7,6 @@ const columns = [
     key: 'name',
     title: 'Name',
     sortable: true,
-    sticky: true,
     renderCell: (record: any) => (
       <Text fw={record.type === 'folder' ? 600 : 400}>{record.name}</Text>
     ),
@@ -74,7 +73,6 @@ export const columns = [
     key: 'name',
     title: 'Name',
     sortable: true,
-    sticky: true,
     renderCell: (record: any) => (
       <Text fw={record.type === 'folder' ? 600 : 400}>{record.name}</Text>
     ),
