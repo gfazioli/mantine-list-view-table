@@ -177,6 +177,7 @@ export interface ListViewTableBaseProps<T = any>
     | 'styles'
     | 'vars'
     | 'unstyled'
+    | 'attributes'
   > {
   /**
    * Array of column definitions.
