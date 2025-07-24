@@ -947,7 +947,7 @@ export function WithMinAndMaxWidth() {
       sortable: true,
       width: 500, // Too large, will be adjusted to maxWidth
       minWidth: 80,
-      maxWidth: 120,
+      maxWidth: 320,
       renderCell: (record: any) => (
         <Badge variant="light" color={record.type === 'folder' ? 'blue' : 'gray'} size="sm">
           {record.kind}
@@ -961,13 +961,13 @@ export function WithMinAndMaxWidth() {
       textAlign: 'right',
       width: 130, // Perfect, within min and max
       minWidth: 120,
-      maxWidth: 150,
+      maxWidth: 350,
     },
     {
       key: 'modified',
       title: 'Date Modified',
       sortable: true,
-      minWidth: 120,
+      minWidth: 20,
       maxWidth: 400, // Auto width, should respect both constraints
     },
   ];
