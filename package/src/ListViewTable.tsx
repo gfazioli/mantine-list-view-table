@@ -884,6 +884,9 @@ export const ListViewTable = factory<ListViewTableFactory>((_props, ref) => {
               minWidth: column.minWidth,
               maxWidth: column.maxWidth,
               textAlign: column.textAlign,
+              whiteSpace: column.noWrap || noWrap ? 'nowrap' : 'normal',
+              textOverflow: column.ellipsis ? 'ellipsis' : 'clip',
+              overflow: column.ellipsis ? 'hidden' : 'clip',
               position: column.sticky ? 'sticky' : 'relative',
               left: column.sticky ? 0 : undefined,
               zIndex: column.sticky ? 11 : undefined, // Higher z-index for sticky headers

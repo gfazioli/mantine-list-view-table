@@ -61,6 +61,70 @@ You can combine auto-width and fixed-width columns in the same table. This is pa
 
 <Demo data={demos.mixedWidthConstraints} />
 
+## Text Truncation with Ellipsis
+
+When dealing with lengthy text content that exceeds the available column width, you can use the `ellipsis` and `noWrap` props to control how text overflow and wrapping are handled.
+
+### Ellipsis Property
+
+Setting `ellipsis: true` on a column will truncate overflowing text with an ellipsis (`...`), providing a clean and consistent appearance. This is particularly useful for columns containing file names, descriptions, or other text that might vary significantly in length.
+
+### NoWrap Property
+
+The `noWrap` property controls whether text can wrap to multiple lines within a cell:
+
+- `noWrap: true` - Prevents text from wrapping to multiple lines
+- `noWrap: false` (default) - Allows text to wrap naturally
+
+### Combining Ellipsis and NoWrap
+
+You can combine these properties for different behaviors:
+
+- `ellipsis: true` + `noWrap: true` - Single line with ellipsis truncation (recommended)
+- `ellipsis: true` + `noWrap: false` - Multi-line text with ellipsis when needed
+- `ellipsis: false` + `noWrap: true` - Single line that may be cut off without ellipsis
+- `ellipsis: false` + `noWrap: false` - Default behavior with natural text wrapping
+
+Both features work seamlessly with column resizing, allowing users to expand columns to see more content or shrink them to save space while maintaining appropriate text handling.
+
+<Demo data={demos.ellipsis} />
+
+### Text Truncation Presets
+
+For consistent behavior across your application, you can use predefined text truncation configurations. This approach helps maintain consistency and makes it easier to apply appropriate truncation strategies based on content type.
+
+<Demo data={demos.ellipsisPresets} />
+
+## Different Header and Cell Styling with cellStyle
+
+While the `ellipsis` and `noWrap` properties apply the same styling to both table headers (TH) and data cells (TD), you can use the `cellStyle` property to create different behaviors between headers and cells. This gives you fine-grained control over how content is displayed in each part of the column.
+
+### Understanding the Behavior
+
+The column-level properties (`ellipsis`, `noWrap`, `textAlign`, etc.) apply to **both** the header (TH) and the data cells (TD) in that column. However, the `cellStyle` property only affects the **data cells (TD)**, allowing you to override the column-level styling specifically for the cell content while keeping different styling for the header.
+
+### Use Cases for Different Header/Cell Styling
+
+1. **Header with ellipsis, cells with wrapping** - Keep headers compact while allowing cell content to wrap naturally
+2. **Header allows wrapping, cells use ellipsis** - Show full header text but truncate long cell content
+3. **Custom cell backgrounds or formatting** - Apply visual enhancements only to data cells
+4. **Dynamic cell styling** - Apply different styles based on the data in each cell
+
+### Implementation Examples
+
+The `cellStyle` property can be either a static style object or a function that receives the record and index, allowing for dynamic styling based on data:
+
+<Demo data={demos.cellStyleDifferences} />
+
+### Key Benefits
+
+- **Flexibility**: Different visual treatment for headers vs. data
+- **User Experience**: Headers can show full context while cells optimize for scanning
+- **Dynamic Styling**: Apply conditional formatting based on data values
+- **Consistency**: Maintain header layout while customizing cell presentation
+
+This approach is particularly useful when building data-heavy interfaces where header clarity and cell readability have different requirements.
+
 ## Horizontal Scrolling with Table.ScrollContainer
 
 When your table content is wider than the available container width, you can use Mantine's [`Table.ScrollContainer`](https://mantine.dev/core/table/#scroll-container) component to enable smooth horizontal scrolling. This is especially useful for tables with many columns or when you need to maintain fixed column widths.
