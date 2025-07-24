@@ -1,9 +1,12 @@
+export { cellStyleDifferences } from './ListViewTable.demo.cellStyleDifferences';
 export { configurator } from './ListViewTable.demo.configurator';
 export { customEmptyState } from './ListViewTable.demo.customEmptyState';
 export { customLoadingComponent } from './ListViewTable.demo.customLoadingComponent';
 export { customLoadingElement } from './ListViewTable.demo.customLoadingElement';
 export { customLoadingProps } from './ListViewTable.demo.customLoadingProps';
 export { defaultEmptyState } from './ListViewTable.demo.defaultEmptyState';
+export { ellipsis } from './ListViewTable.demo.ellipsis';
+export { ellipsisPresets } from './ListViewTable.demo.ellipsisPresets';
 export { externalReorderingAndResizing } from './ListViewTable.demo.externalReorderingAndResizing';
 export { externalSorting } from './ListViewTable.demo.externalSorting';
 export { inlineJsxEmptyState } from './ListViewTable.demo.inlineJsxEmptyState';

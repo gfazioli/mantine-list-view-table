@@ -1926,3 +1926,171 @@ export function WithScrollContainerAndStickyColumn() {
     </div>
   );
 }
+
+export function WithEllipsisAndNoWrap() {
+  const dataWithLongContent = [
+    {
+      id: 1,
+      name: 'Very long document name that would normally overflow the column width and cause issues',
+      type: 'folder',
+      size: '--',
+      modified: '2024-06-01',
+      kind: 'Folder with a very long description',
+      description:
+        'This is a very long description that demonstrates how text can be truncated with ellipsis when the column is too narrow to fit all the content. It should show ellipsis when the column width is constrained.',
+      notes:
+        'Additional notes that can wrap to multiple lines when noWrap is disabled, but will be truncated when ellipsis is enabled.',
+    },
+    {
+      id: 2,
+      name: 'README_with_extremely_long_filename_that_should_be_truncated_based_on_column_settings.md',
+      type: 'file',
+      size: '2.1 KB',
+      modified: '2024-06-02',
+      kind: 'Markdown Document File',
+      description:
+        'A comprehensive guide explaining all the features and functionality of this component library with detailed examples, code samples, and use cases for developers.',
+      notes:
+        'This file contains important documentation that developers should read carefully before implementing the component in their projects.',
+    },
+    {
+      id: 3,
+      name: 'package.json',
+      type: 'file',
+      size: '1.8 KB',
+      modified: '2024-06-03',
+      kind: 'JSON Configuration',
+      description: 'Package configuration file',
+      notes: 'Standard npm configuration',
+    },
+    {
+      id: 4,
+      name: 'source_code_directory_containing_all_typescript_and_component_files',
+      type: 'folder',
+      size: '--',
+      modified: '2024-06-04',
+      kind: 'Source Folder',
+      description:
+        'Source code directory containing all TypeScript files, React components, and related assets for the project',
+      notes:
+        'Main development folder where all the code lives and where developers spend most of their time working on features and bug fixes.',
+    },
+  ];
+
+  const columnsWithTextTruncation: ListViewTableColumn[] = [
+    {
+      key: 'name',
+      title: 'Name (Ellipsis)',
+      sortable: true,
+      width: 200,
+      ellipsis: true, // Enable ellipsis for text truncation
+      renderCell: (record: any) => (
+        <Text fw={record.type === 'folder' ? 600 : 400} title={record.name}>
+          {record.name}
+        </Text>
+      ),
+    },
+    {
+      key: 'description',
+      title: 'Description (Ellipsis + NoWrap)',
+      sortable: true,
+      width: 250,
+      ellipsis: true, // Show ellipsis for overflow
+      noWrap: true, // Prevent text wrapping
+      renderCell: (record: any) => (
+        <Text size="sm" c="dimmed" title={record.description}>
+          {record.description}
+        </Text>
+      ),
+    },
+    {
+      key: 'notes',
+      title: 'Notes (No Ellipsis)',
+      sortable: true,
+      width: 200,
+      ellipsis: false, // No ellipsis - text may wrap or be cut off
+      noWrap: false, // Allow text wrapping
+      renderCell: (record: any) => (
+        <Text size="sm" title={record.notes}>
+          {record.notes}
+        </Text>
+      ),
+    },
+    {
+      key: 'kind',
+      title: 'Kind (NoWrap Only)',
+      sortable: true,
+      width: 150,
+      noWrap: true, // Prevent wrapping but no ellipsis
+      ellipsis: false,
+      renderCell: (record: any) => (
+        <Badge
+          variant="light"
+          color={record.type === 'folder' ? 'blue' : 'gray'}
+          size="sm"
+          title={record.kind}
+        >
+          {record.kind}
+        </Badge>
+      ),
+    },
+    {
+      key: 'size',
+      title: 'Size',
+      sortable: true,
+      textAlign: 'right',
+      width: 80,
+      ellipsis: true,
+    },
+    {
+      key: 'modified',
+      title: 'Modified',
+      sortable: true,
+      width: 100,
+      ellipsis: true,
+    },
+  ];
+
+  return (
+    <div>
+      <Text size="sm" c="dimmed" mb="md">
+        This story demonstrates the <b>ellipsis</b> and <b>noWrap</b> properties for text truncation
+        and wrapping control:
+      </Text>
+      <ul style={{ fontSize: '14px', color: 'var(--mantine-color-dimmed)', marginBottom: '16px' }}>
+        <li>
+          <b>Name:</b> ellipsis: true - Long text is truncated with "..."
+        </li>
+        <li>
+          <b>Description:</b> ellipsis: true + noWrap: true - Text doesn't wrap and shows ellipsis
+        </li>
+        <li>
+          <b>Notes:</b> ellipsis: false + noWrap: false - Text can wrap to multiple lines
+        </li>
+        <li>
+          <b>Kind:</b> noWrap: true + ellipsis: false - Text doesn't wrap but can be cut off
+        </li>
+        <li>
+          <b>Size & Modified:</b> ellipsis: true - Short text with ellipsis support
+        </li>
+      </ul>
+      <Text size="sm" c="dimmed" mb="md">
+        Try resizing the columns to see how different text truncation behaviors work. Hover over
+        cells to see full content in tooltips.
+      </Text>
+      <ListViewTable
+        columns={columnsWithTextTruncation}
+        data={dataWithLongContent}
+        rowKey="id"
+        withTableBorder
+        withColumnBorders
+        highlightOnHover
+        enableColumnResizing
+        onColumnResize={(columnKey, width) => {
+          // eslint-disable-next-line no-console
+          console.log(`Column '${columnKey}' resized to: ${width}px`);
+        }}
+      />
+    </div>
+  );
+}
