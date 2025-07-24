@@ -1,5 +1,19 @@
 import React from 'react';
-import { Badge, Box, ScrollArea, Stack, Switch, Table, Text } from '@mantine/core';
+import { IconRefresh } from '@tabler/icons-react';
+import {
+  Badge,
+  Box,
+  Button,
+  Group,
+  RingProgress,
+  ScrollArea,
+  Stack,
+  Switch,
+  Table,
+  Text,
+  ThemeIcon,
+  Title,
+} from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import { ListViewTable, ListViewTableColumn, ListViewTableSortStatus } from './ListViewTable';
 
@@ -237,6 +251,252 @@ export function EmptyState() {
       withTableBorder
       emptyText="No files found"
     />
+  );
+}
+
+// Custom loading components for testing
+const CustomSpinner = ({
+  message,
+  color,
+  size,
+}: {
+  message?: string;
+  color?: string;
+  size?: string;
+}) => (
+  <Stack align="center" gap="md">
+    <RingProgress
+      size={parseInt(size || '60', 10)}
+      thickness={6}
+      sections={[{ value: 100, color: color || 'blue' }]}
+    />
+    <Text size="sm" c="dimmed">
+      {message || 'Loading data...'}
+    </Text>
+  </Stack>
+);
+
+const CustomLoadingScreen = ({
+  title,
+  subtitle,
+  onRetry,
+}: {
+  title?: string;
+  subtitle?: string;
+  onRetry?: () => void;
+}) => (
+  <Stack align="center" gap="lg" p="xl">
+    <ThemeIcon size="xl" variant="light" color="blue">
+      <IconRefresh size={24} />
+    </ThemeIcon>
+    <Stack align="center" gap="xs">
+      <Title order={4}>{title || 'Loading Files'}</Title>
+      <Text size="sm" c="dimmed" ta="center">
+        {subtitle || 'Please wait while we fetch your data...'}
+      </Text>
+    </Stack>
+    {onRetry && (
+      <Button variant="light" size="sm" onClick={onRetry}>
+        Retry
+      </Button>
+    )}
+  </Stack>
+);
+
+export function CustomLoadingComponents() {
+  const [currentExample, setCurrentExample] = React.useState(0);
+  const [isLoading, setIsLoading] = React.useState(true);
+
+  const examples = [
+    {
+      title: 'Default Loading (with custom props)',
+      description: 'Default Mantine Loader with custom size and color',
+      component: undefined,
+      props: { size: 'xl', color: 'green' },
+    },
+    {
+      title: 'Custom Component (React Element)',
+      description: 'Pre-configured React element with static props',
+      component: <CustomSpinner message="Fetching files..." color="orange" size="80" />,
+      props: undefined,
+    },
+    {
+      title: 'Custom Component (Function)',
+      description: 'Component function that receives loadingProps',
+      component: CustomSpinner,
+      props: { message: 'Loading from server...', color: 'grape', size: '70' },
+    },
+    {
+      title: 'Complex Loading Screen',
+      description: 'Advanced loading component with multiple elements',
+      component: CustomLoadingScreen,
+      props: {
+        title: 'Synchronizing Data',
+        subtitle: 'This may take a few moments depending on your connection',
+        onRetry: () => {
+          // eslint-disable-next-line no-console
+          console.log('Retry clicked');
+          setIsLoading(false);
+          setTimeout(() => setIsLoading(true), 1000);
+        },
+      },
+    },
+  ];
+
+  React.useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentExample((prev) => (prev + 1) % examples.length);
+    }, 4000);
+    return () => clearInterval(interval);
+  }, [examples.length]);
+
+  const currentConfig = examples[currentExample];
+
+  return (
+    <Stack gap="md">
+      <Stack gap="xs">
+        <Text size="sm" c="dimmed">
+          This story demonstrates custom loading components and props. The example cycles through
+          different configurations every 4 seconds.
+        </Text>
+        <Box bg="gray.0" p="sm" style={{ borderRadius: 4 }}>
+          <Text size="sm" fw={500} mb="xs">
+            Current Example: {currentConfig.title}
+          </Text>
+          <Text size="xs" c="dimmed">
+            {currentConfig.description}
+          </Text>
+        </Box>
+      </Stack>
+
+      <Group gap="xs">
+        {examples.map((_, index) => (
+          <Button
+            key={index}
+            size="xs"
+            variant={index === currentExample ? 'filled' : 'light'}
+            onClick={() => setCurrentExample(index)}
+          >
+            {index + 1}
+          </Button>
+        ))}
+        <Button size="xs" variant="outline" onClick={() => setIsLoading(!isLoading)}>
+          Toggle Loading
+        </Button>
+      </Group>
+
+      <ListViewTable
+        columns={columns}
+        data={sampleData}
+        rowKey="id"
+        height={400}
+        withTableBorder
+        loading={isLoading}
+        loadingComponent={currentConfig.component}
+        loadingProps={currentConfig.props}
+      />
+    </Stack>
+  );
+}
+
+export function LoadingStatesComparison() {
+  const [states, setStates] = React.useState({
+    default: true,
+    customProps: true,
+    customComponent: true,
+    complex: true,
+  });
+
+  return (
+    <Stack gap="lg">
+      <Text size="sm" c="dimmed">
+        This story compares different loading configurations side by side.
+      </Text>
+
+      <Group gap="sm">
+        {Object.entries(states).map(([key, value]) => (
+          <Button
+            key={key}
+            size="xs"
+            variant={value ? 'filled' : 'light'}
+            onClick={() =>
+              setStates((prev) => ({ ...prev, [key]: !prev[key as keyof typeof prev] }))
+            }
+          >
+            {key.charAt(0).toUpperCase() + key.slice(1).replace(/([A-Z])/g, ' $1')}
+          </Button>
+        ))}
+      </Group>
+
+      <Group align="flex-start" grow>
+        <Stack gap="xs">
+          <Text size="sm" fw={500}>
+            Default Loader
+          </Text>
+          <ListViewTable
+            columns={columns.slice(0, 2)}
+            data={sampleData}
+            rowKey="id"
+            height={250}
+            withTableBorder
+            loading={states.default}
+          />
+        </Stack>
+
+        <Stack gap="xs">
+          <Text size="sm" fw={500}>
+            Custom Props
+          </Text>
+          <ListViewTable
+            columns={columns.slice(0, 2)}
+            data={sampleData}
+            rowKey="id"
+            height={250}
+            withTableBorder
+            loading={states.customProps}
+            loadingProps={{ size: 'md', color: 'teal' }}
+          />
+        </Stack>
+
+        <Stack gap="xs">
+          <Text size="sm" fw={500}>
+            Custom Component
+          </Text>
+          <ListViewTable
+            columns={columns.slice(0, 2)}
+            data={sampleData}
+            rowKey="id"
+            height={250}
+            withTableBorder
+            loading={states.customComponent}
+            loadingComponent={<CustomSpinner message="Custom loading..." color="red" />}
+          />
+        </Stack>
+
+        <Stack gap="xs">
+          <Text size="sm" fw={500}>
+            Complex Component
+          </Text>
+          <ListViewTable
+            columns={columns.slice(0, 2)}
+            data={sampleData}
+            rowKey="id"
+            height={250}
+            withTableBorder
+            loading={states.complex}
+            loadingComponent={CustomLoadingScreen}
+            loadingProps={{
+              title: 'Processing',
+              subtitle: 'Almost done...',
+              onRetry: () => {
+                // eslint-disable-next-line no-console
+                console.log('Retry from comparison');
+              },
+            }}
+          />
+        </Stack>
+      </Group>
+    </Stack>
   );
 }
 

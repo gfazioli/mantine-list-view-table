@@ -275,9 +275,19 @@ export interface ListViewTableBaseProps<T = any>
   loading?: boolean;
 
   /**
-   * Text to show when no data is available.
+   * Custom props for the default loading state.
    */
-  emptyText?: string;
+  loadingProps?: Record<string, any>;
+
+  /**
+   * Custom loading component to render instead of the default loader. Accepts a React element or a component type.
+   */
+  loadingComponent?: React.ElementType | React.ReactNode;
+
+  /**
+   * Content to show when no data is available. Can be a string or a React component.
+   */
+  emptyText?: React.ReactNode;
 
   /**
    * Current sort status.
@@ -444,6 +454,8 @@ export const ListViewTable = factory<ListViewTableFactory>((_props, ref) => {
     verticalAlign,
     horizontalSpacing,
     verticalSpacing,
+    loadingProps,
+    loadingComponent,
     // Separate Box props from Table props
     id,
     onClick,
@@ -993,7 +1005,15 @@ export const ListViewTable = factory<ListViewTableFactory>((_props, ref) => {
     return (
       <Box {...getStyles('root')} ref={ref} {...boxProps}>
         <Center h={height} {...getStyles('loader')} role="status">
-          <Loader size="lg" />
+          {loadingComponent ? (
+            React.isValidElement(loadingComponent) ? (
+              loadingComponent
+            ) : loadingComponent && typeof loadingComponent === 'function' ? (
+              React.createElement(loadingComponent, loadingProps)
+            ) : null
+          ) : (
+            <Loader {...loadingProps} />
+          )}
         </Center>
       </Box>
     );
@@ -1004,9 +1024,13 @@ export const ListViewTable = factory<ListViewTableFactory>((_props, ref) => {
       <Box {...getStyles('root')} ref={ref} {...boxProps}>
         <Center h={height} {...getStyles('emptyState')}>
           <Stack align="center" gap="md">
-            <Text size="lg" c="dimmed">
-              {emptyText}
-            </Text>
+            {typeof emptyText === 'string' ? (
+              <Text size="lg" c="dimmed">
+                {emptyText}
+              </Text>
+            ) : (
+              emptyText
+            )}
           </Stack>
         </Center>
       </Box>
