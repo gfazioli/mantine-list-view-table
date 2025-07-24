@@ -125,11 +125,52 @@ When data is being fetched or processed, you can show a loading indicator by set
 
 <Demo data={demos.loadingState} />
 
+### Custom Loading Props
+
+You can customize the default Mantine `Loader` component by providing custom props through the `loadingProps` prop. This allows you to change the loader's size, color, and other properties without replacing the entire loading component.
+
+<Demo data={demos.customLoadingProps} />
+
+### Custom Loading Component
+
+For more advanced customization, you can provide a completely custom loading component using the `loadingComponent` prop. This prop accepts either a React element or a component function:
+
+- **React Element**: A pre-configured JSX element that will be rendered as-is
+- **Component Function**: A component that will receive `loadingProps` as props, allowing for dynamic customization
+
+<Demo data={demos.customLoadingElement} />
+
+You can also pass a component function that will receive the `loadingProps`:
+
+<Demo data={demos.customLoadingComponent} />
+
 ### Empty State
 
-When no data is available to display, you can provide a custom empty state message using the `emptyText` prop. This gives users clear feedback when the table has no content to show.
+When no data is available to display, you can customize the empty state using the `emptyText` prop. This prop accepts either a simple text string or a React component, giving you full flexibility to create rich, interactive empty states that provide better user experience and guidance.
 
-<Demo data={demos.emptyState} />
+#### Default Empty State
+
+If you don't specify the `emptyText` prop, the table will show the default message: **"No data available"**.
+
+<Demo data={demos.defaultEmptyState} />
+
+#### Simple Text Empty State
+
+You can provide a custom text message by passing a string to the `emptyText` prop:
+
+<Demo data={demos.simpleEmptyText} />
+
+#### Inline JSX Empty State
+
+For slightly more visual appeal, you can pass inline JSX elements:
+
+<Demo data={demos.inlineJsxEmptyState} />
+
+#### Advanced Custom Component Empty State
+
+For more sophisticated empty states, you can pass a React component that includes icons, custom styling, descriptions, and interactive elements like buttons:
+
+<Demo data={demos.customEmptyState} />
 
 ## Vertical Variant
 

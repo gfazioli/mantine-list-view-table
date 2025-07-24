@@ -44,7 +44,8 @@ function Demo() {
       data={[]}
       rowKey="id"
       withTableBorder
-      emptyText="No files found"
+      height={200}
+      emptyText="No files found in this directory"
     />
   );
 }
@@ -52,7 +53,6 @@ function Demo() {
 const code = `
 import { ListViewTable } from '@gfazioli/mantine-list-view-table';
 import { Badge, Text } from '@mantine/core';
-import { columns } from './data';
 
 function Demo() {
   return (
@@ -61,7 +61,8 @@ function Demo() {
       data={[]}
       rowKey="id"
       withTableBorder
-      emptyText="No files found"
+      height={200}
+      emptyText="No files found in this directory"
     />
   );
 }
@@ -104,7 +105,7 @@ export const columns = [
 ];
 `;
 
-export const emptyState: MantineDemo = {
+export const simpleEmptyText: MantineDemo = {
   type: 'code',
   component: Demo,
   defaultExpanded: false,
