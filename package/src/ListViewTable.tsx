@@ -1034,7 +1034,7 @@ export const ListViewTable = factory<ListViewTableFactory>((_props, ref) => {
               textAlign: column.textAlign,
               whiteSpace: column.noWrap || noWrap ? 'nowrap' : 'normal',
               textOverflow: column.ellipsis ? 'ellipsis' : 'clip',
-              overflow: column.ellipsis ? 'hidden' : 'clip',
+              overflow: column.ellipsis ? 'hidden' : 'visible', // Fallback for older browsers
               position: column.sticky ? 'sticky' : 'relative',
               left: column.sticky ? 0 : undefined,
               zIndex: column.sticky ? 10 : undefined, // z-index for sticky body cells
