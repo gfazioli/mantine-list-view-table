@@ -802,7 +802,8 @@ export const ListViewTable = factory<ListViewTableFactory>((_props, ref) => {
             }
           });
 
-          // Store the initial total table width for resize constraints
+          // Store the initial total table width to enforce resize constraints
+          // and prevent columns from expanding beyond the original table boundaries
           setTotalTableWidth(totalWidth);
           // Update column widths with actual measured values
           setColumnWidths((prev) => ({ ...prev, ...actualWidths }));
