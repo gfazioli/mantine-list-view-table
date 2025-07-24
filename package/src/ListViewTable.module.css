@@ -16,6 +16,16 @@
   box-shadow: none;
 }
 
+.headerCell {
+  white-space: nowrap;
+  overflow: hidden;
+
+  * {
+    text-overflow: inherit;
+    overflow: hidden;
+  }
+}
+
 /* Header cell hover: only when dragging is active */
 .headerCell[data-dragging='true']:hover,
 .headerCell[data-drag-over='true']:hover {
@@ -95,6 +105,11 @@
   /* Let Mantine handle basic cell styling, only add custom overrides */
   vertical-align: middle;
   overflow: hidden;
+
+  > * {
+    text-overflow: inherit;
+    overflow: hidden;
+  }
 }
 
 .emptyState {

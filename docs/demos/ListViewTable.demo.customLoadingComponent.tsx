@@ -79,7 +79,10 @@ function Demo() {
       loadingProps={{
         title: 'Synchronizing Data',
         subtitle: 'This may take a few moments depending on your connection',
-        onRetry: () => console.log('Retry clicked'),
+        onRetry: () => {
+          // eslint-disable-next-line no-console
+          console.log('Retry clicked');
+        },
       }}
       // Note: When using a component function, it receives loadingProps as props
     />
