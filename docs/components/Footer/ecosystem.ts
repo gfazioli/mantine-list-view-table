@@ -1,5 +1,12 @@
 export const ecosystem = [
   {
+    key: 'mantine-clock',
+    title: 'Mantine Clock',
+    href: 'https://gfazioli.github.io/mantine-clock',
+    newWindow: true,
+    new: true,
+  },
+  {
     key: 'mantine-flip',
     title: 'Mantine Flip',
     href: 'https://gfazioli.github.io/mantine-flip',
@@ -9,12 +16,6 @@ export const ecosystem = [
     key: 'mantine-list-view-table',
     title: 'Mantine List View Table',
     href: 'https://gfazioli.github.io/mantine-list-view-table',
-    newWindow: true,
-  },
-  {
-    key: 'mantine-clock',
-    title: 'Mantine Clock',
-    href: 'https://gfazioli.github.io/mantine-clock',
     newWindow: true,
   },
   {
