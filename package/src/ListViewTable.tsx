@@ -891,6 +891,7 @@ export const ListViewTable = factory<ListViewTableFactory>((_props, ref) => {
               position: column.sticky ? 'sticky' : 'relative',
               left: column.sticky ? 0 : undefined,
               zIndex: column.sticky ? 11 : undefined, // Higher z-index for sticky headers
+              top: 0,
             },
           })}
           draggable={enableColumnReordering && column.draggable !== false}

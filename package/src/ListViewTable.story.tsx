@@ -1531,6 +1531,9 @@ export function WithStickyHeaderOffset() {
     <Box h={16000}>
       <div
         style={{
+          position: 'sticky',
+          top: 0,
+          zIndex: 1000,
           height: '60px',
           backgroundColor: 'var(--mantine-color-blue-1)',
           display: 'flex',
