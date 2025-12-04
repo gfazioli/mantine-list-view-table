@@ -1,6 +1,6 @@
 # Mantine ListViewTable Component
 
-<img width="2752" height="1536" alt="Gemini_Generated_Image_rni64erni64erni6" src="https://github.com/user-attachments/assets/0eb31387-264f-4b29-95a3-34ce73072a5f" />
+<img width="2752" height="1536" alt="mantine List View Table" src="https://github.com/user-attachments/assets/ad21d078-ece9-4cb7-b06a-dc5883f47ab1" />
 
 <div align="center">
   
