@@ -1,9 +1,6 @@
 # Mantine ListViewTable Component
 
-
-https://github.com/user-attachments/assets/a220d834-6787-429a-aab3-15e0c504f39c
-
----
+<img width="2752" height="1536" alt="Gemini_Generated_Image_rni64erni64erni6" src="https://github.com/user-attachments/assets/0eb31387-264f-4b29-95a3-34ce73072a5f" />
 
 <div align="center">
   
@@ -120,3 +117,5 @@ function Demo() {
 </div>
 
 https://github.com/user-attachments/assets/f4b7281c-eea0-41f9-b168-80d0f8374929
+
+https://github.com/user-attachments/assets/a220d834-6787-429a-aab3-15e0c504f39c
