@@ -150,35 +150,34 @@ export interface ListViewTableSortStatus {
   direction: ListViewTableSortDirection;
 }
 
-export interface ListViewTableBaseProps<T = any>
-  extends Omit<
-    TableProps,
-    | 'data'
-    | 'children'
-    | 'withTableBorder'
-    | 'withColumnBorders'
-    | 'withRowBorders'
-    | 'striped'
-    | 'stripedColor'
-    | 'highlightOnHover'
-    | 'highlightOnHoverColor'
-    | 'horizontalSpacing'
-    | 'verticalSpacing'
-    | 'borderColor'
-    | 'captionSide'
-    | 'stickyHeader'
-    | 'stickyHeaderOffset'
-    | 'tabularNums'
-    | 'layout'
-    | 'variant'
-    | 'style'
-    | 'className'
-    | 'classNames'
-    | 'styles'
-    | 'vars'
-    | 'unstyled'
-    | 'attributes'
-  > {
+export interface ListViewTableBaseProps<T = any> extends Omit<
+  TableProps,
+  | 'data'
+  | 'children'
+  | 'withTableBorder'
+  | 'withColumnBorders'
+  | 'withRowBorders'
+  | 'striped'
+  | 'stripedColor'
+  | 'highlightOnHover'
+  | 'highlightOnHoverColor'
+  | 'horizontalSpacing'
+  | 'verticalSpacing'
+  | 'borderColor'
+  | 'captionSide'
+  | 'stickyHeader'
+  | 'stickyHeaderOffset'
+  | 'tabularNums'
+  | 'layout'
+  | 'variant'
+  | 'style'
+  | 'className'
+  | 'classNames'
+  | 'styles'
+  | 'vars'
+  | 'unstyled'
+  | 'attributes'
+> {
   /**
    * Array of column definitions.
    */
@@ -361,9 +360,7 @@ export interface ListViewTableBaseProps<T = any>
 }
 
 export interface ListViewTableProps<T = any>
-  extends BoxProps,
-    ListViewTableBaseProps<T>,
-    StylesApiProps<ListViewTableFactory> {}
+  extends BoxProps, ListViewTableBaseProps<T>, StylesApiProps<ListViewTableFactory> {}
 
 export type ListViewTableFactory = Factory<{
   props: ListViewTableProps<any>;
