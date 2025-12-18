@@ -15,19 +15,15 @@
 
 This component is created on top of the [Mantine](https://mantine.dev/) library.
 
-[![Mantine UI Library](https://img.shields.io/badge/-MANTINE_UI_LIBRARY-blue?style=for-the-badge&labelColor=black&logo=mantine
-)](https://mantine.dev/)
+[Mantine ListViewTable](https://gfazioli.github.io/mantine-list-view-table/) is a robust React component that enhances Mantine’s Table to deliver a modern, macOS Finder–style list view with advanced interactivity and layout control. Users can reorder and resize columns, while developers can choose internal behaviors or fully manage state externally for sorting, column reordering, and resizing. 
 
-This component extends [Mantine UI](https://mantine.dev/) by adding advanced table features inspired by the List View in macOS Finder. It enhances the [Mantine Table component](https://mantine.dev/core/table/) with a familiar, intuitive interface for displaying item lists in a structured, table-like format. Users can **reorder** and **resize** columns dynamically, providing greater flexibility and control over data presentation. This makes it ideal for applications needing a modern, customizable list view with enhanced interactivity.
+The component provides fine‑grained typography control—via ellipsis and noWrap—and allows distinct header vs. cell presentation using cellStyle. It supports wide datasets through Table.ScrollContainer for horizontal scrolling, with optional sticky identifier columns, and works seamlessly inside ScrollArea with sticky headers and adjustable offsets. 
 
-[![Mantine Extensions](https://img.shields.io/badge/-Watch_the_Video-blue?style=for-the-badge&labelColor=black&logo=youtube
-)](https://www.youtube.com/playlist?list=PL85tTROKkZrWyqCcmNCdWajpx05-cTal4)
-[![Demo and Documentation](https://img.shields.io/badge/-Demo_%26_Documentation-blue?style=for-the-badge&labelColor=black&logo=typescript
-)](https://gfazioli.github.io/mantine-list-view-table/)
-[![Mantine Extensions HUB](https://img.shields.io/badge/-Mantine_Extensions_Hub-blue?style=for-the-badge&labelColor=blue
-)](https://mantine-extensions.vercel.app/)
+For UX polish, it ships with configurable loading overlays (including custom loaders) and rich empty states ranging from simple messages to fully styled components with actions. These features make ListViewTable ideal for applications that need a clear, scalable, and highly interactive tabular list experience.
 
-👉 You can find more components on the [Mantine Extensions Hub](https://mantine-extensions.vercel.app/) library.
+> [!note]
+>
+> → [Demo and Documentation](https://gfazioli.github.io/mantine-list-view-table/) → [Youtube Video](https://www.youtube.com/playlist?list=PL85tTROKkZrWyqCcmNCdWajpx05-cTal4) → [More Mantine Components](https://mantine-extensions.vercel.app/)
 
 
 ## Installation
@@ -110,12 +106,15 @@ function Demo() {
   );
 }
 ```
-<div align="center">
+
+---
   
-[![Star History Chart](https://api.star-history.com/svg?repos=gfazioli/mantine-list-view-table&type=Timeline)](https://www.star-history.com/#gfazioli/mantine-list-view-table&Timeline)
-
-</div>
-
 https://github.com/user-attachments/assets/f4b7281c-eea0-41f9-b168-80d0f8374929
 
 https://github.com/user-attachments/assets/a220d834-6787-429a-aab3-15e0c504f39c
+
+---
+[![Star History Chart](https://api.star-history.com/svg?repos=gfazioli/mantine-list-view-table&type=Timeline)](https://www.star-history.com/#gfazioli/mantine-list-view-table&Timeline)
+
+
+
