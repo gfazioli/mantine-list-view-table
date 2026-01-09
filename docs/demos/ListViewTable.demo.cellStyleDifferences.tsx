@@ -287,5 +287,6 @@ export const cellStyleDifferences: MantineDemo = {
   code: [
     { fileName: 'Demo.tsx', code, language: 'tsx' },
     { fileName: 'data.ts', code: dataCode, language: 'tsx' },
+    { fileName: 'columns.tsx', code: columnsCode, language: 'tsx' },
   ],
 };

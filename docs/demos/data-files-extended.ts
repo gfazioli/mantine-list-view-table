@@ -1,3 +1,36 @@
+export const dataFilesExtendedCode = `export const data = [
+  { id: 1, name: 'Documents', type: 'folder', size: '--', modified: '2024-06-01', kind: 'Folder' },
+  { id: 2, name: 'README.md', type: 'file', size: '2.1 KB', modified: '2024-06-02', kind: 'Markdown' },
+  { id: 3, name: 'package.json', type: 'file', size: '1.8 KB', modified: '2024-06-03', kind: 'JSON' },
+  { id: 4, name: 'src', type: 'folder', size: '--', modified: '2024-06-04', kind: 'Folder' },
+  { id: 5, name: 'image.png', type: 'file', size: '45.2 KB', modified: '2024-06-05', kind: 'PNG Image' },
+];
+`;
+
+export const dataFilesExtendedLongCode = `export const data = [
+  { id: 1, name: 'Documents', type: 'folder', size: '--', modified: '2024-06-01', kind: 'Folder' },
+  { id: 2, name: 'README.md', type: 'file', size: '2.1 KB', modified: '2024-06-02', kind: 'Markdown' },
+  { id: 3, name: 'package.json', type: 'file', size: '1.8 KB', modified: '2024-06-03', kind: 'JSON' },
+  { id: 4, name: 'src', type: 'folder', size: '--', modified: '2024-06-04', kind: 'Folder' },
+  { id: 5, name: 'image.png', type: 'file', size: '45.2 KB', modified: '2024-06-05', kind: 'PNG Image' },
+  { id: 6, name: 'video.mp4', type: 'file', size: '12.5 MB', modified: '2024-06-06', kind: 'Video' },
+  { id: 7, name: 'archive.zip', type: 'file', size: '3.4 MB', modified: '2024-06-07', kind: 'ZIP Archive' },
+  { id: 8, name: 'Downloads', type: 'folder', size: '--', modified: '2024-06-08', kind: 'Folder' },
+  { id: 9, name: 'notes.txt', type: 'file', size: '1.2 KB', modified: '2024-06-09', kind: 'Text File' },
+  { id: 10, name: 'node_modules', type: 'folder', size: '--', modified: '2024-06-10', kind: 'Folder' },
+  { id: 11, name: 'dist', type: 'folder', size: '--', modified: '2024-06-11', kind: 'Folder' },
+  { id: 12, name: 'LICENSE', type: 'file', size: '1.1 KB', modified: '2024-06-12', kind: 'Text' },
+  { id: 13, name: '.gitignore', type: 'file', size: '0.5 KB', modified: '2024-06-13', kind: 'Text' },
+  { id: 14, name: 'tsconfig.json', type: 'file', size: '2.3 KB', modified: '2024-06-14', kind: 'JSON' },
+  { id: 15, name: 'vite.config.ts', type: 'file', size: '1.9 KB', modified: '2024-06-15', kind: 'TypeScript' },
+  { id: 16, name: 'eslint.config.js', type: 'file', size: '0.8 KB', modified: '2024-06-16', kind: 'JavaScript' },
+  { id: 17, name: 'yarn.lock', type: 'file', size: '456.7 KB', modified: '2024-06-17', kind: 'Lock File' },
+  { id: 18, name: 'pnpm-lock.yaml', type: 'file', size: '234.1 KB', modified: '2024-06-18', kind: 'Lock File' },
+  { id: 19, name: 'rollup.config.js', type: 'file', size: '3.2 KB', modified: '2024-06-19', kind: 'JavaScript' },
+  { id: 20, name: 'jest.config.js', type: 'file', size: '1.4 KB', modified: '2024-06-20', kind: 'JavaScript' },
+];
+`;
+
 export const dataFilesExtended = [
   { id: 1, name: 'Documents', type: 'folder', size: '--', modified: '2024-06-01', kind: 'Folder' },
   {
