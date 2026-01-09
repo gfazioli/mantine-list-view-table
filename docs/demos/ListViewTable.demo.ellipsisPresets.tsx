@@ -76,6 +76,10 @@ const dataCode = `export const data = [
     type: 'documentation',
   },
 ];
+`;
+
+const columnsCode = `import { Badge, Text, Group, ThemeIcon } from '@mantine/core';
+import { IconFile, IconFolder } from '@tabler/icons-react';
 
 // Text truncation presets for consistent behavior
 const TEXT_TRUNCATION_PRESETS = {
@@ -169,7 +173,8 @@ export const columns = [
     ...TEXT_TRUNCATION_PRESETS.NO_TRUNCATION, // No special truncation
     textAlign: 'center' as const,
   },
-];`;
+];
+`;
 
 const columns = [
   {
@@ -273,9 +278,8 @@ function Demo() {
 
 const code = `
 import { ListViewTable } from '@gfazioli/mantine-list-view-table';
-import { Badge, Text, Group, ThemeIcon } from '@mantine/core';
-import { IconFile, IconFolder } from '@tabler/icons-react';
-import { data, columns } from './data';
+import { data } from './data';
+import { columns } from './columns';
 
 function Demo() {
   return (
@@ -299,5 +303,6 @@ export const ellipsisPresets: MantineDemo = {
   code: [
     { fileName: 'Demo.tsx', code, language: 'tsx' },
     { fileName: 'data.ts', code: dataCode, language: 'tsx' },
+    { fileName: 'columns.tsx', code: columnsCode, language: 'tsx' },
   ],
 };

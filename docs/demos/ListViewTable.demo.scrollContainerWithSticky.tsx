@@ -102,7 +102,8 @@ function Demo() {
 const code = `
 import { ListViewTable } from '@gfazioli/mantine-list-view-table';
 import { Table } from '@mantine/core';
-import { data, columns } from './data';
+import { data } from './data';
+import { columns } from './columns';
 
 function Demo() {
   return (
@@ -149,6 +150,9 @@ const dataCode = `export const data = [
     kind: 'PNG Image',
   },
 ];
+`;
+
+const columnsCode = `import { Badge, Text } from '@mantine/core';
 
 export const columns = [
   {
@@ -210,5 +214,6 @@ export const scrollContainerWithSticky: MantineDemo = {
   code: [
     { fileName: 'Demo.tsx', code, language: 'tsx' },
     { fileName: 'data.ts', code: dataCode, language: 'tsx' },
+    { fileName: 'columns.tsx', code: columnsCode, language: 'tsx' },
   ],
 };
