@@ -41,7 +41,7 @@
   border-color: var(--mantine-color-blue-5);
 }
 
-.headerTitle {
+.headerButton {
   display: flex;
   align-items: center;
   gap: var(--mantine-spacing-xs);
@@ -54,8 +54,17 @@
   width: 100%;
 }
 
-.headerTitle:disabled {
+.headerButton:focus {
+  outline: none;
+}
+
+.headerButton:disabled {
   cursor: default;
+}
+
+.headerTitle {
+  font-size: var(--list-view-header-title-font-size);
+  font-weight: var(--list-view-header-title-font-weight);
 }
 
 .sortIcon {
@@ -105,6 +114,8 @@
   /* Let Mantine handle basic cell styling, only add custom overrides */
   vertical-align: middle;
   overflow: hidden;
+  font-size: var(--list-view-cell-font-size);
+  font-weight: var(--list-view-cell-font-weight);
 
   * {
     text-overflow: inherit;
@@ -163,10 +174,6 @@
 .headerCell:hover {
   background: var(--mantine-color-gray-0);
   transition: background-color 150ms ease;
-}
-
-.headerTitle:focus {
-  outline: none;
 }
 
 .headerCell[data-focused='true'] {
