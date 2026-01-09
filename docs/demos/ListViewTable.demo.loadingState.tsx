@@ -7,7 +7,6 @@ function Demo() {
 
 const code = `
 import { ListViewTable } from '@gfazioli/mantine-list-view-table';
-import { Badge, Text } from '@mantine/core';
 
 function Demo() {
   return (
