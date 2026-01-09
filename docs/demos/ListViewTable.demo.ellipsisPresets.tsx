@@ -2,6 +2,7 @@ import { ListViewTable } from '@gfazioli/mantine-list-view-table';
 import { IconFile, IconFolder } from '@tabler/icons-react';
 import { Badge, Group, Text, ThemeIcon } from '@mantine/core';
 import { MantineDemo } from '@mantinex/demo';
+import { dataProjects } from './data-projects';
 
 // Import our text truncation utilities
 const TEXT_TRUNCATION_PRESETS = {
@@ -11,38 +12,7 @@ const TEXT_TRUNCATION_PRESETS = {
   NO_TRUNCATION: {},
 };
 
-const data = [
-  {
-    id: 1,
-    name: 'Super long project name that demonstrates ellipsis truncation behavior in narrow columns',
-    description:
-      'This is a comprehensive project description that contains multiple sentences and detailed information about the project scope, objectives, and expected outcomes. It demonstrates how multi-line ellipsis works.',
-    status: 'In Progress with Additional Details',
-    priority: 'High Priority Item',
-    created: '2024-01-15',
-    type: 'project',
-  },
-  {
-    id: 2,
-    name: 'Mobile App Redesign',
-    description:
-      'Complete overhaul of mobile application interface with focus on user experience improvements and accessibility features.',
-    status: 'Completed',
-    priority: 'Medium',
-    created: '2024-02-20',
-    type: 'design',
-  },
-  {
-    id: 3,
-    name: 'API Documentation Update',
-    description:
-      'Update technical documentation for REST API endpoints including examples and response schemas.',
-    status: 'Review',
-    priority: 'Low',
-    created: '2024-03-10',
-    type: 'documentation',
-  },
-];
+const data = dataProjects;
 
 const dataCode = `export const data = [
   {
