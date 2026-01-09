@@ -29,7 +29,8 @@ function Demo() {
 
 const code = `
 import { ListViewTable } from '@gfazioli/mantine-list-view-table';
-import { data, columns } from './data';
+import { data } from './data';
+import { columns } from './columns';
 
 function Demo() {
   return (
@@ -52,8 +53,9 @@ const dataCode = `export const data = [
   { label: 'Total story points', value: 874 },
   { label: 'Last updated at', value: 'September 26, 2024 17:41:26' },
 ];
+`;
 
-export const columns = [
+const columnsCode = `export const columns = [
   { key: 'label', title: '' },
   { key: 'value', title: '' },
 ];
@@ -66,5 +68,6 @@ export const verticalVariant: MantineDemo = {
   code: [
     { fileName: 'Demo.tsx', code, language: 'tsx' },
     { fileName: 'data.ts', code: dataCode, language: 'tsx' },
+    { fileName: 'columns.ts', code: columnsCode, language: 'tsx' },
   ],
 };

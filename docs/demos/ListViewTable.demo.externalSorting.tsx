@@ -99,7 +99,8 @@ function Demo() {
 const code = `
 import React from 'react';
 import { ListViewTable, ListViewTableSortStatus } from '@gfazioli/mantine-list-view-table';
-import { data, columns } from './data';
+import { data } from './data';
+import { columns } from './columns';
 
 function Demo() {
   const [sortStatus, setSortStatus] = React.useState<ListViewTableSortStatus>({
@@ -162,6 +163,9 @@ const dataCode = `export const data = [
     kind: 'PNG Image',
   },
 ];
+`;
+
+const columnsCode = `import { Badge } from '@mantine/core';
 
 export const columns = [
   {
@@ -203,5 +207,6 @@ export const externalSorting: MantineDemo = {
   code: [
     { fileName: 'Demo.tsx', code, language: 'tsx' },
     { fileName: 'data.ts', code: dataCode, language: 'tsx' },
+    { fileName: 'columns.tsx', code: columnsCode, language: 'tsx' },
   ],
 };

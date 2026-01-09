@@ -81,7 +81,8 @@ function Demo() {
 
 const code = `
 import { ListViewTable } from '@gfazioli/mantine-list-view-table';
-import { data, columns } from './data';
+import { data } from './data';
+import { columns } from './columns';
 
 function Demo() {
   return (
@@ -126,6 +127,9 @@ const dataCode = `export const data = [
     address: '91011 Short St, City, Country',
   },
 ];
+`;
+
+const columnsCode = `import type { ListViewTableColumn } from '@gfazioli/mantine-list-view-table';
 
 export const columns: ListViewTableColumn[] = [
   {
@@ -169,5 +173,6 @@ export const ellipsis: MantineDemo = {
   code: [
     { fileName: 'Demo.tsx', code, language: 'tsx' },
     { fileName: 'data.ts', code: dataCode, language: 'tsx' },
+    { fileName: 'columns.ts', code: columnsCode, language: 'tsx' },
   ],
 };

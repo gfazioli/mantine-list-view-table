@@ -1,5 +1,5 @@
 import { ListViewTable } from '@gfazioli/mantine-list-view-table';
-import { Badge, Text } from '@mantine/core';
+import { Badge } from '@mantine/core';
 import { MantineDemo } from '@mantinex/demo';
 
 const data = [
@@ -135,9 +135,6 @@ const columns = [
     key: 'name',
     title: 'Name',
     sortable: true,
-    renderCell: (record: any) => (
-      <Text fw={record.type === 'folder' ? 600 : 400}>{record.name}</Text>
-    ),
   },
   {
     key: 'kind',
@@ -186,8 +183,8 @@ function Demo() {
 
 const code = `
 import { ListViewTable } from '@gfazioli/mantine-list-view-table';
-import { Badge, Text } from '@mantine/core';
-import { data, columns } from './data';
+import { data } from './data';
+import { columns } from './columns';
 
 function Demo() {
   return (
@@ -231,15 +228,15 @@ export const data = [
   { id: 19, name: 'rollup.config.js', type: 'file', size: '3.2 KB', modified: '2024-06-19', kind: 'JavaScript' },
   { id: 20, name: 'jest.config.js', type: 'file', size: '1.4 KB', modified: '2024-06-20', kind: 'JavaScript' },
 ];
+`;
+
+const columnsCode = `import { Badge, Text } from '@mantine/core';
 
 export const columns = [
   {
     key: 'name',
     title: 'Name',
     sortable: true,
-    renderCell: (record: any) => (
-      <Text fw={record.type === 'folder' ? 600 : 400}>{record.name}</Text>
-    ),
   },
   {
     key: 'kind',
@@ -275,5 +272,6 @@ export const stickyHeader: MantineDemo = {
   code: [
     { fileName: 'Demo.tsx', code, language: 'tsx' },
     { fileName: 'data.ts', code: dataCode, language: 'tsx' },
+    { fileName: 'columns.tsx', code: columnsCode, language: 'tsx' },
   ],
 };
