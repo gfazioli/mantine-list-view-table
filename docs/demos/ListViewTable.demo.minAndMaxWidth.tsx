@@ -1,5 +1,5 @@
 import { ListViewTable } from '@gfazioli/mantine-list-view-table';
-import { Badge, Text } from '@mantine/core';
+import { Badge } from '@mantine/core';
 import { MantineDemo } from '@mantinex/demo';
 
 const data = [
@@ -39,9 +39,6 @@ const columns = [
     width: 50, // Too small, will be adjusted to minWidth
     minWidth: 150,
     maxWidth: 300,
-    renderCell: (record: any) => (
-      <Text fw={record.type === 'folder' ? 600 : 400}>{record.name}</Text>
-    ),
   },
   {
     key: 'kind',
@@ -69,6 +66,7 @@ const columns = [
     key: 'modified',
     title: 'Date Modified',
     sortable: true,
+    textAlign: 'right' as const,
     minWidth: 120,
     maxWidth: 400, // Auto width, should respect both constraints
   },
@@ -94,8 +92,7 @@ function Demo() {
 
 const code = `
 import { ListViewTable } from '@gfazioli/mantine-list-view-table';
-import { Badge, Text } from '@mantine/core';
-import [ data, columns ] from './data';
+import { data, columns } from './data';
 
 function Demo() {
   return (
@@ -115,13 +112,33 @@ function Demo() {
 }
 `;
 
-const dataCode = `
-export const data = [
+const dataCode = `export const data = [
   { id: 1, name: 'Documents', type: 'folder', size: '--', modified: '2024-06-01', kind: 'Folder' },
-  { id: 2, name: 'README.md', type: 'file', size: '2.1 KB', modified: '2024-06-02', kind: 'Markdown' },
-  { id: 3, name: 'package.json', type: 'file', size: '1.8 KB', modified: '2024-06-03', kind: 'JSON' },
+  {
+    id: 2,
+    name: 'README.md',
+    type: 'file',
+    size: '2.1 KB',
+    modified: '2024-06-02',
+    kind: 'Markdown',
+  },
+  {
+    id: 3,
+    name: 'package.json',
+    type: 'file',
+    size: '1.8 KB',
+    modified: '2024-06-03',
+    kind: 'JSON',
+  },
   { id: 4, name: 'src', type: 'folder', size: '--', modified: '2024-06-04', kind: 'Folder' },
-  { id: 5, name: 'image.png', type: 'file', size: '45.2 KB', modified: '2024-06-05', kind: 'PNG Image' },
+  {
+    id: 5,
+    name: 'image.png',
+    type: 'file',
+    size: '45.2 KB',
+    modified: '2024-06-05',
+    kind: 'PNG Image',
+  },
 ];
 
 export const columns = [
@@ -132,9 +149,6 @@ export const columns = [
     width: 50, // Too small, will be adjusted to minWidth
     minWidth: 150,
     maxWidth: 300,
-    renderCell: (record: any) => (
-      <Text fw={record.type === 'folder' ? 600 : 400}>{record.name}</Text>
-    ),
   },
   {
     key: 'kind',
@@ -153,7 +167,7 @@ export const columns = [
     key: 'size',
     title: 'Size',
     sortable: true,
-    textAlign: 'right',
+    textAlign: 'right' as const,
     width: 130, // Perfect, within min and max
     minWidth: 120,
     maxWidth: 150,
@@ -162,6 +176,7 @@ export const columns = [
     key: 'modified',
     title: 'Date Modified',
     sortable: true,
+    textAlign: 'right' as const,
     minWidth: 120,
     maxWidth: 400, // Auto width, should respect both constraints
   },

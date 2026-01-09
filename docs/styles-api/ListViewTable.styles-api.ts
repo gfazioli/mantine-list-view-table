@@ -7,7 +7,8 @@ export const ListViewTableStylesApi: StylesApiData<ListViewTableFactory> = {
     table: 'Table element',
     header: 'Table header',
     headerCell: 'Header cell (th)',
-    headerTitle: 'Header title button',
+    headerButton: 'Header title button',
+    headerTitle: 'Header title text',
     sortIcon: 'Sort direction icon',
     dragHandle: 'Column drag handle icon',
     resizeHandle: 'Column resize handle',
@@ -24,27 +25,53 @@ export const ListViewTableStylesApi: StylesApiData<ListViewTableFactory> = {
     root: {
       '--list-view-height': 'Controls ListView height',
       '--list-view-width': 'Controls ListView width',
+      '--list-view-header-title-font-size': 'Controls font size of header titles',
+      '--list-view-header-title-font-weight': 'Controls font weight of header titles',
+      '--list-view-cell-font-size': 'Controls font size of cell content',
+      '--list-view-cell-font-weight': 'Controls font weight of cell content',
     },
   },
 
   modifiers: [
-    { modifier: 'data-loading', selector: 'root', condition: '`loading` prop is set to true' },
     {
-      modifier: 'data-sticky',
+      selector: 'root',
+      modifier: 'data-loading',
+      condition: '`loading` prop is set to true',
+    },
+    {
       selector: 'headerCell',
-      condition: 'column has `sticky` prop set to true',
-    },
-    {
       modifier: 'data-sticky',
-      selector: 'cell',
       condition: 'column has `sticky` prop set to true',
     },
     {
-      modifier: 'data-selected',
+      selector: 'headerCell',
+      modifier: 'data-column-key',
+      condition: 'column has `columnKey` prop set',
+    },
+    {
+      selector: 'cell',
+      modifier: 'data-sticky',
+      condition: 'column has `sticky` prop set to true',
+    },
+    {
+      selector: 'cell',
+      modifier: 'data-column-key',
+      condition: 'column has `columnKey` prop set',
+    },
+    {
       selector: 'row',
+      modifier: 'data-selected',
       condition: 'row is selected (if selection is enabled)',
     },
-    { modifier: 'data-dragging', selector: 'headerCell', condition: 'column is being dragged' },
-    { modifier: 'data-drag-over', selector: 'headerCell', condition: 'column is drag target' },
+    {
+      selector: 'headerCell',
+      modifier: 'data-dragging',
+      condition: 'column is being dragged',
+    },
+    {
+      selector: 'headerCell',
+      modifier: 'data-drag-over',
+      condition: 'column is drag target',
+    },
   ],
 };

@@ -1,42 +1,7 @@
 import { ListViewTable } from '@gfazioli/mantine-list-view-table';
 import { IconFileX, IconFolderOpen, IconPlus } from '@tabler/icons-react';
-import { Badge, Button, Group, Stack, Text, ThemeIcon } from '@mantine/core';
+import { Button, Group, Stack, Text, ThemeIcon } from '@mantine/core';
 import { MantineDemo } from '@mantinex/demo';
-
-const columns = [
-  {
-    key: 'name',
-    title: 'Name',
-    sortable: true,
-    renderCell: (record: any) => (
-      <Text fw={record.type === 'folder' ? 600 : 400}>{record.name}</Text>
-    ),
-  },
-  {
-    key: 'kind',
-    title: 'Kind',
-    sortable: true,
-    width: 120,
-    renderCell: (record: any) => (
-      <Badge variant="light" color={record.type === 'folder' ? 'blue' : 'gray'} size="sm">
-        {record.kind}
-      </Badge>
-    ),
-  },
-  {
-    key: 'size',
-    title: 'Size',
-    sortable: true,
-    textAlign: 'right' as const,
-    width: 180,
-  },
-  {
-    key: 'modified',
-    title: 'Date Modified',
-    sortable: true,
-    width: 120,
-  },
-];
 
 // Custom empty state component with icon and action buttons
 const CustomEmptyState = () => (
@@ -66,7 +31,7 @@ const CustomEmptyState = () => (
 function Demo() {
   return (
     <ListViewTable
-      columns={columns}
+      columns={[]}
       data={[]}
       rowKey="id"
       withTableBorder
@@ -78,8 +43,8 @@ function Demo() {
 
 const code = `
 import { ListViewTable } from '@gfazioli/mantine-list-view-table';
-import { Badge, Text, Stack, Button, Group, ThemeIcon } from '@mantine/core';
-import { IconFileX, IconPlus, IconFolderOpen } from '@tabler/icons-react';
+import { IconFileX, IconFolderOpen, IconPlus } from '@tabler/icons-react';
+import { Button, Group, Stack, Text, ThemeIcon } from '@mantine/core';
 
 // Custom empty state component with icon and action buttons
 const CustomEmptyState = () => (
@@ -120,49 +85,9 @@ function Demo() {
 }
 `;
 
-const dataCode = `
-export const columns = [
-  {
-    key: 'name',
-    title: 'Name',
-    sortable: true,
-    renderCell: (record: any) => (
-      <Text fw={record.type === 'folder' ? 600 : 400}>{record.name}</Text>
-    ),
-  },
-  {
-    key: 'kind',
-    title: 'Kind',
-    sortable: true,
-    width: 120,
-    renderCell: (record: any) => (
-      <Badge variant="light" color={record.type === 'folder' ? 'blue' : 'gray'} size="sm">
-        {record.kind}
-      </Badge>
-    ),
-  },
-  {
-    key: 'size',
-    title: 'Size',
-    sortable: true,
-    textAlign: 'right',
-    width: 180,
-  },
-  {
-    key: 'modified',
-    title: 'Date Modified',
-    sortable: true,
-    width: 120,
-  },
-];
-`;
-
 export const customEmptyState: MantineDemo = {
   type: 'code',
   component: Demo,
   defaultExpanded: false,
-  code: [
-    { fileName: 'Demo.tsx', code, language: 'tsx' },
-    { fileName: 'data.ts', code: dataCode, language: 'tsx' },
-  ],
+  code: [{ fileName: 'Demo.tsx', code, language: 'tsx' }],
 };

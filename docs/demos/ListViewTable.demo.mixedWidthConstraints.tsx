@@ -1,5 +1,5 @@
 import { ListViewTable } from '@gfazioli/mantine-list-view-table';
-import { Badge, Text } from '@mantine/core';
+import { Badge } from '@mantine/core';
 import { MantineDemo } from '@mantinex/demo';
 
 const data = [
@@ -35,9 +35,6 @@ const columns = [
   {
     key: 'name',
     title: 'Name (Auto)',
-    renderCell: (record: any) => (
-      <Text fw={record.type === 'folder' ? 600 : 400}>{record.name}</Text>
-    ),
   },
   {
     key: 'kind',
@@ -57,6 +54,7 @@ const columns = [
   {
     key: 'modified',
     title: 'Modified (200px)',
+    textAlign: 'right' as const,
     width: 200, // Fixed width at 200px
   },
 ];
@@ -77,7 +75,6 @@ function Demo() {
 
 const code = `
 import { ListViewTable } from '@gfazioli/mantine-list-view-table';
-import { Badge, Text } from '@mantine/core';
 import { data, columns } from './data';
 
 function Demo() {
@@ -95,23 +92,39 @@ function Demo() {
 }
 `;
 
-const dataCode = `
-export const data = [
+const dataCode = `export const data = [
   { id: 1, name: 'Documents', type: 'folder', size: '--', modified: '2024-06-01', kind: 'Folder' },
-  { id: 2, name: 'README.md', type: 'file', size: '2.1 KB', modified: '2024-06-02', kind: 'Markdown' },
-  { id: 3, name: 'package.json', type: 'file', size: '1.8 KB', modified: '2024-06-03', kind: 'JSON' },
+  {
+    id: 2,
+    name: 'README.md',
+    type: 'file',
+    size: '2.1 KB',
+    modified: '2024-06-02',
+    kind: 'Markdown',
+  },
+  {
+    id: 3,
+    name: 'package.json',
+    type: 'file',
+    size: '1.8 KB',
+    modified: '2024-06-03',
+    kind: 'JSON',
+  },
   { id: 4, name: 'src', type: 'folder', size: '--', modified: '2024-06-04', kind: 'Folder' },
-  { id: 5, name: 'image.png', type: 'file', size: '45.2 KB', modified: '2024-06-05', kind: 'PNG Image' },
+  {
+    id: 5,
+    name: 'image.png',
+    type: 'file',
+    size: '45.2 KB',
+    modified: '2024-06-05',
+    kind: 'PNG Image',
+  },
 ];
 
 export const columns = [
   {
     key: 'name',
     title: 'Name (Auto)',
-    // No width specified - uses auto width (flexible)
-    renderCell: (record: any) => (
-      <Text fw={record.type === 'folder' ? 600 : 400}>{record.name}</Text>
-    ),
   },
   {
     key: 'kind',
@@ -126,12 +139,12 @@ export const columns = [
   {
     key: 'size',
     title: 'Size (Auto)',
-    textAlign: 'right',
-    // No width specified - uses auto width (flexible)
+    textAlign: 'right' as const,
   },
   {
     key: 'modified',
     title: 'Modified (200px)',
+    textAlign: 'right' as const,
     width: 200, // Fixed width at 200px
   },
 ];

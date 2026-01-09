@@ -1,5 +1,5 @@
 import { ListViewTable, type ListViewTableColumn } from '@gfazioli/mantine-list-view-table';
-import { Badge, Text } from '@mantine/core';
+import { Badge } from '@mantine/core';
 import { MantineDemo } from '@mantinex/demo';
 
 const data = [
@@ -68,14 +68,8 @@ const columns: ListViewTableColumn[] = [
       whiteSpace: 'normal', // Override noWrap for TD cells - allow wrapping
       textOverflow: 'ellipsis', // Add ellipsis for TD cells
       overflow: 'hidden',
-      maxHeight: '3em', // Limit cell height to ~3 lines
       lineHeight: '1.2em',
     },
-    renderCell: (record: any) => (
-      <Text fw={record.type === 'folder' ? 600 : 400} title={record.name}>
-        {record.name}
-      </Text>
-    ),
   },
   {
     key: 'description',
@@ -90,14 +84,8 @@ const columns: ListViewTableColumn[] = [
       whiteSpace: 'normal', // Allow text wrapping in cells
       textOverflow: 'clip', // No ellipsis in cells
       overflow: 'visible',
-      maxHeight: '4em', // Allow up to ~4 lines
       lineHeight: '1.2em',
     },
-    renderCell: (record: any) => (
-      <Text size="sm" c="dimmed" title={record.description}>
-        {record.description}
-      </Text>
-    ),
   },
   {
     key: 'kind',
@@ -174,8 +162,7 @@ function Demo() {
 
 const code = `
 import { ListViewTable } from '@gfazioli/mantine-list-view-table';
-import { Badge, Text } from '@mantine/core';
-import [ data, columns ] from './data';
+import { data, columns } from './data';
 
 function Demo() {
   return (
@@ -195,8 +182,7 @@ function Demo() {
 }
 `;
 
-const dataCode = `
-export const data = [
+const dataCode = `export const data = [
   {
     id: 1,
     name: 'Very long document name that would normally overflow the column width and require truncation with ellipsis',
@@ -204,7 +190,8 @@ export const data = [
     size: '--',
     modified: '2024-06-01',
     kind: 'Folder',
-    description: 'This is a very long description that demonstrates how text can be truncated with ellipsis when the column is too narrow to fit all the content. The header and cell can have different text wrapping behavior.',
+    description:
+      'This is a very long description that demonstrates how text can be truncated with ellipsis when the column is too narrow to fit all the content. The header and cell can have different text wrapping behavior.',
   },
   {
     id: 2,
@@ -213,7 +200,8 @@ export const data = [
     size: '2.1 KB',
     modified: '2024-06-02',
     kind: 'Markdown Document',
-    description: 'A comprehensive guide explaining all the features and functionality of this component library with detailed examples and use cases that span multiple lines.',
+    description:
+      'A comprehensive guide explaining all the features and functionality of this component library with detailed examples and use cases that span multiple lines.',
   },
   {
     id: 3,
@@ -231,7 +219,8 @@ export const data = [
     size: '--',
     modified: '2024-06-04',
     kind: 'Folder',
-    description: 'Source code directory containing all TypeScript files and components for the application',
+    description:
+      'Source code directory containing all TypeScript files and components for the application',
   },
   {
     id: 5,
@@ -240,11 +229,18 @@ export const data = [
     size: '45.2 KB',
     modified: '2024-06-05',
     kind: 'PNG Image File',
-    description: 'High resolution image file containing memories from vacation with detailed metadata',
+    description:
+      'High resolution image file containing memories from vacation with detailed metadata',
   },
 ];
 
-export const columns = [
+`;
+
+const columnsCode = `
+import type { ListViewTableColumn } from '@gfazioli/mantine-list-view-table';
+import { Badge } from '@mantine/core';
+
+export const columns: ListViewTableColumn[] = [
   {
     key: 'name',
     title: 'Name (Header: noWrap, Cell: wrap with ellipsis)',
@@ -258,14 +254,8 @@ export const columns = [
       whiteSpace: 'normal', // Override noWrap for TD cells - allow wrapping
       textOverflow: 'ellipsis', // Add ellipsis for TD cells
       overflow: 'hidden',
-      maxHeight: '3em', // Limit cell height to ~3 lines
       lineHeight: '1.2em',
     },
-    renderCell: (record: any) => (
-      <Text fw={record.type === 'folder' ? 600 : 400} title={record.name}>
-        {record.name}
-      </Text>
-    ),
   },
   {
     key: 'description',
@@ -280,14 +270,8 @@ export const columns = [
       whiteSpace: 'normal', // Allow text wrapping in cells
       textOverflow: 'clip', // No ellipsis in cells
       overflow: 'visible',
-      maxHeight: '4em', // Allow up to ~4 lines
       lineHeight: '1.2em',
     },
-    renderCell: (record: any) => (
-      <Text size="sm" c="dimmed" title={record.description}>
-        {record.description}
-      </Text>
-    ),
   },
   {
     key: 'kind',
@@ -304,9 +288,9 @@ export const columns = [
       overflow: 'hidden',
     },
     renderCell: (record: any) => (
-      <Badge 
-        variant="light" 
-        color={record.type === 'folder' ? 'blue' : 'gray'} 
+      <Badge
+        variant="light"
+        color={record.type === 'folder' ? 'blue' : 'gray'}
         size="sm"
         style={{ maxWidth: '100%' }}
         title={record.kind}
@@ -319,7 +303,7 @@ export const columns = [
     key: 'size',
     title: 'Size (Same style for header and cell)',
     sortable: true,
-    textAlign: 'right',
+    textAlign: 'right' as const,
     width: 100,
     // Both header and cell use the same default styling
     noWrap: true,
@@ -334,7 +318,8 @@ export const columns = [
     noWrap: true,
     // Cell styling: Add background color and padding
     cellStyle: (record: any) => ({
-      backgroundColor: record.type === 'folder' ? 'var(--mantine-color-blue-0)' : 'var(--mantine-color-gray-0)',
+      backgroundColor:
+        record.type === 'folder' ? 'var(--mantine-color-blue-0)' : 'var(--mantine-color-gray-0)',
       fontWeight: record.type === 'folder' ? 600 : 400,
       padding: '8px 12px',
       borderRadius: '4px',

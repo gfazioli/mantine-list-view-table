@@ -20,5 +20,6 @@ export { scrollContainer } from './ListViewTable.demo.scrollContainer';
 export { scrollContainerWithSticky } from './ListViewTable.demo.scrollContainerWithSticky';
 export { simpleEmptyText } from './ListViewTable.demo.simpleEmptyText';
 export { stickyHeader } from './ListViewTable.demo.stickyHeader';
+export { stylesApi } from './ListViewTable.demo.stylesApi';
 export { verticalVariant } from './ListViewTable.demo.verticalVariant';
 export { widthConstraintsWithoutResizing } from './ListViewTable.demo.widthConstraintsWithoutResizing';
