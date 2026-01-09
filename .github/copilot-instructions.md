@@ -7,9 +7,9 @@ This is a **Yarn 4 monorepo** publishing `@gfazioli/mantine-list-view-table`, a 
 - `docs/` - Next.js 15 static documentation site using `@mantinex/demo`
 
 **Key external dependencies:**
-- Mantine 8.3.12 (core, hooks) - peer dependency
-- React 19.2.3 - development/peer dependency
-- @tabler/icons-react - peer dependency for icons
+- Mantine >=7.0.0 (core, hooks) - peer dependency (dev: 8.3.12)
+- React 18.x or 19.x - peer dependency (dev: 19.2.3)
+- @tabler/icons-react ^3.34.0 - peer dependency for icons
 
 ## Architecture
 
@@ -95,19 +95,19 @@ yarn prettier:check  # Or prettier:write
 **Critical pattern:** Demos MUST follow the `@mantinex/demo` structure:
 
 ```tsx
-import { ComponentName } from '@workspace/package';
+import { ListViewTable } from '@gfazioli/mantine-list-view-table';
 import { MantineDemo } from '@mantinex/demo';
 
 function Demo() {
-  return <ComponentName prop="value" />;
+  return <ListViewTable columns={columns} data={data} rowKey="id" />;
 }
 
 const code = `
-import { ComponentName } from '@your-package/name';
+import { ListViewTable } from '@gfazioli/mantine-list-view-table';
 // User-facing import path ^^^
 
 function Demo() {
-  return <ComponentName prop="value" />;
+  return <ListViewTable columns={columns} data={data} rowKey="id" />;
 }
 `;
 
