@@ -1,5 +1,5 @@
 import { ListViewTable } from '@gfazioli/mantine-list-view-table';
-import { Badge, Text } from '@mantine/core';
+import { Badge } from '@mantine/core';
 import { MantineDemo } from '@mantinex/demo';
 
 const data = [
@@ -35,9 +35,6 @@ const columns = [
   {
     key: 'name',
     title: 'Name (Auto)',
-    renderCell: (record: any) => (
-      <Text fw={record.type === 'folder' ? 600 : 400}>{record.name}</Text>
-    ),
   },
   {
     key: 'kind',
@@ -55,8 +52,9 @@ const columns = [
   },
   {
     key: 'modified',
-    title: 'Modified (Fixed 100px)',
-    width: 100, // Fixed width at 100px
+    title: 'Modified (Fixed 250px)',
+    textAlign: 'right' as const,
+    width: 250, // Fixed width at 250px
   },
 ];
 
@@ -108,9 +106,6 @@ export const columns = [
     key: 'name',
     title: 'Name (Auto)',
     // No width specified - uses auto width
-    renderCell: (record: any) => (
-      <Text fw={record.type === 'folder' ? 600 : 400}>{record.name}</Text>
-    ),
   },
   {
     key: 'kind',
@@ -131,7 +126,8 @@ export const columns = [
   {
     key: 'modified',
     title: 'Modified (Fixed 100px)',
-    width: 100, // Fixed width at 100px
+    textAlign: 'right',    
+    width: 250, // Fixed width at 250px
   },
 ];
 `;

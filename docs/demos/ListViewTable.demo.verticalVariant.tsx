@@ -45,8 +45,7 @@ function Demo() {
 }
 `;
 
-const dataCode = `
-export const data = [
+const dataCode = `export const data = [
   { label: 'Epic name', value: '7.x migration' },
   { label: 'Status', value: 'Open' },
   { label: 'Total issues', value: 135 },

@@ -99,24 +99,24 @@ For consistent behavior across your application, you can use predefined text tru
 
 While the `ellipsis` and `noWrap` properties apply the same styling to both table headers (TH) and data cells (TD), you can use the `cellStyle` property to create different behaviors between headers and cells. This gives you fine-grained control over how content is displayed in each part of the column.
 
-### Understanding the Behavior
+**Understanding the Behavior**
 
 The column-level properties (`ellipsis`, `noWrap`, `textAlign`, etc.) apply to **both** the header (TH) and the data cells (TD) in that column. However, the `cellStyle` property only affects the **data cells (TD)**, allowing you to override the column-level styling specifically for the cell content while keeping different styling for the header.
 
-### Use Cases for Different Header/Cell Styling
+**Use Cases for Different Header/Cell Styling**
 
 1. **Header with ellipsis, cells with wrapping** - Keep headers compact while allowing cell content to wrap naturally
 2. **Header allows wrapping, cells use ellipsis** - Show full header text but truncate long cell content
 3. **Custom cell backgrounds or formatting** - Apply visual enhancements only to data cells
 4. **Dynamic cell styling** - Apply different styles based on the data in each cell
 
-### Implementation Examples
+**Implementation Examples**
 
 The `cellStyle` property can be either a static style object or a function that receives the record and index, allowing for dynamic styling based on data:
 
 <Demo data={demos.cellStyleDifferences} />
 
-### Key Benefits
+**Key Benefits**
 
 - **Flexibility**: Different visual treatment for headers vs. data
 - **User Experience**: Headers can show full context while cells optimize for scanning
@@ -148,6 +148,14 @@ The `ListViewTable` works seamlessly with Mantine's `ScrollArea` component. This
 When used inside a `ScrollArea`, the `stickyHeader` prop will make the table header stick to the top of the scroll area, providing a consistent user experience during scrolling.
 
 <Demo data={demos.scrollArea} />
+
+## Styles API
+
+`ListViewTable` supports [Styles API](https://mantine.dev/styles/styles-api/), you can add styles to any inner element of the component with `classNames` prop. Follow [Styles API](https://mantine.dev/styles/styles-api/) documentation to learn more.
+
+You can customize the appearance of the `ListViewTable` component using the Styles API. This allows you to modify styles for various parts of the component, such as the root, header cells, data cells, rows, and more.
+
+<Demo data={demos.stylesApi} />
 
 ## Advanced Features
 

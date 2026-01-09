@@ -1,6 +1,6 @@
 import React from 'react';
 import { ListViewTable, ListViewTableColumn } from '@gfazioli/mantine-list-view-table';
-import { Badge, Text } from '@mantine/core';
+import { Badge } from '@mantine/core';
 import { MantineDemo } from '@mantinex/demo';
 
 const data = [
@@ -37,9 +37,6 @@ const initialColumns: ListViewTableColumn[] = [
     key: 'name',
     title: 'Name',
     sortable: true,
-    renderCell: (record: any) => (
-      <Text fw={record.type === 'folder' ? 600 : 400}>{record.name}</Text>
-    ),
   },
   {
     key: 'kind',
@@ -104,10 +101,9 @@ function Demo() {
 }
 
 const code = `
-import { ListViewTable, ListViewTableColumn } from '@gfazioli/mantine-list-view-table';
-import { Badge, Text } from '@mantine/core';
 import React from 'react';
-import [ data, initialColumns ] from './data';
+import { ListViewTable } from '@gfazioli/mantine-list-view-table';
+import { data, initialColumns } from './data';
 
 function Demo() {
   const [currentColumns, setCurrentColumns] = React.useState(initialColumns);
@@ -143,23 +139,40 @@ function Demo() {
 }
 `;
 
-const dataCode = `
-export const data = [
+const dataCode = `export const data = [
   { id: 1, name: 'Documents', type: 'folder', size: '--', modified: '2024-06-01', kind: 'Folder' },
-  { id: 2, name: 'README.md', type: 'file', size: '2.1 KB', modified: '2024-06-02', kind: 'Markdown' },
-  { id: 3, name: 'package.json', type: 'file', size: '1.8 KB', modified: '2024-06-03', kind: 'JSON' },
+  {
+    id: 2,
+    name: 'README.md',
+    type: 'file',
+    size: '2.1 KB',
+    modified: '2024-06-02',
+    kind: 'Markdown',
+  },
+  {
+    id: 3,
+    name: 'package.json',
+    type: 'file',
+    size: '1.8 KB',
+    modified: '2024-06-03',
+    kind: 'JSON',
+  },
   { id: 4, name: 'src', type: 'folder', size: '--', modified: '2024-06-04', kind: 'Folder' },
-  { id: 5, name: 'image.png', type: 'file', size: '45.2 KB', modified: '2024-06-05', kind: 'PNG Image' },
+  {
+    id: 5,
+    name: 'image.png',
+    type: 'file',
+    size: '45.2 KB',
+    modified: '2024-06-05',
+    kind: 'PNG Image',
+  },
 ];
 
-export const initialColumns = [
+export const initialColumns: ListViewTableColumn[] = [
   {
     key: 'name',
     title: 'Name',
     sortable: true,
-    renderCell: (record: any) => (
-      <Text fw={record.type === 'folder' ? 600 : 400}>{record.name}</Text>
-    ),
   },
   {
     key: 'kind',
@@ -176,7 +189,7 @@ export const initialColumns = [
     key: 'size',
     title: 'Size',
     sortable: true,
-    textAlign: 'right',
+    textAlign: 'right' as const,
     width: 180,
   },
   {
