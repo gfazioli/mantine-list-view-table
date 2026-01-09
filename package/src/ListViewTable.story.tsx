@@ -83,7 +83,9 @@ const columns: ListViewTableColumn[] = [
     title: 'Name',
     sortable: true,
     renderCell: (record: any) => (
-      <Text fw={record.type === 'folder' ? 600 : 400}>{record.name}</Text>
+      <Text fz="inherit" fw={record.type === 'folder' ? 600 : 'inherit'}>
+        {record.name}
+      </Text>
     ),
   },
   {

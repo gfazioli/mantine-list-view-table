@@ -35,6 +35,7 @@ export type ListViewTableStylesNames =
   | 'table'
   | 'header'
   | 'headerCell'
+  | 'headerButton'
   | 'headerTitle'
   | 'sortIcon'
   | 'dragHandle'
@@ -48,7 +49,13 @@ export type ListViewTableStylesNames =
   | 'stickyHeaderColumn';
 
 export type ListViewTableCssVariables = {
-  root: '--list-view-height' | '--list-view-width';
+  root:
+    | '--list-view-height'
+    | '--list-view-width'
+    | '--list-view-header-title-font-size'
+    | '--list-view-header-title-font-weight'
+    | '--list-view-cell-font-size'
+    | '--list-view-cell-font-weight';
 };
 
 export type ListViewTableSortDirection = 'asc' | 'desc';
@@ -390,6 +397,10 @@ const varsResolver = createVarsResolver<ListViewTableFactory>((_, { height, widt
   root: {
     '--list-view-height': typeof height === 'number' ? `${height}px` : height || '400px',
     '--list-view-width': typeof width === 'number' ? `${width}px` : width || '100%',
+    '--list-view-header-title-font-size': 'var(--mantine-font-size-sm)',
+    '--list-view-header-title-font-weight': '500',
+    '--list-view-cell-font-size': 'var(--mantine-font-size-sm)',
+    '--list-view-cell-font-weight': '400',
   },
 }));
 
@@ -900,6 +911,7 @@ export const ListViewTable = factory<ListViewTableFactory>((_props, ref) => {
           data-dragging={draggedColumn === index ? 'true' : undefined}
           data-drag-over={dragOverColumn === index ? 'true' : undefined}
           data-focused={isFocused ? 'true' : undefined}
+          data-column-key={column.key as string}
         >
           <Group
             gap={0}
@@ -919,7 +931,7 @@ export const ListViewTable = factory<ListViewTableFactory>((_props, ref) => {
             )}
 
             <UnstyledButton
-              {...getStyles('headerTitle', { style: { flex: 1 } })}
+              {...getStyles('headerButton', { style: { flex: 1 } })}
               onClick={() => column.sortable && handleSort(column.key as string)}
               onFocus={() => setFocusedColumn(index)}
               onBlur={() => setFocusedColumn(null)}
@@ -929,9 +941,7 @@ export const ListViewTable = factory<ListViewTableFactory>((_props, ref) => {
                 {column.renderHeader ? (
                   column.renderHeader()
                 ) : (
-                  <Text size="sm" fw={500}>
-                    {title}
-                  </Text>
+                  <Text {...getStyles('headerTitle')}>{title}</Text>
                 )}
                 {column.sortable &&
                   (isSorted ? (
@@ -1040,6 +1050,7 @@ export const ListViewTable = factory<ListViewTableFactory>((_props, ref) => {
               ...cellStyle,
             },
           })}
+          data-column-key={column.key as string}
         >
           {cellContent}
         </Table.Td>
