@@ -1,35 +1,9 @@
 import { ListViewTable } from '@gfazioli/mantine-list-view-table';
 import { Badge } from '@mantine/core';
 import { MantineDemo } from '@mantinex/demo';
+import { dataFilesExtended } from './data-files-extended';
 
-const data = [
-  { id: 1, name: 'Documents', type: 'folder', size: '--', modified: '2024-06-01', kind: 'Folder' },
-  {
-    id: 2,
-    name: 'README.md',
-    type: 'file',
-    size: '2.1 KB',
-    modified: '2024-06-02',
-    kind: 'Markdown',
-  },
-  {
-    id: 3,
-    name: 'package.json',
-    type: 'file',
-    size: '1.8 KB',
-    modified: '2024-06-03',
-    kind: 'JSON',
-  },
-  { id: 4, name: 'src', type: 'folder', size: '--', modified: '2024-06-04', kind: 'Folder' },
-  {
-    id: 5,
-    name: 'image.png',
-    type: 'file',
-    size: '45.2 KB',
-    modified: '2024-06-05',
-    kind: 'PNG Image',
-  },
-];
+const data = dataFilesExtended;
 
 const columns = [
   {
