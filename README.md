@@ -1,6 +1,6 @@
 # Mantine ListViewTable Component
 
-<img alt="mantine List View Table" src="https://github.com/gfazioli/mantine-list-view-table/blob/master/logo.png" />
+<img alt="mantine List View Table" src="https://github.com/gfazioli/mantine-list-view-table/blob/master/logo.jpeg" />
 
 <div align="center">
   
