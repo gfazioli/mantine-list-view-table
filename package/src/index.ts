@@ -6,6 +6,7 @@ export type {
   ListViewTableCssVariables,
   ListViewTableFactory,
   ListViewTableProps,
+  ListViewTableResizeMode,
   ListViewTableSelectionMode,
   ListViewTableSortDirection,
   ListViewTableSortStatus,

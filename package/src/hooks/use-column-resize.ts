@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import type { ListViewTableColumn } from '../types';
+import type { ListViewTableColumn, ListViewTableResizeMode } from '../types';
 
 /**
  * Resolve a size value to CSS string.
@@ -31,6 +31,7 @@ function parseSizeToPixels(value?: number | string, fallback?: number): number |
 
 export interface UseColumnResizeOptions {
   visibleColumns: ListViewTableColumn[];
+  resizeMode?: ListViewTableResizeMode;
   onColumnResize?: (columnKey: string, width: number) => void;
 }
 
@@ -46,12 +47,12 @@ export interface UseColumnResizeReturn {
 
 export function useColumnResize({
   visibleColumns,
+  resizeMode = 'standard',
   onColumnResize,
 }: UseColumnResizeOptions): UseColumnResizeReturn {
   const [columnWidths, setColumnWidths] = useState<Record<string, number>>({});
   const [isResizeActive, setIsResizeActive] = useState(false);
   const tableRef = useRef<HTMLTableElement | null>(null);
-  // Bug #1 fix: Track resize cleanup function for unmount
   const resizeCleanupRef = useRef<(() => void) | null>(null);
 
   // Cleanup on unmount
@@ -81,14 +82,12 @@ export function useColumnResize({
   const getColumnStyle = useCallback(
     (col: ListViewTableColumn, _idx: number): React.CSSProperties => {
       if (isResizeActive && columnWidths[col.key as string]) {
-        // Pixel mode — after first resize
         return {
           width: `${columnWidths[col.key as string]}px`,
           minWidth: resolveSize(col.minWidth),
           maxWidth: resolveSize(col.maxWidth),
         };
       }
-      // Declarative mode — pure CSS, no conversion
       return {
         width: resolveSize(col.width),
         minWidth: resolveSize(col.minWidth),
@@ -112,20 +111,57 @@ export function useColumnResize({
       }
 
       const startX = event.clientX;
-      const column = visibleColumns[index];
-      const startWidth =
-        currentWidths[column.key as string] ||
-        (event.currentTarget.closest('th')?.offsetWidth ?? 100);
+      const leftColumn = visibleColumns[index];
+      const leftKey = leftColumn.key as string;
+      const leftStartWidth =
+        currentWidths[leftKey] || (event.currentTarget.closest('th')?.offsetWidth ?? 100);
+      const leftMin = parseSizeToPixels(leftColumn.minWidth, 50)!;
+      const leftMax = parseSizeToPixels(leftColumn.maxWidth, Infinity)!;
 
-      const minWidth = parseSizeToPixels(column.minWidth, 50)!;
-      const maxWidth = parseSizeToPixels(column.maxWidth, Infinity)!;
+      // Standard mode: also track the right neighbor
+      const rightColumn = index < visibleColumns.length - 1 ? visibleColumns[index + 1] : null;
+      const rightKey = rightColumn ? (rightColumn.key as string) : null;
+      const rightStartWidth = rightColumn && rightKey ? currentWidths[rightKey] || 100 : 0;
+      const rightMin = rightColumn ? parseSizeToPixels(rightColumn.minWidth, 50)! : 0;
+      const rightMax = rightColumn ? parseSizeToPixels(rightColumn.maxWidth, Infinity)! : Infinity;
 
       const handleMouseMove = (e: MouseEvent) => {
         const diff = e.clientX - startX;
-        const newWidth = Math.max(minWidth, Math.min(maxWidth, startWidth + diff));
 
-        setColumnWidths((prev) => ({ ...prev, [column.key as string]: newWidth }));
-        onColumnResize?.(column.key as string, newWidth);
+        if (resizeMode === 'standard' && rightColumn && rightKey) {
+          // === STANDARD MODE ===
+          // Trade width between left and right columns, total stays fixed.
+          // Clamp left column
+          let newLeftWidth = Math.max(leftMin, Math.min(leftMax, leftStartWidth + diff));
+          // The right column absorbs the inverse delta
+          let newRightWidth = rightStartWidth - (newLeftWidth - leftStartWidth);
+
+          // Clamp right column — if it hits min/max, push back onto left
+          if (newRightWidth < rightMin) {
+            newRightWidth = rightMin;
+            newLeftWidth = leftStartWidth + rightStartWidth - rightMin;
+            newLeftWidth = Math.max(leftMin, Math.min(leftMax, newLeftWidth));
+          } else if (newRightWidth > rightMax) {
+            newRightWidth = rightMax;
+            newLeftWidth = leftStartWidth + rightStartWidth - rightMax;
+            newLeftWidth = Math.max(leftMin, Math.min(leftMax, newLeftWidth));
+          }
+
+          setColumnWidths((prev) => ({
+            ...prev,
+            [leftKey]: newLeftWidth,
+            [rightKey]: newRightWidth,
+          }));
+          onColumnResize?.(leftKey, newLeftWidth);
+          onColumnResize?.(rightKey, newRightWidth);
+        } else {
+          // === FINDER MODE ===
+          // Only the left column changes; the table grows/shrinks freely.
+          const newWidth = Math.max(leftMin, Math.min(leftMax, leftStartWidth + diff));
+
+          setColumnWidths((prev) => ({ ...prev, [leftKey]: newWidth }));
+          onColumnResize?.(leftKey, newWidth);
+        }
       };
 
       const handleMouseUp = () => {
@@ -134,13 +170,11 @@ export function useColumnResize({
         resizeCleanupRef.current = null;
       };
 
-      // Bug #1 fix: Store cleanup ref
       resizeCleanupRef.current = handleMouseUp;
-
       document.addEventListener('mousemove', handleMouseMove);
       document.addEventListener('mouseup', handleMouseUp);
     },
-    [columnWidths, isResizeActive, visibleColumns, snapshotColumnWidths, onColumnResize]
+    [columnWidths, isResizeActive, visibleColumns, resizeMode, snapshotColumnWidths, onColumnResize]
   );
 
   /** Double-click: auto-fit column to content */
@@ -160,7 +194,6 @@ export function useColumnResize({
       let maxContentWidth = 0;
 
       cells.forEach((cell) => {
-        // Temporarily remove width constraint to measure natural content width
         const el = cell as HTMLElement;
         const origWidth = el.style.width;
         el.style.width = 'auto';
@@ -179,7 +212,7 @@ export function useColumnResize({
       if (maxContentWidth > 0) {
         const minW = parseSizeToPixels(column.minWidth, 50)!;
         const maxW = parseSizeToPixels(column.maxWidth, Infinity)!;
-        const fitWidth = Math.max(minW, Math.min(maxW, maxContentWidth + 16)); // +16 for padding
+        const fitWidth = Math.max(minW, Math.min(maxW, maxContentWidth + 16));
 
         if (!isResizeActive) {
           const widths = snapshotColumnWidths();

@@ -98,6 +98,15 @@ export interface ListViewTableColumn<T = any> {
   cellStyle?: MantineStyleProp | ((record: T, index: number) => MantineStyleProp | undefined);
 }
 
+// === Resize ===
+
+/**
+ * Column resize behavior mode.
+ * - `'standard'`: dragging the handle trades width between the left and right adjacent columns (total table width stays fixed).
+ * - `'finder'`: dragging the handle only changes the left column; the table width grows/shrinks freely (wrap in `Table.ScrollContainer` for horizontal scroll).
+ */
+export type ListViewTableResizeMode = 'standard' | 'finder';
+
 // === Selection ===
 
 export type ListViewTableSelectionMode = 'single' | 'multiple';
@@ -288,6 +297,13 @@ export interface ListViewTableBaseProps<T = any> {
    * Whether to enable column resizing. Default: `false`.
    */
   enableColumnResizing?: boolean;
+
+  /**
+   * Column resize behavior mode. Default: `'standard'`.
+   * - `'standard'`: width is traded between the dragged column and its right neighbor (total width stays fixed).
+   * - `'finder'`: only the dragged column changes width; the table grows freely (use with `Table.ScrollContainer` for horizontal scroll).
+   */
+  resizeMode?: ListViewTableResizeMode;
 
   /**
    * Callback fired when columns are reordered.
