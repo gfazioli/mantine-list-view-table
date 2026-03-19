@@ -1,4 +1,4 @@
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useMemo, useRef, useState } from 'react';
 import type { ListViewTableSelectionMode } from '../types';
 
 export interface UseRowSelectionOptions<T> {
@@ -33,7 +33,10 @@ export function useRowSelection<T>({
   const lastSelectedIndexRef = useRef<number | null>(null);
 
   const isControlled = selectedRows !== undefined;
-  const currentKeys = isControlled ? new Set(selectedRows) : internalSelectedKeys;
+  const currentKeys = useMemo(
+    () => (isControlled ? new Set(selectedRows) : internalSelectedKeys),
+    [isControlled, selectedRows, internalSelectedKeys]
+  );
 
   const updateSelection = useCallback(
     (newKeys: Set<React.Key>) => {
