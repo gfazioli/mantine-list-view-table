@@ -8,375 +8,41 @@ import {
 import {
   ActionIcon,
   Box,
-  BoxProps,
   Center,
+  Checkbox,
   createVarsResolver,
   factory,
-  Factory,
   Group,
   Loader,
-  MantineColor,
-  MantineSpacing,
-  MantineStyleProp,
-  MantineTheme,
   Stack,
-  StylesApiProps,
   Table,
-  TableProps,
   Text,
   UnstyledButton,
   useProps,
   useStyles,
 } from '@mantine/core';
+import { useColumnReorder } from './hooks/use-column-reorder';
+import { useColumnResize } from './hooks/use-column-resize';
+import { useColumnVisibility } from './hooks/use-column-visibility';
+import { useKeyboardNavigation } from './hooks/use-keyboard-navigation';
+import { useRowSelection } from './hooks/use-row-selection';
+import { useSorting } from './hooks/use-sorting';
+import type { ListViewTableColumn, ListViewTableFactory, ListViewTableProps } from './types';
 import classes from './ListViewTable.module.css';
 
-export type ListViewTableStylesNames =
-  | 'root'
-  | 'table'
-  | 'header'
-  | 'headerCell'
-  | 'headerButton'
-  | 'headerTitle'
-  | 'sortIcon'
-  | 'dragHandle'
-  | 'resizeHandle'
-  | 'body'
-  | 'row'
-  | 'cell'
-  | 'emptyState'
-  | 'loader'
-  | 'stickyColumn'
-  | 'stickyHeaderColumn';
-
-export type ListViewTableCssVariables = {
-  root:
-    | '--list-view-height'
-    | '--list-view-width'
-    | '--list-view-header-title-font-size'
-    | '--list-view-header-title-font-weight'
-    | '--list-view-cell-font-size'
-    | '--list-view-cell-font-weight';
-};
-
-export type ListViewTableSortDirection = 'asc' | 'desc';
-
-export interface ListViewTableColumn<T = any> {
-  /**
-   * Column accessor key. Can use dot notation for nested properties.
-   */
-  key: keyof T | (string & NonNullable<unknown>);
-
-  /**
-   * Column title. If not provided, will be derived from the key.
-   */
-  title?: React.ReactNode;
-
-  /**
-   * Whether the column is sortable.
-   */
-  sortable?: boolean;
-
-  /**
-   * Whether the column can be resized.
-   */
-  resizable?: boolean;
-
-  /**
-   * Whether the column can be dragged to reorder.
-   */
-  draggable?: boolean;
-
-  /**
-   * Column width. Can be string or number.
-   */
-  width?: string | number;
-
-  /**
-   * Minimum column width when resizing.
-   */
-  minWidth?: string | number;
-
-  /**
-   * Maximum column width when resizing.
-   */
-  maxWidth?: string | number;
-
-  /**
-   * Whether the column is sticky (pinned).
-   */
-  sticky?: boolean;
-
-  /**
-   * Text alignment for the column.
-   */
-  textAlign?: 'left' | 'center' | 'right';
-
-  /**
-   * Whether to prevent text wrapping.
-   */
-  noWrap?: boolean;
-
-  /**
-   * Whether to show ellipsis for overflowing text.
-   */
-  ellipsis?: boolean;
-
-  /**
-   * Custom cell renderer function.
-   */
-  renderCell?: (record: T, index: number) => React.ReactNode;
-
-  /**
-   * Custom header renderer function.
-   */
-  renderHeader?: () => React.ReactNode;
-
-  /**
-   * Optional class name for cells in this column.
-   */
-  cellClassName?: string | ((record: T, index: number) => string | undefined);
-
-  /**
-   * Optional style for cells in this column.
-   */
-  cellStyle?: MantineStyleProp | ((record: T, index: number) => MantineStyleProp | undefined);
-
-  /**
-   * Whether the column is hidden.
-   */
-  hidden?: boolean;
-
-  /**
-   * Media query for responsive visibility.
-   */
-  visibleMediaQuery?: string | ((theme: MantineTheme) => string);
-}
-
-export interface ListViewTableSortStatus {
-  columnKey: string;
-  direction: ListViewTableSortDirection;
-}
-
-export interface ListViewTableBaseProps<T = any> extends Omit<
-  TableProps,
-  | 'data'
-  | 'children'
-  | 'withTableBorder'
-  | 'withColumnBorders'
-  | 'withRowBorders'
-  | 'striped'
-  | 'stripedColor'
-  | 'highlightOnHover'
-  | 'highlightOnHoverColor'
-  | 'horizontalSpacing'
-  | 'verticalSpacing'
-  | 'borderColor'
-  | 'captionSide'
-  | 'stickyHeader'
-  | 'stickyHeaderOffset'
-  | 'tabularNums'
-  | 'layout'
-  | 'variant'
-  | 'style'
-  | 'className'
-  | 'classNames'
-  | 'styles'
-  | 'vars'
-  | 'unstyled'
-  | 'attributes'
-> {
-  /**
-   * Array of column definitions.
-   */
-  columns: ListViewTableColumn<T>[];
-
-  /**
-   * Array of data records.
-   */
-  data: T[];
-
-  /**
-   * Key or function to generate unique row keys.
-   */
-  rowKey?: keyof T | ((record: T, index: number) => React.Key);
-
-  /**
-   * Height of the ListViewTable.
-   */
-  height?: string | number;
-
-  /**
-   * Width of the ListViewTable.
-   */
-  width?: string | number;
-
-  /**
-   * Value of `table-layout` style, `auto` by default
-   */
-  layout?: React.CSSProperties['tableLayout'];
-
-  /**
-   * Determines on which side `Table.Caption` is displayed, `bottom` by default
-   */
-  captionSide?: 'top' | 'bottom';
-
-  /**
-   * Color of table borders, key of `theme.colors` or any valid CSS color
-   */
-  borderColor?: MantineColor;
-
-  /**
-   * Whether to show table borders.
-   */
-  withTableBorder?: boolean;
-
-  /**
-   * Whether to show column borders.
-   */
-  withColumnBorders?: boolean;
-
-  /**
-   * Whether to show row borders.
-   */
-  withRowBorders?: boolean;
-
-  /**
-   * Whether to stripe rows.
-   */
-  striped?: boolean | 'odd' | 'even';
-
-  /**
-   * Background color of striped rows, key of `theme.colors` or any valid CSS color
-   */
-  stripedColor?: MantineColor;
-
-  /**
-   * Whether to highlight rows on hover.
-   */
-  highlightOnHover?: boolean;
-
-  /**
-   * Background color of table rows when hovered, key of `theme.colors` or any valid CSS color
-   */
-  highlightOnHoverColor?: MantineColor;
-
-  /**
-   * Determines whether `Table.Thead` should be sticky, `false` by default
-   */
-  stickyHeader?: boolean;
-
-  /**
-   * Offset from top at which `Table.Thead` should become sticky, `0` by default
-   */
-  stickyHeaderOffset?: number | string;
-
-  /**
-   * Determines whether `font-variant-numeric: tabular-nums` style should be set, `false` by default
-   */
-  tabularNums?: boolean;
-
-  /**
-   * Loading state.
-   */
-  loading?: boolean;
-
-  /**
-   * Custom props for the default loading state.
-   */
-  loadingProps?: Record<string, any>;
-
-  /**
-   * Custom loading component to render instead of the default loader. Accepts a React element or a component type.
-   */
-  loadingComponent?: React.ElementType | React.ReactNode;
-
-  /**
-   * Content to show when no data is available. Can be a string or a React component.
-   */
-  emptyText?: React.ReactNode;
-
-  /**
-   * Current sort status.
-   */
-  sortStatus?: ListViewTableSortStatus;
-
-  /**
-   * Callback fired when sort changes.
-   */
-  onSort?: (sortStatus: ListViewTableSortStatus) => void;
-
-  /**
-   * Callback fired when a row is clicked.
-   */
-  onRowClick?: (record: T, index: number, event: React.MouseEvent) => void;
-
-  /**
-   * Callback fired when a row is double-clicked.
-   */
-  onRowDoubleClick?: (record: T, index: number, event: React.MouseEvent) => void;
-
-  /**
-   * Callback fired when columns are reordered.
-   */
-  onColumnReorder?: (fromIndex: number, toIndex: number) => void;
-
-  /**
-   * Callback fired when a column is resized.
-   */
-  onColumnResize?: (columnKey: string, width: number) => void;
-
-  /**
-   * Whether to enable column reordering via drag and drop.
-   */
-  enableColumnReordering?: boolean;
-
-  /**
-   * Whether to enable column resizing.
-   */
-  enableColumnResizing?: boolean;
-
-  /**
-   * Optional custom row class name.
-   */
-  rowClassName?: string | ((record: T, index: number) => string | undefined);
-
-  /**
-   * Optional custom row style.
-   */
-  rowStyle?: React.CSSProperties | ((record: T, index: number) => React.CSSProperties | undefined);
-
-  /**
-   * Whether rows should not wrap content.
-   */
-  noWrap?: boolean;
-
-  /**
-   * Vertical alignment for cells.
-   */
-  verticalAlign?: 'top' | 'middle' | 'bottom';
-
-  /**
-   * Horizontal spacing between columns.
-   */
-  horizontalSpacing?: MantineSpacing;
-
-  /**
-   * Vertical spacing between rows.
-   */
-  verticalSpacing?: MantineSpacing;
-}
-
-export interface ListViewTableProps<T = any>
-  extends BoxProps, ListViewTableBaseProps<T>, StylesApiProps<ListViewTableFactory> {}
-
-export type ListViewTableFactory = Factory<{
-  props: ListViewTableProps<any>;
-  ref: HTMLTableElement;
-  defaultComponent: 'div';
-  defaultRef: HTMLDivElement;
-  stylesNames: ListViewTableStylesNames;
-  vars: ListViewTableCssVariables;
-}>;
+// Re-export types for backward compatibility
+export type {
+  ListViewTableBaseProps,
+  ListViewTableColumn,
+  ListViewTableContextMenuInfo,
+  ListViewTableCssVariables,
+  ListViewTableFactory,
+  ListViewTableProps,
+  ListViewTableSelectionMode,
+  ListViewTableSortDirection,
+  ListViewTableSortStatus,
+  ListViewTableStylesNames,
+} from './types';
 
 const defaultProps: Partial<ListViewTableProps> = {
   height: 'auto',
@@ -386,23 +52,27 @@ const defaultProps: Partial<ListViewTableProps> = {
   withRowBorders: true,
   withColumnBorders: true,
   highlightOnHover: false,
-  enableColumnReordering: true,
-  enableColumnResizing: true,
+  enableColumnReordering: false,
+  enableColumnResizing: false,
   verticalAlign: 'middle',
   horizontalSpacing: 'sm',
   verticalSpacing: 'xs',
 };
 
-const varsResolver = createVarsResolver<ListViewTableFactory>((_, { height, width }) => ({
-  root: {
-    '--list-view-height': typeof height === 'number' ? `${height}px` : height || '400px',
-    '--list-view-width': typeof width === 'number' ? `${width}px` : width || '100%',
-    '--list-view-header-title-font-size': 'var(--mantine-font-size-sm)',
-    '--list-view-header-title-font-weight': '500',
-    '--list-view-cell-font-size': 'var(--mantine-font-size-sm)',
-    '--list-view-cell-font-weight': '400',
-  },
-}));
+const varsResolver = createVarsResolver<ListViewTableFactory>(
+  (_, { height, width, selectedRowColor }) => ({
+    root: {
+      '--list-view-height': typeof height === 'number' ? `${height}px` : height || '400px',
+      '--list-view-width': typeof width === 'number' ? `${width}px` : width || '100%',
+      '--list-view-header-title-font-size': 'var(--mantine-font-size-sm)',
+      '--list-view-header-title-font-weight': '500',
+      '--list-view-cell-font-size': 'var(--mantine-font-size-sm)',
+      '--list-view-cell-font-weight': '400',
+      '--list-view-selected-row-color': selectedRowColor || undefined,
+      '--list-view-sticky-blur': undefined,
+    },
+  })
+);
 
 // Helper function to get nested value
 const getNestedValue = (obj: any, path: string): any => {
@@ -464,57 +134,36 @@ export const ListViewTable = factory<ListViewTableFactory>((_props, ref) => {
     verticalSpacing,
     loadingProps,
     loadingComponent,
-    // Separate Box props from Table props
-    id,
-    onClick,
-    onContextMenu,
-    onDoubleClick,
-    onMouseDown,
-    onMouseEnter,
-    onMouseLeave,
-    onMouseMove,
-    onMouseOut,
-    onMouseOver,
-    onMouseUp,
-    ...tableProps
+    tableProps,
+    // Row selection
+    selectionMode,
+    selectedRows,
+    defaultSelectedRows,
+    onSelectionChange,
+    selectedRowColor,
+    // Keyboard navigation
+    enableKeyboardNavigation,
+    onRowActivate,
+    // Context menu
+    renderContextMenu,
+    onRowContextMenu,
+    // Column visibility
+    hiddenColumns,
+    defaultHiddenColumns,
+    onHiddenColumnsChange,
+    enableColumnVisibilityToggle,
+    ...others
   } = props;
 
-  const [draggedColumn, setDraggedColumn] = useState<number | null>(null);
-  const [dragOverColumn, setDragOverColumn] = useState<number | null>(null);
   const [focusedColumn, setFocusedColumn] = useState<number | null>(null);
-  const [columnWidths, setColumnWidths] = useState<Record<string, number>>({});
-  const [totalTableWidth, setTotalTableWidth] = useState<number | null>(null);
 
-  // Internal state for sorting if onSort is not provided
-  const [internalSortStatus, setInternalSortStatus] = useState<ListViewTableSortStatus | undefined>(
-    undefined
-  );
-
-  // Internal columns state for reordering if onColumnReorder is not provided
-  const [internalColumns, setInternalColumns] = useState<ListViewTableColumn[]>(columns);
-
-  // Reset internal columns if columns prop changes
-  useEffect(() => {
-    setInternalColumns(columns);
-  }, [columns]);
-
-  const tableRef = useRef<HTMLTableElement>(null);
-  const isFirstRenderRef = useRef(true);
-
-  // Separate Box props for the container
-  const boxProps = {
-    id,
-    onClick,
-    onContextMenu,
-    onDoubleClick,
-    onMouseDown,
-    onMouseEnter,
-    onMouseLeave,
-    onMouseMove,
-    onMouseOut,
-    onMouseOver,
-    onMouseUp,
-  };
+  // Context menu state
+  const [contextMenu, setContextMenu] = useState<{
+    x: number;
+    y: number;
+    content: React.ReactNode;
+  } | null>(null);
+  const contextMenuRef = useRef<HTMLDivElement>(null);
 
   const getStyles = useStyles<ListViewTableFactory>({
     name: 'ListViewTable',
@@ -529,37 +178,6 @@ export const ListViewTable = factory<ListViewTableFactory>((_props, ref) => {
     varsResolver,
   });
 
-  // Initialize column widths
-  useEffect(() => {
-    const initialWidths: Record<string, number> = {};
-    columns.forEach((column) => {
-      if (column.width && !columnWidths[column.key as string]) {
-        let widthValue =
-          typeof column.width === 'string' ? parseInt(column.width, 10) || 150 : column.width;
-
-        // Apply minWidth constraint
-        if (column.minWidth) {
-          const minWidthValue =
-            typeof column.minWidth === 'string' ? parseInt(column.minWidth, 10) : column.minWidth;
-          widthValue = Math.max(widthValue, minWidthValue);
-        }
-
-        // Apply maxWidth constraint
-        if (column.maxWidth) {
-          const maxWidthValue =
-            typeof column.maxWidth === 'string' ? parseInt(column.maxWidth, 10) : column.maxWidth;
-          widthValue = Math.min(widthValue, maxWidthValue);
-        }
-
-        initialWidths[column.key as string] = widthValue;
-      }
-    });
-
-    if (Object.keys(initialWidths).length > 0) {
-      setColumnWidths((prev) => ({ ...prev, ...initialWidths }));
-    }
-  }, [columns, columnWidths]);
-
   // Generate row key
   const getRowKey = useCallback(
     (record: any, index: number): React.Key => {
@@ -571,299 +189,166 @@ export const ListViewTable = factory<ListViewTableFactory>((_props, ref) => {
     [rowKey]
   );
 
-  // Determine the effective sort status (external or internal)
-  const effectiveSortStatus = sortStatus || internalSortStatus;
+  // === Hooks ===
 
-  // Handle sort
-  const handleSort = useCallback(
-    (columnKey: string) => {
-      const newDirection: ListViewTableSortDirection =
-        effectiveSortStatus?.columnKey === columnKey && effectiveSortStatus.direction === 'asc'
-          ? 'desc'
-          : 'asc';
-      const newSortStatus = { columnKey, direction: newDirection };
+  const { sortedData, effectiveSortStatus, handleSort } = useSorting({
+    data,
+    sortStatus,
+    onSort,
+  });
 
-      if (onSort) {
-        onSort(newSortStatus);
-      } else {
-        setInternalSortStatus(newSortStatus);
-      }
-    },
-    [onSort, effectiveSortStatus]
-  );
+  const {
+    effectiveColumns,
+    draggedColumn,
+    dragOverColumn,
+    handleColumnDragStart,
+    handleColumnDragOver,
+    handleColumnDragLeave,
+    handleColumnDrop,
+    handleColumnDragEnd,
+  } = useColumnReorder({
+    columns,
+    enableColumnReordering: enableColumnReordering!,
+    onColumnReorder,
+  });
 
-  // Handle column drag start
-  const handleColumnDragStart = useCallback((index: number, event: React.DragEvent) => {
-    event.dataTransfer.effectAllowed = 'move';
-    event.dataTransfer.setData('text/html', index.toString());
-    setDraggedColumn(index);
-  }, []);
+  const { visibleColumns, hiddenColumnKeys, toggleColumn } = useColumnVisibility({
+    columns: effectiveColumns,
+    hiddenColumns,
+    defaultHiddenColumns,
+    onHiddenColumnsChange,
+  });
 
-  // Handle column drag over
-  const handleColumnDragOver = useCallback((index: number, event: React.DragEvent) => {
-    event.preventDefault();
-    event.dataTransfer.dropEffect = 'move';
-    setDragOverColumn(index);
-  }, []);
-
-  // Handle column drag leave
-  const handleColumnDragLeave = useCallback(() => {
-    setDragOverColumn(null);
-  }, []);
-
-  // Handle column drop
-  const handleColumnDrop = useCallback(
-    (toIndex: number, event: React.DragEvent) => {
-      event.preventDefault();
-      if (draggedColumn !== null && draggedColumn !== toIndex) {
-        if (onColumnReorder) {
-          onColumnReorder(draggedColumn, toIndex);
-        } else if (enableColumnReordering) {
-          // Internal reorder logic
-          setInternalColumns((prev) => {
-            const newColumns = [...prev];
-            const [moved] = newColumns.splice(draggedColumn, 1);
-            newColumns.splice(toIndex, 0, moved);
-            return newColumns;
-          });
-        }
-      }
-      setDraggedColumn(null);
-      setDragOverColumn(null);
-    },
-    [draggedColumn, onColumnReorder, enableColumnReordering]
-  );
-
-  // Handle drag end
-  const handleColumnDragEnd = useCallback(() => {
-    setDraggedColumn(null);
-    setDragOverColumn(null);
-  }, []);
-
-  // Use internal columns if managing reorder internally
-  const effectiveColumns = enableColumnReordering && !onColumnReorder ? internalColumns : columns;
-
-  // Sort data if sorting is enabled (either internal or external)
-  const sortedData = useMemo(() => {
-    if (!effectiveSortStatus) {
-      return data;
-    }
-
-    const { columnKey, direction } = effectiveSortStatus;
-    const sorted = [...data].sort((a, b) => {
-      const aValue = getNestedValue(a, columnKey);
-      const bValue = getNestedValue(b, columnKey);
-
-      if (aValue === null || aValue === undefined) {
-        return 1;
-      }
-      if (bValue === null || bValue === undefined) {
-        return -1;
-      }
-
-      if (aValue < bValue) {
-        return direction === 'asc' ? -1 : 1;
-      }
-      if (aValue > bValue) {
-        return direction === 'asc' ? 1 : -1;
-      }
-      return 0;
+  const { isResizeActive, getColumnStyle, handleResizeStart, handleResizeDoubleClick, tableRef } =
+    useColumnResize({
+      columns,
+      visibleColumns,
+      enableColumnResizing: enableColumnResizing!,
+      onColumnResize,
+      withColumnBorders,
     });
 
-    return sorted;
-  }, [data, effectiveSortStatus]);
+  const {
+    handleRowClick: handleSelectionClick,
+    isSelected,
+    selectAll,
+  } = useRowSelection({
+    data: sortedData,
+    getRowKey,
+    selectionMode,
+    selectedRows,
+    defaultSelectedRows,
+    onSelectionChange,
+  });
 
-  // Helper: get visible columns
-  const visibleColumns = useMemo(
-    () => effectiveColumns.filter((col) => !col.hidden),
-    [effectiveColumns]
-  );
+  const kbEnabled = enableKeyboardNavigation ?? selectionMode !== undefined;
 
-  // Handle resize start
-  const handleResizeStart = useCallback(
-    (index: number, event: React.MouseEvent) => {
-      event.preventDefault();
-      event.stopPropagation();
-
-      const startX = event.clientX;
-      const headerCell = event.currentTarget.closest('th');
-      const startWidth = headerCell?.offsetWidth || 100;
-      // Use correct columns order after reorder, without relying on block-scoped variable
-      const column = (enableColumnReordering && !onColumnReorder ? internalColumns : columns)[
-        index
-      ];
-
-      const handleMouseMove = (e: MouseEvent) => {
-        const diff = e.clientX - startX;
-        let newWidth = startWidth + diff;
-
-        // Apply min/max width constraints for the current column
-        const minWidth = column.minWidth
-          ? typeof column.minWidth === 'string'
-            ? parseInt(column.minWidth, 10)
-            : column.minWidth
-          : 50;
-        const maxWidth = column.maxWidth
-          ? typeof column.maxWidth === 'string'
-            ? parseInt(column.maxWidth, 10)
-            : column.maxWidth
-          : 1000;
-
-        newWidth = Math.max(minWidth, Math.min(maxWidth, newWidth));
-
-        // If we have a total table width constraint, enforce it
-        if (totalTableWidth && enableColumnResizing) {
-          // Calculate current total width of all columns
-          const currentTotalWidth = visibleColumns.reduce((total, col) => {
-            const currentWidth = columnWidths[col.key as string] || 100;
-            return total + currentWidth;
-          }, 0);
-
-          // Calculate what the new total would be
-          const currentColumnWidth = columnWidths[column.key as string] || startWidth;
-          const widthDiff = newWidth - currentColumnWidth;
-          const newTotalWidth = currentTotalWidth + widthDiff;
-
-          // If the new total would exceed the original table width, constrain it
-          if (newTotalWidth > totalTableWidth) {
-            const maxAllowedWidth = currentColumnWidth + (totalTableWidth - currentTotalWidth);
-            newWidth = Math.max(minWidth, Math.min(maxAllowedWidth, newWidth));
-          }
-
-          // Also ensure the last column has a minimum width by constraining earlier columns
-          const lastColumnIndex = visibleColumns.length - 1;
-          if (index < lastColumnIndex) {
-            const lastColumn = visibleColumns[lastColumnIndex];
-            const lastColumnMinWidth = lastColumn.minWidth
-              ? typeof lastColumn.minWidth === 'string'
-                ? parseInt(lastColumn.minWidth, 10)
-                : lastColumn.minWidth
-              : 50;
-
-            // Calculate what the last column width would be after this resize
-            const otherColumnsWidth = visibleColumns.reduce((total, col, idx) => {
-              if (idx === lastColumnIndex) {
-                return total;
-              } // Skip last column
-              if (idx === index) {
-                return total + newWidth;
-              } // Use new width for current column
-              return total + (columnWidths[col.key as string] || 100);
-            }, 0);
-
-            const remainingWidthForLastColumn = totalTableWidth - otherColumnsWidth;
-
-            // If last column would be too small, constrain current column
-            if (remainingWidthForLastColumn < lastColumnMinWidth) {
-              const maxWidthForCurrentColumn =
-                newWidth - (lastColumnMinWidth - remainingWidthForLastColumn);
-              newWidth = Math.max(minWidth, Math.min(maxWidthForCurrentColumn, newWidth));
-            }
-          }
+  const { focusedRowIndex, setFocusedRowIndex, handleKeyDown } = useKeyboardNavigation({
+    enabled: kbEnabled,
+    rowCount: sortedData.length,
+    onActivateRow: onRowActivate ? (index) => onRowActivate(sortedData[index], index) : undefined,
+    onSelectRow: selectionMode
+      ? (index, _event) => {
+          // Space toggles selection like Cmd+click
+          const syntheticEvent = {
+            metaKey: true,
+            ctrlKey: false,
+            shiftKey: false,
+          } as React.MouseEvent;
+          handleSelectionClick(index, syntheticEvent);
         }
+      : undefined,
+    onSelectAll: selectionMode === 'multiple' ? selectAll : undefined,
+  });
 
-        setColumnWidths((prev) => ({ ...prev, [column.key as string]: newWidth }));
+  // Dynamic table-layout (resolves Issue #4)
+  const tableLayout = useMemo(() => {
+    if (layout) {
+      return layout;
+    }
+    if (isResizeActive) {
+      return 'fixed' as const;
+    }
+    return undefined;
+  }, [layout, isResizeActive]);
 
-        // Call onColumnResize callback if provided
-        if (onColumnResize) {
-          onColumnResize(column.key as string, newWidth);
-        }
-      };
-
-      const handleMouseUp = () => {
-        document.removeEventListener('mousemove', handleMouseMove);
-        document.removeEventListener('mouseup', handleMouseUp);
-      };
-
-      document.addEventListener('mousemove', handleMouseMove);
-      document.addEventListener('mouseup', handleMouseUp);
-    },
-    [
-      enableColumnReordering,
-      onColumnReorder,
-      internalColumns,
-      columns,
-      onColumnResize,
-      totalTableWidth,
-      columnWidths,
-      visibleColumns,
-    ]
-  );
-
-  // Calculate actual column widths after first rendering
+  // Close context menu on click outside
   useEffect(() => {
-    if (isFirstRenderRef.current && tableRef.current && data.length > 0) {
-      // Add a small delay to ensure the table is fully rendered
-      const timeoutId = setTimeout(() => {
-        const headerCells = tableRef.current?.querySelectorAll('thead th');
-        if (headerCells) {
-          const actualWidths: Record<string, number> = {};
-          let totalWidth = 0;
+    if (!contextMenu) {
+      return;
+    }
+    const handleClick = (e: MouseEvent) => {
+      if (contextMenuRef.current && !contextMenuRef.current.contains(e.target as Node)) {
+        setContextMenu(null);
+      }
+    };
+    document.addEventListener('mousedown', handleClick);
+    return () => document.removeEventListener('mousedown', handleClick);
+  }, [contextMenu]);
 
-          visibleColumns.forEach((column, index) => {
-            const cell = headerCells[index];
-            if (cell) {
-              const rect = cell.getBoundingClientRect();
-              const width = Math.round(rect.width);
-              actualWidths[column.key as string] = width;
-              totalWidth += width;
-            }
-          });
+  // Handle row context menu
+  const handleRowContextMenu = useCallback(
+    (record: any, index: number, event: React.MouseEvent) => {
+      onRowContextMenu?.(record, index, event);
 
-          // Store the initial total table width to enforce resize constraints
-          // and prevent columns from expanding beyond the original table boundaries
-          setTotalTableWidth(totalWidth);
-          // Update column widths with actual measured values
-          setColumnWidths((prev) => ({ ...prev, ...actualWidths }));
+      if (renderContextMenu) {
+        event.preventDefault();
+
+        // Select row if not already selected
+        if (!isSelected(getRowKey(record, index))) {
+          handleSelectionClick(index, event);
         }
 
-        isFirstRenderRef.current = false;
-      }, 0);
-
-      return () => clearTimeout(timeoutId);
-    }
-  }, [data, visibleColumns]);
-
-  // Helper: get column width (in px for all except last column in certain cases)
-  const getColumnWidth = (col: ListViewTableColumn, idx: number): string | undefined => {
-    const w = columnWidths[col.key as string] || col.width;
-
-    // For the last column, we need to be smart about when to force auto width
-    if (idx === visibleColumns.length - 1) {
-      // Check if ALL columns (including this last one) would have explicit widths
-      const allColumnsHaveWidths = visibleColumns.every((column) => {
-        const columnWidth = columnWidths[column.key as string] || column.width;
-        return columnWidth !== undefined;
-      });
-
-      // Only force last column to auto if:
-      // 1. ALL columns would have fixed widths AND
-      // 2. Column resizing is enabled (meaning the table needs to be flexible)
-      // This prevents the table from becoming completely rigid when resizing is needed
-      if (allColumnsHaveWidths && enableColumnResizing) {
-        return undefined; // auto width
+        const content = renderContextMenu({ record, index, event });
+        if (content) {
+          setContextMenu({ x: event.clientX, y: event.clientY, content });
+        }
       }
+    },
+    [onRowContextMenu, renderContextMenu, isSelected, getRowKey, handleSelectionClick]
+  );
 
-      // If at least one other column is auto, OR resizing is disabled,
-      // allow last column to have its specified width
-      // This supports these use cases:
-      // 1. All auto columns + last fixed column
-      // 2. Mixed auto/fixed columns + last fixed column
-      // 3. All fixed columns with resizing disabled (e.g., in ScrollContainer)
-    }
+  // Handle header context menu for column visibility
+  const handleHeaderContextMenu = useCallback(
+    (event: React.MouseEvent) => {
+      if (!enableColumnVisibilityToggle) {
+        return;
+      }
+      event.preventDefault();
 
-    if (typeof w === 'number') {
-      return `${w}px`;
-    }
-    if (typeof w === 'string' && w.match(/^[0-9]+$/)) {
-      return `${parseInt(w, 10)}px`;
-    }
-    // If no width, minWidth, or maxWidth is specified, return "auto"
-    if (!w && !col.minWidth && !col.maxWidth) {
-      return 'auto';
-    }
-    return w;
-  };
+      const content = (
+        <Stack gap={0}>
+          {effectiveColumns
+            .filter((col) => !col.hidden)
+            .map((col) => {
+              const key = col.key as string;
+              const title = col.title || humanize(key);
+              return (
+                <UnstyledButton
+                  key={key}
+                  style={{ padding: '6px 12px', display: 'flex', alignItems: 'center', gap: 8 }}
+                  onClick={() => {
+                    toggleColumn(key);
+                  }}
+                >
+                  <Checkbox
+                    size="xs"
+                    checked={!hiddenColumnKeys.has(key)}
+                    onChange={() => toggleColumn(key)}
+                    tabIndex={-1}
+                    style={{ pointerEvents: 'none' }}
+                  />
+                  <Text size="sm">{typeof title === 'string' ? title : key}</Text>
+                </UnstyledButton>
+              );
+            })}
+        </Stack>
+      );
+
+      setContextMenu({ x: event.clientX, y: event.clientY, content });
+    },
+    [enableColumnVisibilityToggle, effectiveColumns, hiddenColumnKeys, toggleColumn]
+  );
 
   // Render header cell
   const renderHeaderCell = useCallback(
@@ -871,34 +356,22 @@ export const ListViewTable = factory<ListViewTableFactory>((_props, ref) => {
       const isSorted = effectiveSortStatus?.columnKey === column.key;
       const sortDirection = isSorted ? effectiveSortStatus.direction : null;
       const title = column.title || humanize(column.key as string);
-      const width = getColumnWidth(column, index);
-      const isFocused = focusedColumn === index;
-
-      // Get base styles and add conditional classes for focus state and sticky columns
-      const headerCellStyles = getStyles('headerCell');
-      const stickyHeaderClass = column.sticky ? getStyles('stickyHeaderColumn').className : '';
-      const className = isFocused
-        ? `${headerCellStyles.className} ${headerCellStyles.className}--focused ${stickyHeaderClass}`
-        : `${headerCellStyles.className} ${stickyHeaderClass}`;
+      const columnStyle = getColumnStyle(column, index);
 
       return (
         <Table.Th
           key={column.key as React.Key}
-          className={className}
           {...getStyles('headerCell', {
             className: column.sticky ? getStyles('stickyHeaderColumn').className : undefined,
             style: {
-              ...(column.sticky ? getStyles('stickyHeaderColumn').style : {}),
-              width,
-              minWidth: column.minWidth,
-              maxWidth: column.maxWidth,
+              ...(column.sticky
+                ? { position: 'sticky', left: 0, zIndex: 11 }
+                : { position: 'relative' }),
+              ...columnStyle,
               textAlign: column.textAlign,
-              whiteSpace: column.noWrap || noWrap ? 'nowrap' : 'normal',
-              textOverflow: column.ellipsis ? 'ellipsis' : 'clip',
-              overflow: column.ellipsis ? 'hidden' : 'clip',
-              position: column.sticky ? 'sticky' : 'relative',
-              left: column.sticky ? 0 : undefined,
-              zIndex: column.sticky ? 11 : undefined, // Higher z-index for sticky headers
+              whiteSpace: column.noWrap || noWrap ? 'nowrap' : undefined,
+              textOverflow: column.ellipsis ? 'ellipsis' : undefined,
+              overflow: column.ellipsis ? 'hidden' : undefined,
               top: 0,
             },
           })}
@@ -910,7 +383,7 @@ export const ListViewTable = factory<ListViewTableFactory>((_props, ref) => {
           onDragEnd={handleColumnDragEnd}
           data-dragging={draggedColumn === index ? 'true' : undefined}
           data-drag-over={dragOverColumn === index ? 'true' : undefined}
-          data-focused={isFocused ? 'true' : undefined}
+          data-focused={focusedColumn === index ? 'true' : undefined}
           data-column-key={column.key as string}
         >
           <Group
@@ -953,8 +426,7 @@ export const ListViewTable = factory<ListViewTableFactory>((_props, ref) => {
                     ) : (
                       <IconChevronDown
                         size={14}
-                        {...getStyles('sortIcon')}
-                        style={{ opacity: 1 }}
+                        {...getStyles('sortIcon', { style: { opacity: 1 } })}
                       />
                     )
                   ) : (
@@ -976,11 +448,12 @@ export const ListViewTable = factory<ListViewTableFactory>((_props, ref) => {
                       width: 4,
                       height: '100%',
                       position: 'absolute',
-                      right: withColumnBorders ? -2 : 0, // Offset to avoid covering the border
+                      right: withColumnBorders ? -2 : 0,
                       top: 0,
                     },
                   })}
                   onMouseDown={(e) => handleResizeStart(index, e)}
+                  onDoubleClick={() => handleResizeDoubleClick(index)}
                 />
               )}
           </Group>
@@ -989,13 +462,14 @@ export const ListViewTable = factory<ListViewTableFactory>((_props, ref) => {
     },
     [
       effectiveSortStatus,
-      columnWidths,
       enableColumnReordering,
       enableColumnResizing,
       draggedColumn,
       dragOverColumn,
       focusedColumn,
       visibleColumns,
+      noWrap,
+      withColumnBorders,
       handleSort,
       handleColumnDragStart,
       handleColumnDragOver,
@@ -1003,8 +477,9 @@ export const ListViewTable = factory<ListViewTableFactory>((_props, ref) => {
       handleColumnDrop,
       handleColumnDragEnd,
       handleResizeStart,
+      handleResizeDoubleClick,
+      getColumnStyle,
       getStyles,
-      withColumnBorders,
     ]
   );
 
@@ -1013,14 +488,13 @@ export const ListViewTable = factory<ListViewTableFactory>((_props, ref) => {
     (record: any, column: ListViewTableColumn, rowIndex: number, colIdx: number) => {
       const value = getNestedValue(record, column.key as string);
       const cellContent = column.renderCell ? column.renderCell(record, rowIndex) : value;
-      const width = getColumnWidth(column, colIdx);
+      const columnStyle = getColumnStyle(column, colIdx);
 
       const cellClassName =
         typeof column.cellClassName === 'function'
           ? column.cellClassName(record, rowIndex)
           : column.cellClassName;
 
-      // Combine custom cell className with sticky class if needed
       const stickyColumnClass = column.sticky ? getStyles('stickyColumn').className : '';
       const finalCellClassName = [cellClassName, stickyColumnClass].filter(Boolean).join(' ');
 
@@ -1036,16 +510,14 @@ export const ListViewTable = factory<ListViewTableFactory>((_props, ref) => {
           {...getStyles('cell', {
             className: stickyColumnClass,
             style: {
-              width,
-              minWidth: column.minWidth,
-              maxWidth: column.maxWidth,
+              ...columnStyle,
               textAlign: column.textAlign,
-              whiteSpace: column.noWrap || noWrap ? 'nowrap' : 'normal',
-              textOverflow: column.ellipsis ? 'ellipsis' : 'clip',
-              overflow: column.ellipsis ? 'hidden' : 'visible', // Fallback for older browsers
-              position: column.sticky ? 'sticky' : 'relative',
+              whiteSpace: column.noWrap || noWrap ? 'nowrap' : undefined,
+              textOverflow: column.ellipsis ? 'ellipsis' : undefined,
+              overflow: column.ellipsis ? 'hidden' : 'visible',
+              position: column.sticky ? 'sticky' : undefined,
               left: column.sticky ? 0 : undefined,
-              zIndex: column.sticky ? 10 : undefined, // z-index for sticky body cells
+              zIndex: column.sticky ? 10 : undefined,
               verticalAlign,
               ...cellStyle,
             },
@@ -1056,14 +528,15 @@ export const ListViewTable = factory<ListViewTableFactory>((_props, ref) => {
         </Table.Td>
       );
     },
-    [columnWidths, noWrap, verticalAlign, getStyles, visibleColumns]
+    [noWrap, verticalAlign, getStyles, getColumnStyle]
   );
 
-  const isVertical = tableProps.variant === 'vertical';
+  const isVertical = tableProps?.variant === 'vertical';
 
+  // === Render: Loading ===
   if (loading) {
     return (
-      <Box {...getStyles('root')} ref={ref} {...boxProps}>
+      <Box {...getStyles('root')} ref={ref} {...others}>
         <Center h={height} {...getStyles('loader')} role="status">
           {loadingComponent ? (
             React.isValidElement(loadingComponent) ? (
@@ -1079,9 +552,10 @@ export const ListViewTable = factory<ListViewTableFactory>((_props, ref) => {
     );
   }
 
+  // === Render: Empty ===
   if (!data || data.length === 0) {
     return (
-      <Box {...getStyles('root')} ref={ref} {...boxProps}>
+      <Box {...getStyles('root')} ref={ref} {...others}>
         <Center h={height} {...getStyles('emptyState')}>
           <Stack align="center" gap="md">
             {typeof emptyText === 'string' ? (
@@ -1097,10 +571,23 @@ export const ListViewTable = factory<ListViewTableFactory>((_props, ref) => {
     );
   }
 
+  // === Render: Vertical variant ===
   if (isVertical) {
-    // Render vertical variant: each row is a Th/Td pair
+    // Bug #6 guard: vertical needs at least 2 columns
+    if (visibleColumns.length < 2) {
+      return (
+        <Box {...getStyles('root')} ref={ref} {...others}>
+          <Center h={height} {...getStyles('emptyState')}>
+            <Text size="lg" c="dimmed">
+              Vertical variant requires at least 2 columns
+            </Text>
+          </Center>
+        </Box>
+      );
+    }
+
     return (
-      <Box {...getStyles('root')} ref={ref} {...boxProps}>
+      <Box {...getStyles('root')} ref={ref} {...others}>
         <Table
           {...getStyles('table')}
           withTableBorder={withTableBorder}
@@ -1115,10 +602,10 @@ export const ListViewTable = factory<ListViewTableFactory>((_props, ref) => {
                 <Table.Th
                   {...getStyles('headerCell', { style: { width: visibleColumns[0]?.width } })}
                 >
-                  {row[visibleColumns[0].key as string]}
+                  {(row as any)[visibleColumns[0].key as string]}
                 </Table.Th>
                 <Table.Td {...getStyles('cell', { style: { width: visibleColumns[1]?.width } })}>
-                  {row[visibleColumns[1].key as string]}
+                  {(row as any)[visibleColumns[1].key as string]}
                 </Table.Td>
               </Table.Tr>
             ))}
@@ -1128,8 +615,16 @@ export const ListViewTable = factory<ListViewTableFactory>((_props, ref) => {
     );
   }
 
+  // === Render: Normal table ===
   return (
-    <Box {...getStyles('root')} ref={ref} {...boxProps}>
+    <Box
+      {...getStyles('root')}
+      ref={ref}
+      tabIndex={kbEnabled ? 0 : undefined}
+      onKeyDown={kbEnabled ? handleKeyDown : undefined}
+      onContextMenu={enableColumnVisibilityToggle ? undefined : undefined}
+      {...others}
+    >
       <Table
         {...getStyles('table')}
         withTableBorder={withTableBorder}
@@ -1137,7 +632,7 @@ export const ListViewTable = factory<ListViewTableFactory>((_props, ref) => {
         withRowBorders={withRowBorders}
         striped={striped}
         stripedColor={stripedColor}
-        highlightOnHover={highlightOnHover}
+        highlightOnHover={highlightOnHover && !selectionMode}
         highlightOnHoverColor={highlightOnHoverColor}
         horizontalSpacing={horizontalSpacing}
         verticalSpacing={verticalSpacing}
@@ -1146,11 +641,14 @@ export const ListViewTable = factory<ListViewTableFactory>((_props, ref) => {
         stickyHeader={stickyHeader}
         stickyHeaderOffset={stickyHeaderOffset}
         tabularNums={tabularNums}
-        layout={layout}
+        layout={tableLayout}
         {...tableProps}
         ref={tableRef}
       >
-        <Table.Thead {...getStyles('header')}>
+        <Table.Thead
+          {...getStyles('header')}
+          onContextMenu={enableColumnVisibilityToggle ? handleHeaderContextMenu : undefined}
+        >
           <Table.Tr>
             {visibleColumns.map((column, index) => renderHeaderCell(column, index))}
           </Table.Tr>
@@ -1169,18 +667,42 @@ export const ListViewTable = factory<ListViewTableFactory>((_props, ref) => {
               rowStyleValue = rowStyle;
             }
 
+            const selected = isSelected(key);
+            const focused = focusedRowIndex === rowIndex;
+
             const combinedStyle: React.CSSProperties = {
-              cursor: onRowClick || onRowDoubleClick ? 'pointer' : 'default',
+              cursor: onRowClick || onRowDoubleClick || selectionMode ? 'pointer' : 'default',
               ...rowStyleValue,
             };
+
+            const rowClasses = [
+              rowClassNameValue,
+              selected ? getStyles('selectedRow').className : undefined,
+              focused ? getStyles('focusedRow').className : undefined,
+            ]
+              .filter(Boolean)
+              .join(' ');
 
             return (
               <Table.Tr
                 key={key}
                 {...getStyles('row', { style: combinedStyle })}
-                className={rowClassNameValue}
-                onClick={(event) => onRowClick?.(record, rowIndex, event)}
+                className={rowClasses || undefined}
+                onClick={(event) => {
+                  if (selectionMode) {
+                    handleSelectionClick(rowIndex, event);
+                    setFocusedRowIndex(rowIndex);
+                  }
+                  onRowClick?.(record, rowIndex, event);
+                }}
                 onDoubleClick={(event) => onRowDoubleClick?.(record, rowIndex, event)}
+                onContextMenu={
+                  renderContextMenu || onRowContextMenu
+                    ? (event) => handleRowContextMenu(record, rowIndex, event)
+                    : undefined
+                }
+                data-selected={selected ? 'true' : undefined}
+                data-focused={focused ? 'true' : undefined}
               >
                 {visibleColumns.map((column, colIdx) =>
                   renderCell(record, column, rowIndex, colIdx)
@@ -1190,6 +712,22 @@ export const ListViewTable = factory<ListViewTableFactory>((_props, ref) => {
           })}
         </Table.Tbody>
       </Table>
+
+      {/* Context Menu */}
+      {contextMenu && (
+        <div
+          ref={contextMenuRef}
+          {...getStyles('contextMenu')}
+          style={{
+            position: 'fixed',
+            left: contextMenu.x,
+            top: contextMenu.y,
+            zIndex: 1000,
+          }}
+        >
+          {contextMenu.content}
+        </div>
+      )}
     </Box>
   );
 });

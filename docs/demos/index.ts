@@ -1,5 +1,9 @@
+export { autoFitColumns } from './ListViewTable.demo.autoFitColumns';
 export { cellStyleDifferences } from './ListViewTable.demo.cellStyleDifferences';
+export { columnVisibility } from './ListViewTable.demo.columnVisibility';
 export { configurator } from './ListViewTable.demo.configurator';
+export { contextMenu } from './ListViewTable.demo.contextMenu';
+export { controlledSelection } from './ListViewTable.demo.controlledSelection';
 export { customEmptyState } from './ListViewTable.demo.customEmptyState';
 export { customLoadingComponent } from './ListViewTable.demo.customLoadingComponent';
 export { customLoadingElement } from './ListViewTable.demo.customLoadingElement';
@@ -10,6 +14,7 @@ export { ellipsisPresets } from './ListViewTable.demo.ellipsisPresets';
 export { externalReorderingAndResizing } from './ListViewTable.demo.externalReorderingAndResizing';
 export { externalSorting } from './ListViewTable.demo.externalSorting';
 export { inlineJsxEmptyState } from './ListViewTable.demo.inlineJsxEmptyState';
+export { keyboardNavigation } from './ListViewTable.demo.keyboardNavigation';
 export { loadingState } from './ListViewTable.demo.loadingState';
 export { maxWidth } from './ListViewTable.demo.maxWidth';
 export { minAndMaxWidth } from './ListViewTable.demo.minAndMaxWidth';
@@ -18,6 +23,7 @@ export { mixedWidthConstraints } from './ListViewTable.demo.mixedWidthConstraint
 export { scrollArea } from './ListViewTable.demo.scrollArea';
 export { scrollContainer } from './ListViewTable.demo.scrollContainer';
 export { scrollContainerWithSticky } from './ListViewTable.demo.scrollContainerWithSticky';
+export { selection } from './ListViewTable.demo.selection';
 export { simpleEmptyText } from './ListViewTable.demo.simpleEmptyText';
 export { stickyHeader } from './ListViewTable.demo.stickyHeader';
 export { stylesApi } from './ListViewTable.demo.stylesApi';
