@@ -425,16 +425,7 @@ export const ListViewTable = factory<ListViewTableFactory>((_props, ref) => {
               column.resizable !== false &&
               index < visibleColumns.length - 1 && (
                 <Box
-                  {...getStyles('resizeHandle', {
-                    style: {
-                      cursor: 'col-resize',
-                      width: 4,
-                      height: '100%',
-                      position: 'absolute',
-                      right: withColumnBorders ? -2 : 0,
-                      top: 0,
-                    },
-                  })}
+                  {...getStyles('resizeHandle')}
                   onMouseDown={(e) => handleResizeStart(index, e)}
                   onDoubleClick={() => handleResizeDoubleClick(index)}
                 />
@@ -452,7 +443,6 @@ export const ListViewTable = factory<ListViewTableFactory>((_props, ref) => {
       focusedColumn,
       visibleColumns,
       noWrap,
-      withColumnBorders,
       handleSort,
       handleColumnDragStart,
       handleColumnDragOver,

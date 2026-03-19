@@ -87,18 +87,33 @@
 
 .resizeHandle {
   position: absolute;
-  right: 0;
+  right: -6px;
   top: 0;
-  width: 4px;
+  width: 12px;
   height: 100%;
   background: transparent;
   cursor: col-resize;
-  border-radius: 256px;
+  z-index: 1;
+}
+
+/* Visible indicator line — thin, centered in the hit area */
+.resizeHandle::after {
+  content: '';
+  position: absolute;
+  top: 25%;
+  bottom: 25%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 2px;
+  border-radius: 1px;
+  background: transparent;
   transition: background-color 150ms ease;
 }
 
-.resizeHandle:hover {
+.resizeHandle:hover::after {
   background: var(--mantine-color-blue-5);
+  top: 4px;
+  bottom: 4px;
 }
 
 .body {
@@ -198,7 +213,8 @@
   }
 
   .resizeHandle {
-    width: 8px;
+    width: 16px;
+    right: -8px;
   }
 }
 
