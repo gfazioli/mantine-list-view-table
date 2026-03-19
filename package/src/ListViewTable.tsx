@@ -39,6 +39,7 @@ export type {
   ListViewTableCssVariables,
   ListViewTableFactory,
   ListViewTableProps,
+  ListViewTableResizeMode,
   ListViewTableSelectionMode,
   ListViewTableSortDirection,
   ListViewTableSortStatus,
@@ -112,6 +113,7 @@ export const ListViewTable = factory<ListViewTableFactory>((_props, ref) => {
     onColumnResize,
     enableColumnReordering,
     enableColumnResizing,
+    resizeMode,
     rowClassName,
     rowStyle,
     noWrap,
@@ -208,6 +210,7 @@ export const ListViewTable = factory<ListViewTableFactory>((_props, ref) => {
   const { isResizeActive, getColumnStyle, handleResizeStart, handleResizeDoubleClick, tableRef } =
     useColumnResize({
       visibleColumns,
+      resizeMode,
       onColumnResize,
     });
 
