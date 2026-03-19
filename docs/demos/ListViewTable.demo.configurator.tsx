@@ -81,14 +81,14 @@ export const configurator: MantineDemo = {
     {
       prop: 'enableColumnReordering',
       type: 'boolean',
-      initialValue: true,
-      libraryValue: true,
+      initialValue: false,
+      libraryValue: false,
     },
     {
       prop: 'enableColumnResizing',
       type: 'boolean',
-      initialValue: true,
-      libraryValue: true,
+      initialValue: false,
+      libraryValue: false,
     },
     {
       prop: 'horizontalSpacing',

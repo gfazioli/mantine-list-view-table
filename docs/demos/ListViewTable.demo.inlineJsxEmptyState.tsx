@@ -27,6 +27,7 @@ const code = `
 import { ListViewTable } from '@gfazioli/mantine-list-view-table';
 import { Group, Text, ThemeIcon } from '@mantine/core';
 import { IconFolderOpen } from '@tabler/icons-react';
+import { columns } from './columns';
 
 function Demo() {
   return (

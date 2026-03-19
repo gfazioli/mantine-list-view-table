@@ -5,7 +5,7 @@ import { columns } from './columns-three';
 import { data } from './data-files';
 
 const code = `
-import { Compare } from "@gfazioli/mantine-compare";
+import { ListViewTable } from "@gfazioli/mantine-list-view-table";
 import { data } from './data';
 
 function Demo() {

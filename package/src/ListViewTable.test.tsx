@@ -1,4 +1,5 @@
 import React from 'react';
+import { fireEvent } from '@testing-library/react';
 import { render, screen } from '@mantine-tests/core';
 import { ListViewTable } from './ListViewTable';
 
@@ -163,5 +164,205 @@ describe('ListViewTable', () => {
       />
     );
     expect(screen.getByTestId('custom-fn-loader')).toHaveTextContent('Loading with function');
+  });
+
+  // === Bug regression tests ===
+
+  it('does not crash with vertical variant and fewer than 2 columns', () => {
+    const singleColumn = [{ key: 'name', title: 'Name' }];
+    const { container } = render(
+      <ListViewTable
+        columns={singleColumn as any}
+        data={testData}
+        rowKey="id"
+        height={300}
+        tableProps={{ variant: 'vertical' }}
+      />
+    );
+    expect(container).toBeTruthy();
+    expect(screen.getByText('Vertical variant requires at least 2 columns')).toBeInTheDocument();
+  });
+
+  it('does not sort data internally when sortStatus is controlled externally', () => {
+    const sortedByNameDesc = [...testData].sort((a, b) => b.name.localeCompare(a.name));
+
+    const { container } = render(
+      <ListViewTable
+        columns={testColumns as any}
+        data={sortedByNameDesc}
+        rowKey="id"
+        height={300}
+        sortStatus={{ columnKey: 'name', direction: 'desc' }}
+        onSort={() => {}}
+      />
+    );
+
+    // Data should be rendered in the exact order provided (not re-sorted)
+    const rows = container.querySelectorAll('tbody tr');
+    expect(rows[0]).toHaveTextContent('Item 3');
+    expect(rows[1]).toHaveTextContent('Item 2');
+    expect(rows[2]).toHaveTextContent('Item 1');
+  });
+
+  it('defaults enableColumnReordering and enableColumnResizing to false', () => {
+    const { container } = render(
+      <ListViewTable columns={testColumns as any} data={testData} rowKey="id" height={300} />
+    );
+
+    // No drag handles should be present
+    expect(container.querySelector('.mantine-ListViewTable-dragHandle')).toBeNull();
+    // No resize handles should be present
+    expect(container.querySelector('.mantine-ListViewTable-resizeHandle')).toBeNull();
+  });
+
+  // === Row Selection tests ===
+
+  it('renders clickable rows when selectionMode is set', () => {
+    const { container } = render(
+      <ListViewTable
+        columns={testColumns as any}
+        data={testData}
+        rowKey="id"
+        height={300}
+        selectionMode="single"
+      />
+    );
+
+    const rows = container.querySelectorAll('tbody tr');
+    expect(rows.length).toBe(3);
+    expect(rows[0]).toHaveStyle({ cursor: 'pointer' });
+  });
+
+  it('calls onSelectionChange on row click', () => {
+    const onSelectionChange = jest.fn();
+
+    render(
+      <ListViewTable
+        columns={testColumns as any}
+        data={testData}
+        rowKey="id"
+        height={300}
+        selectionMode="single"
+        onSelectionChange={onSelectionChange}
+      />
+    );
+
+    const rows = screen.getAllByRole('row');
+    // rows[0] is the header row, rows[1] is first data row
+    fireEvent.click(rows[1]);
+    expect(onSelectionChange).toHaveBeenCalledWith([1], expect.any(Array));
+  });
+
+  it('supports controlled selection', () => {
+    const { container } = render(
+      <ListViewTable
+        columns={testColumns as any}
+        data={testData}
+        rowKey="id"
+        height={300}
+        selectionMode="multiple"
+        selectedRows={[1, 3]}
+      />
+    );
+
+    const rows = container.querySelectorAll('tbody tr');
+    expect(rows[0]).toHaveAttribute('data-selected', 'true');
+    expect(rows[1]).not.toHaveAttribute('data-selected');
+    expect(rows[2]).toHaveAttribute('data-selected', 'true');
+  });
+
+  // === Column Visibility tests ===
+
+  it('hides columns based on hiddenColumns prop', () => {
+    render(
+      <ListViewTable
+        columns={testColumns as any}
+        data={testData}
+        rowKey="id"
+        height={300}
+        hiddenColumns={['value']}
+      />
+    );
+
+    expect(screen.getByText('Name')).toBeInTheDocument();
+    expect(screen.queryByText('Value')).toBeNull();
+  });
+
+  it('toggles column visibility', () => {
+    const onHiddenColumnsChange = jest.fn();
+
+    const { rerender } = render(
+      <ListViewTable
+        columns={testColumns as any}
+        data={testData}
+        rowKey="id"
+        height={300}
+        hiddenColumns={[]}
+        onHiddenColumnsChange={onHiddenColumnsChange}
+      />
+    );
+
+    // Both columns visible
+    expect(screen.getByText('Name')).toBeInTheDocument();
+    expect(screen.getByText('Value')).toBeInTheDocument();
+
+    // Re-render with value column hidden
+    rerender(
+      <ListViewTable
+        columns={testColumns as any}
+        data={testData}
+        rowKey="id"
+        height={300}
+        hiddenColumns={['value']}
+        onHiddenColumnsChange={onHiddenColumnsChange}
+      />
+    );
+
+    expect(screen.getByText('Name')).toBeInTheDocument();
+    expect(screen.queryByText('Value')).toBeNull();
+  });
+
+  // === Keyboard Navigation tests ===
+
+  it('renders with keyboard navigation support when selectionMode is set', () => {
+    const { container } = render(
+      <ListViewTable
+        columns={testColumns as any}
+        data={testData}
+        rowKey="id"
+        height={300}
+        selectionMode="multiple"
+        enableKeyboardNavigation
+      />
+    );
+
+    // The component root should be focusable for keyboard navigation
+    const root = container.querySelector('[tabindex="0"]');
+    expect(root).toBeTruthy();
+  });
+
+  it('does not have tabindex when keyboard navigation is disabled', () => {
+    const { container } = render(
+      <ListViewTable columns={testColumns as any} data={testData} rowKey="id" height={300} />
+    );
+
+    const focusable = container.querySelector('[tabindex="0"]');
+    expect(focusable).toBeNull();
+  });
+
+  // === tableProps pass-through ===
+
+  it('passes additional props via tableProps', () => {
+    const { container } = render(
+      <ListViewTable
+        columns={testColumns as any}
+        data={testData}
+        rowKey="id"
+        height={300}
+        tableProps={{ 'data-testid': 'inner-table' } as any}
+      />
+    );
+
+    expect(container.querySelector('[data-testid="inner-table"]')).toBeTruthy();
   });
 });

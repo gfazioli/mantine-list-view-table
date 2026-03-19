@@ -58,6 +58,7 @@ const code = `
 import { ListViewTable } from '@gfazioli/mantine-list-view-table';
 import { IconRefresh } from '@tabler/icons-react';
 import { Button, Stack, Text, ThemeIcon, Title } from '@mantine/core';
+import { columns } from './columns';
 
 // Custom loading component
 const CustomLoadingScreen = ({ 

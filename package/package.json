@@ -7,14 +7,15 @@
   "license": "MIT",
   "author": "Giovambattista Fazioli <giovambattista.fazioli@gmail.com>",
   "keywords": [
-    "animation",
-    "branding",
-    "extension",
-    "list-view-table",
+    "table",
+    "list-view",
+    "finder",
+    "column-reorder",
+    "column-resize",
+    "sorting",
     "mantine",
     "react",
     "react-component",
-    "scroll",
     "typescript"
   ],
   "main": "./dist/cjs/index.cjs",
@@ -36,8 +37,8 @@
   },
   "repository": "https://github.com/gfazioli/mantine-list-view-table.git",
   "peerDependencies": {
-    "@mantine/core": ">=7.0.0",
-    "@mantine/hooks": ">=7.0.0",
+    "@mantine/core": ">=8.0.0",
+    "@mantine/hooks": ">=8.0.0",
     "@tabler/icons-react": "^3.34.0",
     "react": "^18.x || ^19.x",
     "react-dom": "^18.x || ^19.x"

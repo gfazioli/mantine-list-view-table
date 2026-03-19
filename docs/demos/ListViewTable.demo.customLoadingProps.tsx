@@ -19,6 +19,7 @@ function Demo() {
 
 const code = `
 import { ListViewTable } from '@gfazioli/mantine-list-view-table';
+import { columns } from './columns';
 
 function Demo() {
   return (

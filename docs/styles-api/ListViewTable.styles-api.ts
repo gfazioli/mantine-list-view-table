@@ -15,10 +15,13 @@ export const ListViewTableStylesApi: StylesApiData<ListViewTableFactory> = {
     body: 'Table body',
     row: 'Table row (tr)',
     cell: 'Table cell (td)',
+    selectedRow: 'Selected row highlight',
+    focusedRow: 'Focused row outline (keyboard navigation)',
     stickyColumn: 'Sticky column cell (td)',
     stickyHeaderColumn: 'Sticky header column cell (th)',
     emptyState: 'Empty state container when no data',
     loader: 'Loading state container',
+    contextMenu: 'Context menu container',
   },
 
   vars: {
@@ -29,6 +32,8 @@ export const ListViewTableStylesApi: StylesApiData<ListViewTableFactory> = {
       '--list-view-header-title-font-weight': 'Controls font weight of header titles',
       '--list-view-cell-font-size': 'Controls font size of cell content',
       '--list-view-cell-font-weight': 'Controls font weight of cell content',
+      '--list-view-selected-row-color': 'Controls background color of selected rows',
+      '--list-view-sticky-blur': 'Controls blur amount for sticky column overlay',
     },
   },
 

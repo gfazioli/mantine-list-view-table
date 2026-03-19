@@ -6,7 +6,7 @@ function Demo() {
   // Custom loading component as React element
   const customLoader = (
     <Stack align="center" gap="md">
-      <RingProgress size={80} thickness={6} sections={[{ value: 10, color: 'grape' }]} />
+      <RingProgress size={80} thickness={6} sections={[{ value: 100, color: 'grape' }]} />
       <Text size="sm" c="dimmed">
         Loading files from server...
       </Text>
@@ -29,6 +29,7 @@ function Demo() {
 const code = `
 import { ListViewTable } from '@gfazioli/mantine-list-view-table';
 import { RingProgress, Stack, Text } from '@mantine/core';
+import { columns } from './columns';
 
 function Demo() {
   // Custom loading component as React element

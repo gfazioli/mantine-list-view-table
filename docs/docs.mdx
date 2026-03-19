@@ -244,6 +244,54 @@ For more sophisticated empty states, you can pass a React component that include
 
 <Demo data={demos.customEmptyState} />
 
+## Row Selection
+
+The `ListViewTable` component supports row selection with both single and multiple selection modes, inspired by macOS Finder behavior.
+
+### Basic Selection
+
+Enable row selection by setting the `selectionMode` prop. In `multiple` mode, use **Cmd/Ctrl+Click** to toggle individual rows and **Shift+Click** for range selection.
+
+<Demo data={demos.selection} />
+
+### Controlled Selection
+
+For full control over the selection state, use the `selectedRows` and `onSelectionChange` props.
+
+<Demo data={demos.controlledSelection} />
+
+## Keyboard Navigation
+
+When `selectionMode` is set, keyboard navigation is automatically enabled. You can also explicitly control it with the `enableKeyboardNavigation` prop.
+
+**Key bindings:**
+
+- **Arrow Up/Down** — Move focus between rows
+- **Enter** — Activate the focused row (`onRowActivate`)
+- **Space** — Toggle selection on the focused row
+- **Home/End** — Jump to first/last row
+- **Cmd/Ctrl+A** — Select all (multiple mode)
+
+<Demo data={demos.keyboardNavigation} />
+
+## Context Menu
+
+Right-click on a row to show a custom context menu using the `renderContextMenu` prop. The right-clicked row is automatically selected before the menu appears.
+
+<Demo data={demos.contextMenu} />
+
+## Column Visibility
+
+Control which columns are visible with the `hiddenColumns` prop. You can also enable a built-in column visibility toggle by right-clicking on the table header with `enableColumnVisibilityToggle`.
+
+<Demo data={demos.columnVisibility} />
+
+## Auto-Fit Columns
+
+When column resizing is enabled, double-click on a resize handle to auto-fit the column width to its content.
+
+<Demo data={demos.autoFitColumns} />
+
 ## Vertical Variant
 
 The `ListViewTable` component supports the `variant="vertical"` prop from [Mantine Table component](https://mantine.dev/core/table/), which displays data in a key-value format where each row represents a property-value pair. This is particularly useful for displaying detailed information about a single item, such as configuration settings, user profiles, or metadata.
