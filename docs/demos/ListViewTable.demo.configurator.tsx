@@ -1,23 +1,102 @@
 import { ListViewTable, ListViewTableProps } from '@gfazioli/mantine-list-view-table';
-import { Center } from '@mantine/core';
+import { Badge, Stack, Text } from '@mantine/core';
 import { MantineDemo } from '@mantinex/demo';
-import { columns, columnsCode } from './columns-three';
-import { data, dataCode } from './data-files';
+
+const columns = [
+  {
+    key: 'name',
+    title: 'Name',
+    sortable: true,
+    // Multi-line content to make verticalAlign visible
+    renderCell: (row: any) => (
+      <Stack gap={0}>
+        <Text size="sm" fw={500}>
+          {row.name}
+        </Text>
+        <Text size="xs" c="dimmed">
+          {row.kind}
+        </Text>
+      </Stack>
+    ),
+  },
+  { key: 'size', title: 'Size', sortable: true, textAlign: 'right' as const },
+  {
+    key: 'modified',
+    title: 'Modified',
+    sortable: true,
+    renderCell: (row: any) => <Badge variant="light">{row.modified}</Badge>,
+  },
+];
+
+const columnsCode = `import { Badge, Stack, Text } from '@mantine/core';
+
+export const columns = [
+  {
+    key: 'name',
+    title: 'Name',
+    sortable: true,
+    renderCell: (row: any) => (
+      <Stack gap={0}>
+        <Text size="sm" fw={500}>{row.name}</Text>
+        <Text size="xs" c="dimmed">{row.kind}</Text>
+      </Stack>
+    ),
+  },
+  { key: 'size', title: 'Size', sortable: true, textAlign: 'right' },
+  {
+    key: 'modified',
+    title: 'Modified',
+    sortable: true,
+    renderCell: (row: any) => <Badge variant="light">{row.modified}</Badge>,
+  },
+];`;
+
+const data = [
+  { id: 1, name: 'File.txt', kind: 'Text Document', size: '12 KB', modified: '2024-06-01' },
+  { id: 2, name: 'Image.png', kind: 'PNG Image', size: '2 MB', modified: '2024-06-02' },
+  { id: 3, name: 'Video.mp4', kind: 'MPEG-4 Movie', size: '125 MB', modified: '2024-06-03' },
+  { id: 4, name: 'Document.pdf', kind: 'PDF Document', size: '500 KB', modified: '2024-06-04' },
+  { id: 5, name: 'Archive.zip', kind: 'ZIP Archive', size: '1.5 GB', modified: '2024-06-05' },
+  {
+    id: 6,
+    name: 'Spreadsheet.xlsx',
+    kind: 'Excel Spreadsheet',
+    size: '300 KB',
+    modified: '2024-06-06',
+  },
+  { id: 7, name: 'Presentation.pptx', kind: 'PowerPoint', size: '2 MB', modified: '2024-06-07' },
+  { id: 8, name: 'Audio.mp3', kind: 'MP3 Audio', size: '5 MB', modified: '2024-06-08' },
+  { id: 9, name: 'Script.js', kind: 'JavaScript File', size: '15 KB', modified: '2024-06-09' },
+];
+
+const dataCode = `
+export const data = [
+  { id: 1, name: 'File.txt', kind: 'Text Document', size: '12 KB', modified: '2024-06-01' },
+  { id: 2, name: 'Image.png', kind: 'PNG Image', size: '2 MB', modified: '2024-06-02' },
+  { id: 3, name: 'Video.mp4', kind: 'MPEG-4 Movie', size: '125 MB', modified: '2024-06-03' },
+  { id: 4, name: 'Document.pdf', kind: 'PDF Document', size: '500 KB', modified: '2024-06-04' },
+  { id: 5, name: 'Archive.zip', kind: 'ZIP Archive', size: '1.5 GB', modified: '2024-06-05' },
+  { id: 6, name: 'Spreadsheet.xlsx', kind: 'Excel Spreadsheet', size: '300 KB', modified: '2024-06-06' },
+  { id: 7, name: 'Presentation.pptx', kind: 'PowerPoint', size: '2 MB', modified: '2024-06-07' },
+  { id: 8, name: 'Audio.mp3', kind: 'MP3 Audio', size: '5 MB', modified: '2024-06-08' },
+  { id: 9, name: 'Script.js', kind: 'JavaScript File', size: '15 KB', modified: '2024-06-09' },
+];`;
 
 function Demo(props: Omit<ListViewTableProps, 'columns' | 'data'>) {
+  // Convert empty string from configurator select to undefined
+  const { selectionMode, ...rest } = props;
   return (
-    <Center w={520}>
-      <ListViewTable
-        columns={columns}
-        data={data}
-        rowKey="id"
-        onRowClick={(row) => {
-          // eslint-disable-next-line no-console
-          console.log('Clicked:', row.name);
-        }}
-        {...props}
-      />
-    </Center>
+    <ListViewTable
+      columns={columns}
+      data={data}
+      rowKey="id"
+      selectionMode={selectionMode || undefined}
+      onRowClick={(row) => {
+        // eslint-disable-next-line no-console
+        console.log('Clicked:', row.name);
+      }}
+      {...rest}
+    />
   );
 }
 
@@ -79,6 +158,18 @@ export const configurator: MantineDemo = {
       libraryValue: false,
     },
     {
+      prop: 'stickyHeader',
+      type: 'boolean',
+      initialValue: false,
+      libraryValue: false,
+    },
+    {
+      prop: 'tabularNums',
+      type: 'boolean',
+      initialValue: false,
+      libraryValue: false,
+    },
+    {
       prop: 'enableColumnReordering',
       type: 'boolean',
       initialValue: false,
@@ -126,6 +217,17 @@ export const configurator: MantineDemo = {
       ],
       initialValue: 'middle',
       libraryValue: 'middle',
+    },
+    {
+      prop: 'selectionMode',
+      type: 'select',
+      data: [
+        { value: '', label: 'none' },
+        { value: 'single', label: 'single' },
+        { value: 'multiple', label: 'multiple' },
+      ],
+      initialValue: '',
+      libraryValue: '',
     },
     {
       prop: 'stripedColor',

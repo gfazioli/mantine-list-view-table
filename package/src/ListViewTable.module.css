@@ -111,7 +111,6 @@
 
 .cell {
   /* Let Mantine handle basic cell styling, only add custom overrides */
-  vertical-align: middle;
   overflow: hidden;
   font-size: var(--list-view-cell-font-size);
   font-weight: var(--list-view-cell-font-weight);
@@ -134,10 +133,6 @@
 
 /* === Row Selection === */
 .selectedRow {
-  background-color: var(--list-view-selected-row-color, var(--mantine-primary-color-light));
-}
-
-[data-mantine-color-scheme='dark'] .selectedRow {
   background-color: var(--list-view-selected-row-color, var(--mantine-primary-color-light));
 }
 

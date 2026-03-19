@@ -1,10 +1,6 @@
 import { useCallback, useMemo, useState } from 'react';
 import type { ListViewTableSortDirection, ListViewTableSortStatus } from '../types';
-
-// Helper function to get nested value via dot-notation path
-const getNestedValue = (obj: any, path: string): any => {
-  return path.split('.').reduce((current, key) => current?.[key], obj);
-};
+import { getNestedValue } from '../utils';
 
 export interface UseSortingOptions<T> {
   data: T[];

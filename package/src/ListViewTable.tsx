@@ -28,6 +28,7 @@ import { useKeyboardNavigation } from './hooks/use-keyboard-navigation';
 import { useRowSelection } from './hooks/use-row-selection';
 import { useSorting } from './hooks/use-sorting';
 import type { ListViewTableColumn, ListViewTableFactory, ListViewTableProps } from './types';
+import { getNestedValue, humanize } from './utils';
 import classes from './ListViewTable.module.css';
 
 // Re-export types for backward compatibility
@@ -73,21 +74,6 @@ const varsResolver = createVarsResolver<ListViewTableFactory>(
     },
   })
 );
-
-// Helper function to get nested value
-const getNestedValue = (obj: any, path: string): any => {
-  return path.split('.').reduce((current, key) => current?.[key], obj);
-};
-
-// Helper function to humanize column keys
-const humanize = (str: string): string => {
-  return str
-    .split('.')
-    .pop()!
-    .replace(/([A-Z])/g, ' $1')
-    .replace(/^./, (char) => char.toUpperCase())
-    .trim();
-};
 
 export const ListViewTable = factory<ListViewTableFactory>((_props, ref) => {
   const props = useProps('ListViewTable', defaultProps, _props);
@@ -221,11 +207,8 @@ export const ListViewTable = factory<ListViewTableFactory>((_props, ref) => {
 
   const { isResizeActive, getColumnStyle, handleResizeStart, handleResizeDoubleClick, tableRef } =
     useColumnResize({
-      columns,
       visibleColumns,
-      enableColumnResizing: enableColumnResizing!,
       onColumnResize,
-      withColumnBorders,
     });
 
   const {
@@ -597,7 +580,7 @@ export const ListViewTable = factory<ListViewTableFactory>((_props, ref) => {
           ref={tableRef}
         >
           <Table.Tbody {...getStyles('body')}>
-            {data.map((row, rowIndex) => (
+            {sortedData.map((row, rowIndex) => (
               <Table.Tr key={getRowKey(row, rowIndex)} {...getStyles('row')}>
                 <Table.Th
                   {...getStyles('headerCell', { style: { width: visibleColumns[0]?.width } })}
@@ -622,7 +605,6 @@ export const ListViewTable = factory<ListViewTableFactory>((_props, ref) => {
       ref={ref}
       tabIndex={kbEnabled ? 0 : undefined}
       onKeyDown={kbEnabled ? handleKeyDown : undefined}
-      onContextMenu={enableColumnVisibilityToggle ? undefined : undefined}
       {...others}
     >
       <Table

@@ -26,7 +26,10 @@ export function useColumnVisibility({
   );
 
   const isControlled = hiddenColumns !== undefined;
-  const currentHiddenKeys = isControlled ? new Set(hiddenColumns) : internalHiddenKeys;
+  const currentHiddenKeys = useMemo(
+    () => (isControlled ? new Set(hiddenColumns) : internalHiddenKeys),
+    [isControlled, hiddenColumns, internalHiddenKeys]
+  );
 
   const visibleColumns = useMemo(
     () => columns.filter((col) => !col.hidden && !currentHiddenKeys.has(col.key as string)),

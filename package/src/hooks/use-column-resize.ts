@@ -30,11 +30,8 @@ function parseSizeToPixels(value?: number | string, fallback?: number): number |
 }
 
 export interface UseColumnResizeOptions {
-  columns: ListViewTableColumn[];
   visibleColumns: ListViewTableColumn[];
-  enableColumnResizing: boolean;
   onColumnResize?: (columnKey: string, width: number) => void;
-  withColumnBorders?: boolean;
 }
 
 export interface UseColumnResizeReturn {
