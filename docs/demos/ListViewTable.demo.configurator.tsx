@@ -158,7 +158,7 @@ export const configurator: MantineDemo = {
       libraryValue: false,
     },
     {
-      prop: 'stickyHeader',
+      prop: 'noWrap',
       type: 'boolean',
       initialValue: false,
       libraryValue: false,
