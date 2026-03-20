@@ -292,6 +292,15 @@ When column resizing is enabled, double-click on a resize handle to auto-fit the
 
 <Demo data={demos.autoFitColumns} />
 
+## Resize Mode
+
+The `resizeMode` prop controls how column resizing behaves:
+
+- **`standard`** (default): dragging the resize handle trades width between the left column and its right neighbor. The total table width stays fixed.
+- **`finder`**: dragging only changes the left column width. The table grows or shrinks freely, similar to macOS Finder. Use with `Table.ScrollContainer` for horizontal scrolling when the table exceeds its container.
+
+<Demo data={demos.resizeMode} />
+
 ## Vertical Variant
 
 The `ListViewTable` component supports the `variant="vertical"` prop from [Mantine Table component](https://mantine.dev/core/table/), which displays data in a key-value format where each row represents a property-value pair. This is particularly useful for displaying detailed information about a single item, such as configuration settings, user profiles, or metadata.
