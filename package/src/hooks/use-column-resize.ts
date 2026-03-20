@@ -57,6 +57,12 @@ export function useColumnResize({
   const tableRef = useRef<HTMLTableElement | null>(null);
   const resizeCleanupRef = useRef<(() => void) | null>(null);
 
+  // Refs to always access the latest values in callbacks without stale closures
+  const columnWidthsRef = useRef<Record<string, number>>({});
+  columnWidthsRef.current = columnWidths;
+  const isResizeActiveRef = useRef(false);
+  isResizeActiveRef.current = isResizeActive;
+
   // Cleanup on unmount
   useEffect(() => {
     return () => {
@@ -131,6 +137,11 @@ export function useColumnResize({
 
   const handleResizeStart = useCallback(
     (index: number, event: React.MouseEvent) => {
+      // Skip if this mousedown is part of a double-click (detail >= 2)
+      if (event.detail >= 2) {
+        return;
+      }
+
       event.preventDefault();
       event.stopPropagation();
 
@@ -254,8 +265,9 @@ export function useColumnResize({
         const maxW = parseSizeToPixels(column.maxWidth, Infinity)!;
         let fitWidth = Math.max(minW, Math.min(maxW, maxContentWidth + 2));
 
-        let currentWidths = columnWidths;
-        if (!isResizeActive) {
+        // Use refs to always get the latest values (avoids stale closures)
+        let currentWidths = columnWidthsRef.current;
+        if (!isResizeActiveRef.current) {
           currentWidths = snapshotColumnWidths();
           setIsResizeActive(true);
         }
@@ -294,7 +306,7 @@ export function useColumnResize({
         }
       }
     },
-    [visibleColumns, isResizeActive, snapshotColumnWidths, onColumnResize]
+    [visibleColumns, resizeMode, snapshotColumnWidths, onColumnResize]
   );
 
   /** Reset to declarative mode */
