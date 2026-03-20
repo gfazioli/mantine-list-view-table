@@ -53,6 +53,7 @@ export function useColumnResize({
 }: UseColumnResizeOptions): UseColumnResizeReturn {
   const [columnWidths, setColumnWidths] = useState<Record<string, number>>({});
   const [isResizeActive, setIsResizeActive] = useState(false);
+  const [tableWidth, setTableWidth] = useState<number>(0);
   const tableRef = useRef<HTMLTableElement | null>(null);
   const resizeCleanupRef = useRef<(() => void) | null>(null);
 
@@ -69,6 +70,9 @@ export function useColumnResize({
     if (!tableRef.current) {
       return widths;
     }
+
+    // Capture the real table width before switching to fixed layout
+    setTableWidth(Math.round(tableRef.current.getBoundingClientRect().width));
 
     const headerCells = tableRef.current.querySelectorAll('thead th');
     visibleColumns.forEach((column, index) => {
@@ -104,19 +108,26 @@ export function useColumnResize({
    * In Standard mode, width: 100% is fine since total width is preserved.
    */
   const getTableStyle = useCallback((): React.CSSProperties => {
-    if (!isResizeActive || resizeMode !== 'finder') {
+    if (!isResizeActive) {
       return {};
     }
-    // Sum all column pixel widths
-    const totalWidth = visibleColumns.reduce((sum, col) => {
-      const w = columnWidths[col.key as string];
-      return sum + (w || 0);
-    }, 0);
-    if (totalWidth > 0) {
-      return { width: `${totalWidth}px`, minWidth: `${totalWidth}px` };
+    if (resizeMode === 'finder') {
+      // Finder: table grows/shrinks freely — use sum of column widths
+      const totalWidth = visibleColumns.reduce((sum, col) => {
+        const w = columnWidths[col.key as string];
+        return sum + (w || 0);
+      }, 0);
+      if (totalWidth > 0) {
+        return { width: `${totalWidth}px`, minWidth: `${totalWidth}px` };
+      }
+      return {};
+    }
+    // Standard: lock to original container width to prevent browser redistribution
+    if (tableWidth > 0) {
+      return { width: `${tableWidth}px` };
     }
     return {};
-  }, [isResizeActive, resizeMode, visibleColumns, columnWidths]);
+  }, [isResizeActive, resizeMode, visibleColumns, columnWidths, tableWidth]);
 
   const handleResizeStart = useCallback(
     (index: number, event: React.MouseEvent) => {
@@ -208,43 +219,79 @@ export function useColumnResize({
       const column = visibleColumns[index];
       const colKey = column.key as string;
 
-      // Measure max content width for this column
+      // Measure max content width using off-screen clones.
+      // In table-layout:auto, scrollWidth on a cell returns the rendered width
+      // (with browser space distribution), not the minimum content width.
+      // Cloning cells as inline-block outside the table gives accurate measurements.
       const cells = tableRef.current.querySelectorAll(`td[data-column-key="${colKey}"]`);
       const headerCell = tableRef.current.querySelector(`th[data-column-key="${colKey}"]`);
 
       let maxContentWidth = 0;
 
-      cells.forEach((cell) => {
-        const el = cell as HTMLElement;
-        const origWidth = el.style.width;
-        el.style.width = 'auto';
-        maxContentWidth = Math.max(maxContentWidth, el.scrollWidth);
-        el.style.width = origWidth;
-      });
+      const measurer = document.createElement('div');
+      measurer.style.cssText =
+        'position:absolute;visibility:hidden;pointer-events:none;top:-9999px;left:-9999px;';
+      document.body.appendChild(measurer);
 
+      const measureCell = (cell: Element) => {
+        const clone = cell.cloneNode(true) as HTMLElement;
+        const computed = getComputedStyle(cell);
+        clone.style.cssText = `display:inline-block;width:auto;white-space:nowrap;padding:${computed.padding};font:${computed.font};box-sizing:${computed.boxSizing};`;
+        measurer.appendChild(clone);
+        maxContentWidth = Math.max(maxContentWidth, clone.offsetWidth);
+        measurer.removeChild(clone);
+      };
+
+      cells.forEach(measureCell);
       if (headerCell) {
-        const el = headerCell as HTMLElement;
-        const origWidth = el.style.width;
-        el.style.width = 'auto';
-        maxContentWidth = Math.max(maxContentWidth, el.scrollWidth);
-        el.style.width = origWidth;
+        measureCell(headerCell);
       }
+
+      document.body.removeChild(measurer);
 
       if (maxContentWidth > 0) {
         const minW = parseSizeToPixels(column.minWidth, 50)!;
         const maxW = parseSizeToPixels(column.maxWidth, Infinity)!;
-        const fitWidth = Math.max(minW, Math.min(maxW, maxContentWidth + 16));
+        let fitWidth = Math.max(minW, Math.min(maxW, maxContentWidth + 2));
 
+        let currentWidths = columnWidths;
         if (!isResizeActive) {
-          const widths = snapshotColumnWidths();
-          widths[colKey] = fitWidth;
-          setColumnWidths(widths);
+          currentWidths = snapshotColumnWidths();
           setIsResizeActive(true);
-        } else {
-          setColumnWidths((prev) => ({ ...prev, [colKey]: fitWidth }));
         }
 
-        onColumnResize?.(colKey, fitWidth);
+        const oldWidth = currentWidths[colKey] || fitWidth;
+        const delta = fitWidth - oldWidth;
+
+        if (resizeMode === 'standard' && index < visibleColumns.length - 1) {
+          // Compensate the adjacent column so total width stays constant
+          const rightColumn = visibleColumns[index + 1];
+          const rightKey = rightColumn.key as string;
+          const rightOldWidth = currentWidths[rightKey] || 100;
+          const rightMin = parseSizeToPixels(rightColumn.minWidth, 50)!;
+          const rightMax = parseSizeToPixels(rightColumn.maxWidth, Infinity)!;
+
+          let rightNewWidth = rightOldWidth - delta;
+
+          // Clamp right column — push back onto left if needed
+          if (rightNewWidth < rightMin) {
+            rightNewWidth = rightMin;
+            fitWidth = oldWidth + (rightOldWidth - rightMin);
+            fitWidth = Math.max(minW, Math.min(maxW, fitWidth));
+          } else if (rightNewWidth > rightMax) {
+            rightNewWidth = rightMax;
+            fitWidth = oldWidth + (rightOldWidth - rightMax);
+            fitWidth = Math.max(minW, Math.min(maxW, fitWidth));
+          }
+
+          setColumnWidths({ ...currentWidths, [colKey]: fitWidth, [rightKey]: rightNewWidth });
+          onColumnResize?.(colKey, fitWidth);
+          onColumnResize?.(rightKey, rightNewWidth);
+        } else {
+          // Finder mode or last column: only adjust the target column
+          setColumnWidths({ ...currentWidths, [colKey]: fitWidth });
+          onColumnResize?.(colKey, fitWidth);
+        }
       }
     },
     [visibleColumns, isResizeActive, snapshotColumnWidths, onColumnResize]
@@ -254,6 +301,7 @@ export function useColumnResize({
   const resetColumnWidths = useCallback(() => {
     setColumnWidths({});
     setIsResizeActive(false);
+    setTableWidth(0);
   }, []);
 
   return {
