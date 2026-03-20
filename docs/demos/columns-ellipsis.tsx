@@ -7,32 +7,22 @@ export const columns: ListViewTableColumn[] = [
     key: 'name',
     title: 'Name (ellipsis + noWrap)',
     sortable: true,
-    width: 180,
-    ellipsis: true, // Enable text truncation with ellipsis
-    noWrap: true, // Prevent text wrapping
+    ellipsis: true,
+    noWrap: true,
   },
   {
     key: 'description',
     title: 'Description (ellipsis only)',
     sortable: true,
-    width: 200,
-    ellipsis: true, // Enable text truncation with ellipsis
+    ellipsis: true,
     noWrap: false,
   },
   {
     key: 'note',
     title: 'Note (noWrap only)',
     sortable: true,
-    width: 120,
-    ellipsis: false, // Disable ellipsis
-    noWrap: true, // Prevent text wrapping but allow cut-off
-  },
-  {
-    key: 'address',
-    title: 'Address (default)',
-    sortable: true,
-    width: 80,
-    // Default behavior: no ellipsis, wrapping allowed
+    ellipsis: false,
+    noWrap: true,
   },
 ];
 `;
@@ -42,31 +32,21 @@ export const columnsEllipsis: ListViewTableColumn[] = [
     key: 'name',
     title: 'Name (ellipsis + noWrap)',
     sortable: true,
-    width: 180,
-    ellipsis: true, // Enable text truncation with ellipsis
-    noWrap: true, // Prevent text wrapping
+    ellipsis: true,
+    noWrap: true,
   },
   {
     key: 'description',
     title: 'Description (ellipsis only)',
     sortable: true,
-    width: 200,
-    ellipsis: true, // Enable text truncation with ellipsis
+    ellipsis: true,
     noWrap: false,
   },
   {
     key: 'note',
     title: 'Note (noWrap only)',
     sortable: true,
-    width: 120,
-    ellipsis: false, // Disable ellipsis
-    noWrap: true, // Prevent text wrapping but allow cut-off
-  },
-  {
-    key: 'address',
-    title: 'Address (default)',
-    sortable: true,
-    width: 80,
-    // Default behavior: no ellipsis, wrapping allowed
+    ellipsis: false,
+    noWrap: true,
   },
 ];

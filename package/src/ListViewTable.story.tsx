@@ -15,7 +15,8 @@ import {
   Title,
 } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
-import { ListViewTable, ListViewTableColumn, ListViewTableSortStatus } from './ListViewTable';
+import { ListViewTable } from './ListViewTable';
+import type { ListViewTableColumn, ListViewTableSortStatus } from './types';
 
 export default {
   title: 'Components/ListViewTable',

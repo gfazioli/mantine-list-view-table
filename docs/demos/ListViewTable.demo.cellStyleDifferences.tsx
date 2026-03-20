@@ -1,5 +1,4 @@
 import { ListViewTable, type ListViewTableColumn } from '@gfazioli/mantine-list-view-table';
-import { Badge } from '@mantine/core';
 import { MantineDemo } from '@mantinex/demo';
 import { dataFilesWithDescription } from './data-files-with-description';
 
@@ -8,87 +7,47 @@ const data = dataFilesWithDescription;
 const columns: ListViewTableColumn[] = [
   {
     key: 'name',
-    title: 'Name (Header: noWrap, Cell: wrap with ellipsis)',
+    title: 'Name (Header: noWrap, Cell: wrap)',
     sortable: true,
-    width: 200,
-    // Header styling: TH will have noWrap to prevent header text wrapping
-    noWrap: true, // This applies to TH header
-    ellipsis: false, // No ellipsis in header
-    // Cell styling: TD will allow wrapping but with ellipsis for overflow
+    // Header: noWrap keeps the title on one line
+    noWrap: true,
+    ellipsis: false,
+    // Cell: override to allow wrapping with ellipsis
     cellStyle: {
-      whiteSpace: 'normal', // Override noWrap for TD cells - allow wrapping
-      textOverflow: 'ellipsis', // Add ellipsis for TD cells
+      whiteSpace: 'normal',
+      textOverflow: 'ellipsis',
       overflow: 'hidden',
       lineHeight: '1.2em',
     },
   },
   {
     key: 'description',
-    title: 'Description (Header: ellipsis, Cell: normal wrap)',
+    title: 'Description (Header: ellipsis, Cell: wrap)',
     sortable: true,
-    width: 220,
-    // Header styling: TH will have ellipsis and noWrap
+    // Header: truncated with ellipsis
     ellipsis: true,
     noWrap: true,
-    // Cell styling: TD will allow normal text wrapping without ellipsis
+    // Cell: normal wrapping, no truncation
     cellStyle: {
-      whiteSpace: 'normal', // Allow text wrapping in cells
-      textOverflow: 'clip', // No ellipsis in cells
+      whiteSpace: 'normal',
+      textOverflow: 'clip',
       overflow: 'visible',
       lineHeight: '1.2em',
     },
   },
   {
-    key: 'kind',
-    title: 'Kind (Header: wrap, Cell: noWrap + ellipsis)',
-    sortable: true,
-    width: 140,
-    // Header styling: TH will allow wrapping
-    noWrap: false,
-    ellipsis: false,
-    // Cell styling: TD will have noWrap and ellipsis
-    cellStyle: {
-      whiteSpace: 'nowrap',
-      textOverflow: 'ellipsis',
-      overflow: 'hidden',
-    },
-    renderCell: (record: any) => (
-      <Badge
-        variant="light"
-        color={record.type === 'folder' ? 'blue' : 'gray'}
-        size="sm"
-        style={{ maxWidth: '100%' }}
-        title={record.kind}
-      >
-        {record.kind}
-      </Badge>
-    ),
-  },
-  {
-    key: 'size',
-    title: 'Size (Same style for header and cell)',
-    sortable: true,
-    textAlign: 'right' as const,
-    width: 100,
-    // Both header and cell use the same default styling
-    noWrap: true,
-    ellipsis: true,
-  },
-  {
     key: 'modified',
-    title: 'Modified (Custom cell background)',
+    title: 'Modified (dynamic cellStyle)',
     sortable: true,
-    width: 120,
     ellipsis: true,
     noWrap: true,
-    // Cell styling: Add background color and padding
+    // Dynamic cell background based on data
     cellStyle: (record: any) => ({
       backgroundColor:
         record.type === 'folder' ? 'var(--mantine-color-blue-0)' : 'var(--mantine-color-gray-0)',
       fontWeight: record.type === 'folder' ? 600 : 400,
       padding: '8px 12px',
       borderRadius: '4px',
-      margin: '2px 0',
     }),
   },
 ];
@@ -103,10 +62,6 @@ function Demo() {
       withColumnBorders
       highlightOnHover
       enableColumnResizing
-      onColumnResize={(columnKey, width) => {
-        // eslint-disable-next-line no-console
-        console.log(`Column '${columnKey}' resized to: ${width}px`);
-      }}
     />
   );
 }
@@ -125,9 +80,6 @@ function Demo() {
       withColumnBorders
       highlightOnHover
       enableColumnResizing
-      onColumnResize={(columnKey, width) => {
-        console.log(\`Column '\${columnKey}' resized to: \${width}px\`);
-      }}
     />
   );
 }
@@ -136,145 +88,77 @@ function Demo() {
 const dataCode = `export const data = [
   {
     id: 1,
-    name: 'Very long document name that would normally overflow the column width and require truncation with ellipsis',
+    name: 'Very long document name that would normally overflow the column width',
     type: 'folder',
-    size: '--',
     modified: '2024-06-01',
-    kind: 'Folder',
-    description:
-      'This is a very long description that demonstrates how text can be truncated with ellipsis when the column is too narrow to fit all the content. The header and cell can have different text wrapping behavior.',
+    description: 'This is a very long description that demonstrates how text can be truncated differently in header vs cell.',
   },
   {
     id: 2,
-    name: 'README_with_extremely_long_filename_that_should_be_truncated_differently_in_header_vs_cell.md',
+    name: 'README_with_extremely_long_filename_that_should_be_truncated.md',
     type: 'file',
-    size: '2.1 KB',
     modified: '2024-06-02',
-    kind: 'Markdown Document',
-    description:
-      'A comprehensive guide explaining all the features and functionality of this component library with detailed examples and use cases that span multiple lines.',
+    description: 'A comprehensive guide explaining features and functionality with detailed examples.',
   },
   {
     id: 3,
     name: 'package.json',
     type: 'file',
-    size: '1.8 KB',
     modified: '2024-06-03',
-    kind: 'JSON',
     description: 'Configuration file for project dependencies',
   },
   {
     id: 4,
     name: 'src',
     type: 'folder',
-    size: '--',
     modified: '2024-06-04',
-    kind: 'Folder',
-    description:
-      'Source code directory containing all TypeScript files and components for the application',
-  },
-  {
-    id: 5,
-    name: 'my_vacation_photos_from_summer_2024_trip_to_europe_including_italy_france_and_spain_with_beautiful_landscapes.png',
-    type: 'file',
-    size: '45.2 KB',
-    modified: '2024-06-05',
-    kind: 'PNG Image File',
-    description:
-      'High resolution image file containing memories from vacation with detailed metadata',
+    description: 'Source code directory containing all TypeScript files and components',
   },
 ];
-
 `;
 
 const columnsCode = `
 import type { ListViewTableColumn } from '@gfazioli/mantine-list-view-table';
-import { Badge } from '@mantine/core';
 
 export const columns: ListViewTableColumn[] = [
   {
     key: 'name',
-    title: 'Name (Header: noWrap, Cell: wrap with ellipsis)',
+    title: 'Name (Header: noWrap, Cell: wrap)',
     sortable: true,
-    width: 200,
-    // Header styling: TH will have noWrap to prevent header text wrapping
-    noWrap: true, // This applies to TH header
-    ellipsis: false, // No ellipsis in header
-    // Cell styling: TD will allow wrapping but with ellipsis for overflow
+    noWrap: true,
+    ellipsis: false,
     cellStyle: {
-      whiteSpace: 'normal', // Override noWrap for TD cells - allow wrapping
-      textOverflow: 'ellipsis', // Add ellipsis for TD cells
+      whiteSpace: 'normal',
+      textOverflow: 'ellipsis',
       overflow: 'hidden',
       lineHeight: '1.2em',
     },
   },
   {
     key: 'description',
-    title: 'Description (Header: ellipsis, Cell: normal wrap)',
+    title: 'Description (Header: ellipsis, Cell: wrap)',
     sortable: true,
-    width: 220,
-    // Header styling: TH will have ellipsis and noWrap
     ellipsis: true,
     noWrap: true,
-    // Cell styling: TD will allow normal text wrapping without ellipsis
     cellStyle: {
-      whiteSpace: 'normal', // Allow text wrapping in cells
-      textOverflow: 'clip', // No ellipsis in cells
+      whiteSpace: 'normal',
+      textOverflow: 'clip',
       overflow: 'visible',
       lineHeight: '1.2em',
     },
   },
   {
-    key: 'kind',
-    title: 'Kind (Header: wrap, Cell: noWrap + ellipsis)',
-    sortable: true,
-    width: 140,
-    // Header styling: TH will allow wrapping
-    noWrap: false,
-    ellipsis: false,
-    // Cell styling: TD will have noWrap and ellipsis
-    cellStyle: {
-      whiteSpace: 'nowrap',
-      textOverflow: 'ellipsis',
-      overflow: 'hidden',
-    },
-    renderCell: (record: any) => (
-      <Badge
-        variant="light"
-        color={record.type === 'folder' ? 'blue' : 'gray'}
-        size="sm"
-        style={{ maxWidth: '100%' }}
-        title={record.kind}
-      >
-        {record.kind}
-      </Badge>
-    ),
-  },
-  {
-    key: 'size',
-    title: 'Size (Same style for header and cell)',
-    sortable: true,
-    textAlign: 'right' as const,
-    width: 100,
-    // Both header and cell use the same default styling
-    noWrap: true,
-    ellipsis: true,
-  },
-  {
     key: 'modified',
-    title: 'Modified (Custom cell background)',
+    title: 'Modified (dynamic cellStyle)',
     sortable: true,
-    width: 120,
     ellipsis: true,
     noWrap: true,
-    // Cell styling: Add background color and padding
-    cellStyle: (record: any) => ({
+    cellStyle: (record) => ({
       backgroundColor:
         record.type === 'folder' ? 'var(--mantine-color-blue-0)' : 'var(--mantine-color-gray-0)',
       fontWeight: record.type === 'folder' ? 600 : 400,
       padding: '8px 12px',
       borderRadius: '4px',
-      margin: '2px 0',
     }),
   },
 ];

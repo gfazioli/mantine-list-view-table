@@ -17,7 +17,7 @@
 }
 
 .headerCell {
-  overflow: hidden;
+  /* No overflow:hidden here — it would clip the resize handle that extends beyond the th */
 
   * {
     text-overflow: inherit;
@@ -87,9 +87,9 @@
 
 .resizeHandle {
   position: absolute;
-  right: -6px;
+  right: -7px;
   top: 0;
-  width: 12px;
+  width: 14px;
   height: 100%;
   background: transparent;
   cursor: col-resize;
@@ -213,8 +213,8 @@
   }
 
   .resizeHandle {
-    width: 16px;
-    right: -8px;
+    width: 20px;
+    right: -10px;
   }
 }
 

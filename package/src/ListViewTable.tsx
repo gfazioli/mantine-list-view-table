@@ -8,14 +8,20 @@ import {
 import {
   ActionIcon,
   Box,
+  BoxProps,
   Center,
   Checkbox,
   createVarsResolver,
   factory,
+  Factory,
   Group,
   Loader,
+  MantineColor,
+  MantineSpacing,
   Stack,
+  StylesApiProps,
   Table,
+  TableProps,
   Text,
   UnstyledButton,
   useProps,
@@ -27,24 +33,286 @@ import { useColumnVisibility } from './hooks/use-column-visibility';
 import { useKeyboardNavigation } from './hooks/use-keyboard-navigation';
 import { useRowSelection } from './hooks/use-row-selection';
 import { useSorting } from './hooks/use-sorting';
-import type { ListViewTableColumn, ListViewTableFactory, ListViewTableProps } from './types';
-import { getNestedValue, humanize } from './utils';
-import classes from './ListViewTable.module.css';
-
-// Re-export types for backward compatibility
-export type {
-  ListViewTableBaseProps,
+import type {
   ListViewTableColumn,
   ListViewTableContextMenuInfo,
   ListViewTableCssVariables,
-  ListViewTableFactory,
-  ListViewTableProps,
   ListViewTableResizeMode,
   ListViewTableSelectionMode,
-  ListViewTableSortDirection,
   ListViewTableSortStatus,
   ListViewTableStylesNames,
 } from './types';
+import { getNestedValue, humanize } from './utils';
+import classes from './ListViewTable.module.css';
+
+export interface ListViewTableBaseProps<T = any> {
+  /**
+   * Array of column definitions.
+   */
+  columns: ListViewTableColumn<T>[];
+
+  /**
+   * Array of data records.
+   */
+  data: T[];
+
+  /**
+   * Key or function to generate unique row keys.
+   */
+  rowKey?: keyof T | ((record: T, index: number) => React.Key);
+
+  /**
+   * Height of the ListViewTable.
+   */
+  height?: string | number;
+
+  /**
+   * Width of the ListViewTable.
+   */
+  width?: string | number;
+
+  /**
+   * Value of `table-layout` style. When `enableColumnResizing` is active and no explicit value is provided, defaults to `fixed`.
+   */
+  layout?: React.CSSProperties['tableLayout'];
+
+  /**
+   * Whether to show table borders.
+   */
+  withTableBorder?: boolean;
+
+  /**
+   * Whether to show column borders.
+   */
+  withColumnBorders?: boolean;
+
+  /**
+   * Whether to show row borders.
+   */
+  withRowBorders?: boolean;
+
+  /**
+   * Whether to stripe rows.
+   */
+  striped?: boolean | 'odd' | 'even';
+
+  /**
+   * Background color of striped rows, key of `theme.colors` or any valid CSS color.
+   */
+  stripedColor?: MantineColor;
+
+  /**
+   * Whether to highlight rows on hover.
+   */
+  highlightOnHover?: boolean;
+
+  /**
+   * Background color of table rows when hovered, key of `theme.colors` or any valid CSS color.
+   */
+  highlightOnHoverColor?: MantineColor;
+
+  /**
+   * Determines whether `Table.Thead` should be sticky. Default: `false`.
+   */
+  stickyHeader?: boolean;
+
+  /**
+   * Offset from top at which `Table.Thead` should become sticky. Default: `0`.
+   */
+  stickyHeaderOffset?: number | string;
+
+  /**
+   * Determines whether `font-variant-numeric: tabular-nums` style should be set. Default: `false`.
+   */
+  tabularNums?: boolean;
+
+  /**
+   * Determines on which side `Table.Caption` is displayed. Default: `bottom`.
+   */
+  captionSide?: 'top' | 'bottom';
+
+  /**
+   * Color of table borders, key of `theme.colors` or any valid CSS color.
+   */
+  borderColor?: MantineColor;
+
+  /**
+   * Horizontal spacing between columns.
+   */
+  horizontalSpacing?: MantineSpacing;
+
+  /**
+   * Vertical spacing between rows.
+   */
+  verticalSpacing?: MantineSpacing;
+
+  /**
+   * Additional props passed directly to the Mantine Table component.
+   */
+  tableProps?: Partial<TableProps>;
+
+  /**
+   * Whether to enable column reordering via drag and drop. Default: `false`.
+   */
+  enableColumnReordering?: boolean;
+
+  /**
+   * Whether to enable column resizing. Default: `false`.
+   */
+  enableColumnResizing?: boolean;
+
+  /**
+   * Column resize behavior mode. Default: `'standard'`.
+   * - `'standard'`: width is traded between the dragged column and its right neighbor (total width stays fixed).
+   * - `'finder'`: only the dragged column changes width; the table grows freely (use with `Table.ScrollContainer` for horizontal scroll).
+   */
+  resizeMode?: ListViewTableResizeMode;
+
+  /**
+   * Callback fired when columns are reordered.
+   */
+  onColumnReorder?: (fromIndex: number, toIndex: number) => void;
+
+  /**
+   * Callback fired when a column is resized.
+   */
+  onColumnResize?: (columnKey: string, width: number) => void;
+
+  /**
+   * Current sort status. When provided with `onSort`, external sorting mode is used.
+   */
+  sortStatus?: ListViewTableSortStatus;
+
+  /**
+   * Callback fired when sort changes.
+   */
+  onSort?: (sortStatus: ListViewTableSortStatus) => void;
+
+  /**
+   * Callback fired when a row is clicked.
+   */
+  onRowClick?: (record: T, index: number, event: React.MouseEvent) => void;
+
+  /**
+   * Callback fired when a row is double-clicked.
+   */
+  onRowDoubleClick?: (record: T, index: number, event: React.MouseEvent) => void;
+
+  /**
+   * Optional custom row class name.
+   */
+  rowClassName?: string | ((record: T, index: number) => string | undefined);
+
+  /**
+   * Optional custom row style.
+   */
+  rowStyle?: React.CSSProperties | ((record: T, index: number) => React.CSSProperties | undefined);
+
+  /**
+   * Whether rows should not wrap content.
+   */
+  noWrap?: boolean;
+
+  /**
+   * Vertical alignment for cells.
+   */
+  verticalAlign?: 'top' | 'middle' | 'bottom';
+
+  /**
+   * Loading state.
+   */
+  loading?: boolean;
+
+  /**
+   * Custom props for the default loading state.
+   */
+  loadingProps?: Record<string, any>;
+
+  /**
+   * Custom loading component to render instead of the default loader. Accepts a React element or a component type.
+   */
+  loadingComponent?: React.ElementType | React.ReactNode;
+
+  /**
+   * Content to show when no data is available. Can be a string or a React component.
+   */
+  emptyText?: React.ReactNode;
+
+  /**
+   * Selection mode: 'single' or 'multiple'. When not set, row selection is disabled.
+   */
+  selectionMode?: ListViewTableSelectionMode;
+
+  /**
+   * Controlled selected row keys.
+   */
+  selectedRows?: React.Key[];
+
+  /**
+   * Default selected row keys (uncontrolled).
+   */
+  defaultSelectedRows?: React.Key[];
+
+  /**
+   * Callback fired when selection changes.
+   */
+  onSelectionChange?: (selectedKeys: React.Key[], records: T[]) => void;
+
+  /**
+   * Color for selected rows. Key of `theme.colors` or any valid CSS color.
+   */
+  selectedRowColor?: MantineColor;
+
+  /**
+   * Enable keyboard navigation. Default: `true` when `selectionMode` is defined.
+   */
+  enableKeyboardNavigation?: boolean;
+
+  /**
+   * Callback fired when a row is activated (Enter key).
+   */
+  onRowActivate?: (record: T, index: number) => void;
+
+  /**
+   * Render function for the context menu. Return null to prevent the context menu.
+   */
+  renderContextMenu?: (info: ListViewTableContextMenuInfo<T>) => React.ReactNode;
+
+  /**
+   * Callback fired on right-click on a row.
+   */
+  onRowContextMenu?: (record: T, index: number, event: React.MouseEvent) => void;
+
+  /**
+   * Controlled hidden column keys.
+   */
+  hiddenColumns?: string[];
+
+  /**
+   * Default hidden column keys (uncontrolled).
+   */
+  defaultHiddenColumns?: string[];
+
+  /**
+   * Callback fired when hidden columns change.
+   */
+  onHiddenColumnsChange?: (hiddenKeys: string[]) => void;
+
+  /**
+   * Enable column visibility toggle via right-click on header. Default: `false`.
+   */
+  enableColumnVisibilityToggle?: boolean;
+}
+
+export interface ListViewTableProps<T = any>
+  extends BoxProps, ListViewTableBaseProps<T>, StylesApiProps<ListViewTableFactory> {}
+
+export type ListViewTableFactory = Factory<{
+  props: ListViewTableProps<any>;
+  ref: HTMLDivElement;
+  stylesNames: ListViewTableStylesNames;
+  vars: ListViewTableCssVariables;
+}>;
 
 const defaultProps: Partial<ListViewTableProps> = {
   height: 'auto',
