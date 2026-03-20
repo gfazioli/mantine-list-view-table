@@ -207,12 +207,18 @@ export const ListViewTable = factory<ListViewTableFactory>((_props, ref) => {
     onHiddenColumnsChange,
   });
 
-  const { isResizeActive, getColumnStyle, handleResizeStart, handleResizeDoubleClick, tableRef } =
-    useColumnResize({
-      visibleColumns,
-      resizeMode,
-      onColumnResize,
-    });
+  const {
+    isResizeActive,
+    getColumnStyle,
+    getTableStyle,
+    handleResizeStart,
+    handleResizeDoubleClick,
+    tableRef,
+  } = useColumnResize({
+    visibleColumns,
+    resizeMode,
+    onColumnResize,
+  });
 
   const {
     handleRowClick: handleSelectionClick,
@@ -601,7 +607,7 @@ export const ListViewTable = factory<ListViewTableFactory>((_props, ref) => {
       {...others}
     >
       <Table
-        {...getStyles('table')}
+        {...getStyles('table', { style: getTableStyle() })}
         withTableBorder={withTableBorder}
         withColumnBorders={withColumnBorders}
         withRowBorders={withRowBorders}

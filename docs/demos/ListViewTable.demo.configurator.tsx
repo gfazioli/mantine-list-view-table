@@ -182,6 +182,16 @@ export const configurator: MantineDemo = {
       libraryValue: false,
     },
     {
+      prop: 'resizeMode',
+      type: 'select',
+      data: [
+        { value: 'standard', label: 'standard' },
+        { value: 'finder', label: 'finder' },
+      ],
+      initialValue: 'standard',
+      libraryValue: 'standard',
+    },
+    {
       prop: 'horizontalSpacing',
       type: 'select',
       data: [

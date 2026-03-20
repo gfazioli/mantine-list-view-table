@@ -39,6 +39,7 @@ export interface UseColumnResizeReturn {
   columnWidths: Record<string, number>;
   isResizeActive: boolean;
   getColumnStyle: (col: ListViewTableColumn, idx: number) => React.CSSProperties;
+  getTableStyle: () => React.CSSProperties;
   handleResizeStart: (index: number, event: React.MouseEvent) => void;
   handleResizeDoubleClick: (index: number) => void;
   resetColumnWidths: () => void;
@@ -96,6 +97,26 @@ export function useColumnResize({
     },
     [isResizeActive, columnWidths]
   );
+
+  /**
+   * In Finder mode, the table must NOT be constrained to 100% width —
+   * it should be exactly the sum of all column widths so it can grow/shrink freely.
+   * In Standard mode, width: 100% is fine since total width is preserved.
+   */
+  const getTableStyle = useCallback((): React.CSSProperties => {
+    if (!isResizeActive || resizeMode !== 'finder') {
+      return {};
+    }
+    // Sum all column pixel widths
+    const totalWidth = visibleColumns.reduce((sum, col) => {
+      const w = columnWidths[col.key as string];
+      return sum + (w || 0);
+    }, 0);
+    if (totalWidth > 0) {
+      return { width: `${totalWidth}px`, minWidth: `${totalWidth}px` };
+    }
+    return {};
+  }, [isResizeActive, resizeMode, visibleColumns, columnWidths]);
 
   const handleResizeStart = useCallback(
     (index: number, event: React.MouseEvent) => {
@@ -239,6 +260,7 @@ export function useColumnResize({
     columnWidths,
     isResizeActive,
     getColumnStyle,
+    getTableStyle,
     handleResizeStart,
     handleResizeDoubleClick,
     resetColumnWidths,
