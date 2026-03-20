@@ -100,14 +100,17 @@
 .resizeHandle::after {
   content: '';
   position: absolute;
-  top: 25%;
-  bottom: 25%;
+  top: 30%;
+  bottom: 30%;
   left: 50%;
   transform: translateX(-50%);
-  width: 3px;
-  border-radius: 1.5px;
+  width: 4px;
+  border-radius: 2px;
   background: transparent;
-  transition: background-color 150ms ease;
+  transition:
+    background-color 150ms ease,
+    top 300ms cubic-bezier(0.34, 1.56, 0.64, 1),
+    bottom 300ms cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 .resizeHandle:hover::after {
