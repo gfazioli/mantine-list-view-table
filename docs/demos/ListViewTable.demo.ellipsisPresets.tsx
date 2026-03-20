@@ -30,7 +30,7 @@ export const columns = [
     key: 'name',
     title: 'Project Name',
     sortable: true,
-    width: 180,
+    width: 150,
     ...TEXT_TRUNCATION_PRESETS.SINGLE_LINE_ELLIPSIS, // Single line with ellipsis
     renderCell: (record: any) => (
       <Group gap="xs" wrap="nowrap">
@@ -51,7 +51,7 @@ export const columns = [
     key: 'description',
     title: 'Description',
     sortable: true,
-    width: 250,
+    width: 180,
     ...TEXT_TRUNCATION_PRESETS.MULTI_LINE_ELLIPSIS, // Multi-line with ellipsis
     renderCell: (record: any) => (
       <Text size="sm" fz="inherit" c="dimmed" title={record.description}>
@@ -100,14 +100,6 @@ export const columns = [
         {record.priority}
       </Text>
     ),
-  },
-  {
-    key: 'created',
-    title: 'Created',
-    sortable: true,
-    width: 100,
-    ...TEXT_TRUNCATION_PRESETS.NO_TRUNCATION, // No special truncation
-    textAlign: 'center' as const,
   },
 ];
 `;
@@ -117,7 +109,7 @@ const columns = [
     key: 'name',
     title: 'Project Name',
     sortable: true,
-    width: 180,
+    width: 150,
     ...TEXT_TRUNCATION_PRESETS.SINGLE_LINE_ELLIPSIS, // Single line with ellipsis
     renderCell: (record: any) => (
       <Group gap="xs" wrap="nowrap">
@@ -138,7 +130,7 @@ const columns = [
     key: 'description',
     title: 'Description',
     sortable: true,
-    width: 250,
+    width: 180,
     ...TEXT_TRUNCATION_PRESETS.MULTI_LINE_ELLIPSIS, // Multi-line with ellipsis
     renderCell: (record: any) => (
       <Text size="sm" fz="inherit" c="dimmed" title={record.description}>
@@ -187,14 +179,6 @@ const columns = [
         {record.priority}
       </Text>
     ),
-  },
-  {
-    key: 'created',
-    title: 'Created',
-    sortable: true,
-    width: 100,
-    ...TEXT_TRUNCATION_PRESETS.NO_TRUNCATION, // No special truncation
-    textAlign: 'center' as const,
   },
 ];
 

@@ -1,11 +1,13 @@
 export { ListViewTable } from './ListViewTable';
 export type {
   ListViewTableBaseProps,
+  ListViewTableFactory,
+  ListViewTableProps,
+} from './ListViewTable';
+export type {
   ListViewTableColumn,
   ListViewTableContextMenuInfo,
   ListViewTableCssVariables,
-  ListViewTableFactory,
-  ListViewTableProps,
   ListViewTableResizeMode,
   ListViewTableSelectionMode,
   ListViewTableSortDirection,
