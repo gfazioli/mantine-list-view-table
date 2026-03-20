@@ -1,4 +1,5 @@
 import { ListViewTable, type ListViewTableColumn } from '@gfazioli/mantine-list-view-table';
+import { Table } from '@mantine/core';
 import { MantineDemo } from '@mantinex/demo';
 import { dataFilesWithDescription } from './data-files-with-description';
 
@@ -9,6 +10,7 @@ const columns: ListViewTableColumn[] = [
     key: 'name',
     title: 'Name (Header: noWrap, Cell: wrap)',
     sortable: true,
+    width: 200,
     // Header: noWrap keeps the title on one line
     noWrap: true,
     ellipsis: false,
@@ -24,6 +26,7 @@ const columns: ListViewTableColumn[] = [
     key: 'description',
     title: 'Description (Header: ellipsis, Cell: wrap)',
     sortable: true,
+    width: 200,
     // Header: truncated with ellipsis
     ellipsis: true,
     noWrap: true,
@@ -39,6 +42,7 @@ const columns: ListViewTableColumn[] = [
     key: 'modified',
     title: 'Modified (dynamic cellStyle)',
     sortable: true,
+    width: 120,
     ellipsis: true,
     noWrap: true,
     // Dynamic cell background based on data
@@ -54,33 +58,38 @@ const columns: ListViewTableColumn[] = [
 
 function Demo() {
   return (
-    <ListViewTable
-      columns={columns}
-      data={data}
-      rowKey="id"
-      withTableBorder
-      withColumnBorders
-      highlightOnHover
-      enableColumnResizing
-    />
+    <Table.ScrollContainer minWidth={500}>
+      <ListViewTable
+        columns={columns}
+        data={data}
+        rowKey="id"
+        withTableBorder
+        withColumnBorders
+        highlightOnHover
+        enableColumnResizing
+      />
+    </Table.ScrollContainer>
   );
 }
 
 const code = `
 import { ListViewTable } from '@gfazioli/mantine-list-view-table';
+import { Table } from '@mantine/core';
 import { data, columns } from './data';
 
 function Demo() {
   return (
-    <ListViewTable
-      columns={columns}
-      data={data}
-      rowKey="id"
-      withTableBorder
-      withColumnBorders
-      highlightOnHover
-      enableColumnResizing
-    />
+    <Table.ScrollContainer minWidth={500}>
+      <ListViewTable
+        columns={columns}
+        data={data}
+        rowKey="id"
+        withTableBorder
+        withColumnBorders
+        highlightOnHover
+        enableColumnResizing
+      />
+    </Table.ScrollContainer>
   );
 }
 `;
@@ -151,6 +160,7 @@ export const columns: ListViewTableColumn[] = [
     key: 'modified',
     title: 'Modified (dynamic cellStyle)',
     sortable: true,
+    width: 120,
     ellipsis: true,
     noWrap: true,
     cellStyle: (record) => ({

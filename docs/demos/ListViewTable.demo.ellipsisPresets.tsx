@@ -1,6 +1,6 @@
 import { ListViewTable } from '@gfazioli/mantine-list-view-table';
 import { IconFile, IconFolder } from '@tabler/icons-react';
-import { Badge, Group, Text, ThemeIcon } from '@mantine/core';
+import { Badge, Group, Table, Text, ThemeIcon } from '@mantine/core';
 import { MantineDemo } from '@mantinex/demo';
 import { dataProjects, dataProjectsCode } from './data-projects';
 
@@ -184,34 +184,39 @@ const columns = [
 
 function Demo() {
   return (
-    <ListViewTable
-      columns={columns}
-      data={data}
-      rowKey="id"
-      withTableBorder
-      withColumnBorders
-      highlightOnHover
-      enableColumnResizing
-    />
+    <Table.ScrollContainer minWidth={500}>
+      <ListViewTable
+        columns={columns}
+        data={data}
+        rowKey="id"
+        withTableBorder
+        withColumnBorders
+        highlightOnHover
+        enableColumnResizing
+      />
+    </Table.ScrollContainer>
   );
 }
 
 const code = `
 import { ListViewTable } from '@gfazioli/mantine-list-view-table';
+import { Table } from '@mantine/core';
 import { data } from './data';
 import { columns } from './columns';
 
 function Demo() {
   return (
-    <ListViewTable
-      columns={columns}
-      data={data}
-      rowKey="id"
-      withTableBorder
-      withColumnBorders
-      highlightOnHover
-      enableColumnResizing
-    />
+    <Table.ScrollContainer minWidth={500}>
+      <ListViewTable
+        columns={columns}
+        data={data}
+        rowKey="id"
+        withTableBorder
+        withColumnBorders
+        highlightOnHover
+        enableColumnResizing
+      />
+    </Table.ScrollContainer>
   );
 }
 `;
