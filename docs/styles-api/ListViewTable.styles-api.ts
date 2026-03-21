@@ -21,7 +21,6 @@ export const ListViewTableStylesApi: StylesApiData<ListViewTableFactory> = {
     stickyHeaderColumn: 'Sticky header column cell (th)',
     emptyState: 'Empty state container when no data',
     loader: 'Loading state container',
-    contextMenu: 'Context menu container',
   },
 
   vars: {
