@@ -70,9 +70,9 @@ export function useRowSelection<T>({
       const isShift = event.shiftKey;
 
       if (isShift && lastSelectedIndexRef.current !== null) {
-        // Range select
-        const start = Math.min(lastSelectedIndexRef.current, index);
-        const end = Math.max(lastSelectedIndexRef.current, index);
+        // Range select — clamp to valid data bounds
+        const start = Math.max(0, Math.min(lastSelectedIndexRef.current, index));
+        const end = Math.min(data.length - 1, Math.max(lastSelectedIndexRef.current, index));
         const newKeys = new Set(currentKeys);
         for (let i = start; i <= end; i++) {
           newKeys.add(getRowKey(data[i], i));

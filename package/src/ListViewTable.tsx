@@ -414,11 +414,11 @@ export const ListViewTable = factory<ListViewTableFactory>((_props, ref) => {
   const [focusedColumn, setFocusedColumn] = useState<number | null>(null);
 
   // Context menu state
-  const [contextMenu, setContextMenu] = useState<{
-    x: number;
-    y: number;
-    content: React.ReactNode;
-  } | null>(null);
+  const [contextMenu, setContextMenu] = useState<
+    | { x: number; y: number; type: 'row'; content: React.ReactNode }
+    | { x: number; y: number; type: 'header-visibility' }
+    | null
+  >(null);
   const contextMenuRef = useRef<HTMLDivElement>(null);
 
   const getStyles = useStyles<ListViewTableFactory>({
@@ -561,7 +561,7 @@ export const ListViewTable = factory<ListViewTableFactory>((_props, ref) => {
 
         const content = renderContextMenu({ record, index, event });
         if (content) {
-          setContextMenu({ x: event.clientX, y: event.clientY, content });
+          setContextMenu({ x: event.clientX, y: event.clientY, type: 'row', content });
         }
       }
     },
@@ -575,39 +575,9 @@ export const ListViewTable = factory<ListViewTableFactory>((_props, ref) => {
         return;
       }
       event.preventDefault();
-
-      const content = (
-        <Stack gap={0}>
-          {effectiveColumns
-            .filter((col) => !col.hidden)
-            .map((col) => {
-              const key = col.key as string;
-              const title = col.title || humanize(key);
-              return (
-                <UnstyledButton
-                  key={key}
-                  style={{ padding: '6px 12px', display: 'flex', alignItems: 'center', gap: 8 }}
-                  onClick={() => {
-                    toggleColumn(key);
-                  }}
-                >
-                  <Checkbox
-                    size="xs"
-                    checked={!hiddenColumnKeys.has(key)}
-                    onChange={() => toggleColumn(key)}
-                    tabIndex={-1}
-                    style={{ pointerEvents: 'none' }}
-                  />
-                  <Text size="sm">{typeof title === 'string' ? title : key}</Text>
-                </UnstyledButton>
-              );
-            })}
-        </Stack>
-      );
-
-      setContextMenu({ x: event.clientX, y: event.clientY, content });
+      setContextMenu({ x: event.clientX, y: event.clientY, type: 'header-visibility' });
     },
-    [enableColumnVisibilityToggle, effectiveColumns, hiddenColumnKeys, toggleColumn]
+    [enableColumnVisibilityToggle]
   );
 
   // Render header cell
@@ -974,7 +944,33 @@ export const ListViewTable = factory<ListViewTableFactory>((_props, ref) => {
             zIndex: 1000,
           }}
         >
-          {contextMenu.content}
+          {contextMenu.type === 'row' && contextMenu.content}
+          {contextMenu.type === 'header-visibility' && (
+            <Stack gap={0}>
+              {effectiveColumns
+                .filter((col) => !col.hidden)
+                .map((col) => {
+                  const key = col.key as string;
+                  const title = col.title || humanize(key);
+                  return (
+                    <UnstyledButton
+                      key={key}
+                      style={{ padding: '6px 12px', display: 'flex', alignItems: 'center', gap: 8 }}
+                      onClick={() => toggleColumn(key)}
+                    >
+                      <Checkbox
+                        size="xs"
+                        checked={!hiddenColumnKeys.has(key)}
+                        onChange={() => toggleColumn(key)}
+                        tabIndex={-1}
+                        style={{ pointerEvents: 'none' }}
+                      />
+                      <Text size="sm">{typeof title === 'string' ? title : key}</Text>
+                    </UnstyledButton>
+                  );
+                })}
+            </Stack>
+          )}
         </div>
       )}
     </Box>

@@ -6,7 +6,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 `@gfazioli/mantine-list-view-table` — a Finder-style list view table component for Mantine 8.x. Yarn 4 monorepo with two workspaces: `package/` (npm library) and `docs/` (Next.js 15 static site).
 
-Peer dependencies: Mantine >=7, React 18/19, @tabler/icons-react ^3.34.
+Peer dependencies: Mantine (core/hooks) >=8.0.0, React 18/19, @tabler/icons-react ^3.34.0.
 
 ## Commands
 

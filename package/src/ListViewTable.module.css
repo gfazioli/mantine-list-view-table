@@ -5,6 +5,11 @@
   outline: none;
 }
 
+.root:focus-visible {
+  outline: 2px solid var(--mantine-primary-color-filled);
+  outline-offset: -2px;
+}
+
 .table {
   min-width: 100%;
   width: 100%;

@@ -63,14 +63,14 @@ export function useKeyboardNavigation({
           break;
         }
         case 'Enter': {
-          if (focusedRowIndex !== null) {
+          if (focusedRowIndex !== null && focusedRowIndex < rowCount) {
             event.preventDefault();
             onActivateRow?.(focusedRowIndex);
           }
           break;
         }
         case ' ': {
-          if (focusedRowIndex !== null) {
+          if (focusedRowIndex !== null && focusedRowIndex < rowCount) {
             event.preventDefault();
             onSelectRow?.(focusedRowIndex, event);
           }
