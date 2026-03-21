@@ -1,6 +1,6 @@
 import { ListViewTable } from '@gfazioli/mantine-list-view-table';
 import { IconCopy, IconDownload, IconTrash } from '@tabler/icons-react';
-import { Badge, Stack, Text, UnstyledButton } from '@mantine/core';
+import { Badge, Menu } from '@mantine/core';
 import { MantineDemo } from '@mantinex/demo';
 import { data } from './data-files';
 
@@ -24,29 +24,19 @@ function Demo() {
       selectionMode="single"
       withColumnBorders
       withRowBorders
-      renderContextMenu={() => (
-        <Stack gap={0}>
-          {[
-            { icon: <IconCopy size={14} />, label: 'Copy', action: () => {} },
-            { icon: <IconDownload size={14} />, label: 'Download', action: () => {} },
-            { icon: <IconTrash size={14} />, label: 'Delete', action: () => {} },
-          ].map((item) => (
-            <UnstyledButton
-              key={item.label}
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: 8,
-                padding: '6px 12px',
-                width: '100%',
-              }}
-              onClick={item.action}
-            >
-              {item.icon}
-              <Text size="sm">{item.label}</Text>
-            </UnstyledButton>
-          ))}
-        </Stack>
+      renderContextMenu={({ record }) => (
+        <>
+          <Menu.Item leftSection={<IconCopy size={14} />} onClick={() => console.log('Copy', record.name)}>
+            Copy
+          </Menu.Item>
+          <Menu.Item leftSection={<IconDownload size={14} />} onClick={() => console.log('Download', record.name)}>
+            Download
+          </Menu.Item>
+          <Menu.Divider />
+          <Menu.Item color="red" leftSection={<IconTrash size={14} />} onClick={() => console.log('Delete', record.name)}>
+            Delete
+          </Menu.Item>
+        </>
       )}
     />
   );
@@ -54,7 +44,7 @@ function Demo() {
 
 const code = `
 import { ListViewTable } from '@gfazioli/mantine-list-view-table';
-import { Stack, Text, UnstyledButton } from '@mantine/core';
+import { Menu } from '@mantine/core';
 import { IconCopy, IconDownload, IconTrash } from '@tabler/icons-react';
 import { columns } from './columns';
 import { data } from './data';
@@ -69,22 +59,28 @@ function Demo() {
       withColumnBorders
       withRowBorders
       renderContextMenu={({ record }) => (
-        <Stack gap={0}>
-          {[
-            { icon: <IconCopy size={14} />, label: 'Copy' },
-            { icon: <IconDownload size={14} />, label: 'Download' },
-            { icon: <IconTrash size={14} />, label: 'Delete' },
-          ].map((item) => (
-            <UnstyledButton
-              key={item.label}
-              style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '6px 12px', width: '100%' }}
-              onClick={() => console.log(item.label, record.name)}
-            >
-              {item.icon}
-              <Text size="sm">{item.label}</Text>
-            </UnstyledButton>
-          ))}
-        </Stack>
+        <>
+          <Menu.Item
+            leftSection={<IconCopy size={14} />}
+            onClick={() => console.log('Copy', record.name)}
+          >
+            Copy
+          </Menu.Item>
+          <Menu.Item
+            leftSection={<IconDownload size={14} />}
+            onClick={() => console.log('Download', record.name)}
+          >
+            Download
+          </Menu.Item>
+          <Menu.Divider />
+          <Menu.Item
+            color="red"
+            leftSection={<IconTrash size={14} />}
+            onClick={() => console.log('Delete', record.name)}
+          >
+            Delete
+          </Menu.Item>
+        </>
       )}
     />
   );

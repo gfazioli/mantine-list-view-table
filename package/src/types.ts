@@ -140,8 +140,7 @@ export type ListViewTableStylesNames =
   | 'emptyState'
   | 'loader'
   | 'stickyColumn'
-  | 'stickyHeaderColumn'
-  | 'contextMenu';
+  | 'stickyHeaderColumn';
 
 // === CSS Variables ===
 

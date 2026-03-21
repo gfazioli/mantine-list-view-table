@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import {
   IconChevronDown,
   IconChevronUp,
@@ -10,7 +10,6 @@ import {
   Box,
   BoxProps,
   Center,
-  Checkbox,
   createVarsResolver,
   factory,
   Factory,
@@ -18,6 +17,7 @@ import {
   Loader,
   MantineColor,
   MantineSpacing,
+  Menu,
   Stack,
   StylesApiProps,
   Table,
@@ -419,7 +419,6 @@ export const ListViewTable = factory<ListViewTableFactory>((_props, ref) => {
     | { x: number; y: number; type: 'header-visibility' }
     | null
   >(null);
-  const contextMenuRef = useRef<HTMLDivElement>(null);
 
   const getStyles = useStyles<ListViewTableFactory>({
     name: 'ListViewTable',
@@ -531,20 +530,6 @@ export const ListViewTable = factory<ListViewTableFactory>((_props, ref) => {
     }
     return undefined;
   }, [layout, isResizeActive]);
-
-  // Close context menu on click outside
-  useEffect(() => {
-    if (!contextMenu) {
-      return;
-    }
-    const handleClick = (e: MouseEvent) => {
-      if (contextMenuRef.current && !contextMenuRef.current.contains(e.target as Node)) {
-        setContextMenu(null);
-      }
-    };
-    document.addEventListener('mousedown', handleClick);
-    return () => document.removeEventListener('mousedown', handleClick);
-  }, [contextMenu]);
 
   // Handle row context menu
   const handleRowContextMenu = useCallback(
@@ -933,46 +918,56 @@ export const ListViewTable = factory<ListViewTableFactory>((_props, ref) => {
       </Table>
 
       {/* Context Menu */}
-      {contextMenu && (
-        <div
-          ref={contextMenuRef}
-          {...getStyles('contextMenu')}
-          style={{
-            position: 'fixed',
-            left: contextMenu.x,
-            top: contextMenu.y,
-            zIndex: 1000,
-          }}
-        >
-          {contextMenu.type === 'row' && contextMenu.content}
-          {contextMenu.type === 'header-visibility' && (
-            <Stack gap={0}>
-              {effectiveColumns
-                .filter((col) => !col.hidden)
-                .map((col) => {
-                  const key = col.key as string;
-                  const title = col.title || humanize(key);
-                  return (
-                    <UnstyledButton
-                      key={key}
-                      style={{ padding: '6px 12px', display: 'flex', alignItems: 'center', gap: 8 }}
-                      onClick={() => toggleColumn(key)}
-                    >
-                      <Checkbox
-                        size="xs"
-                        checked={!hiddenColumnKeys.has(key)}
-                        onChange={() => toggleColumn(key)}
-                        tabIndex={-1}
-                        style={{ pointerEvents: 'none' }}
-                      />
-                      <Text size="sm">{typeof title === 'string' ? title : key}</Text>
-                    </UnstyledButton>
-                  );
-                })}
-            </Stack>
-          )}
-        </div>
-      )}
+      <Menu
+        opened={contextMenu !== null}
+        onChange={(opened) => { if (!opened) setContextMenu(null); }}
+        closeOnItemClick={contextMenu?.type !== 'header-visibility'}
+        position="bottom-start"
+        withinPortal
+      >
+        <Menu.Target>
+          <span
+            style={{
+              position: 'fixed',
+              left: contextMenu?.x ?? 0,
+              top: contextMenu?.y ?? 0,
+              pointerEvents: 'none',
+            }}
+          />
+        </Menu.Target>
+        <Menu.Dropdown>
+          {contextMenu?.type === 'row' && contextMenu.content}
+          {contextMenu?.type === 'header-visibility' &&
+            effectiveColumns
+              .filter((col) => !col.hidden)
+              .map((col) => {
+                const key = col.key as string;
+                const title = col.title || humanize(key);
+                return (
+                  <Menu.Item
+                    key={key}
+                    leftSection={
+                      <Box
+                        component="span"
+                        style={{
+                          width: 14,
+                          height: 14,
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                        }}
+                      >
+                        {!hiddenColumnKeys.has(key) && <Text size="xs">✓</Text>}
+                      </Box>
+                    }
+                    onClick={() => toggleColumn(key)}
+                  >
+                    <Text size="sm">{typeof title === 'string' ? title : key}</Text>
+                  </Menu.Item>
+                );
+              })}
+        </Menu.Dropdown>
+      </Menu>
     </Box>
   );
 });
