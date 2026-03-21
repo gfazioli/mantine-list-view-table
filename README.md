@@ -19,9 +19,11 @@
 
 This component is created on top of the [Mantine](https://mantine.dev/) library.
 
-[Mantine ListViewTable](https://gfazioli.github.io/mantine-list-view-table/) is a robust React component that enhances Mantine’s Table to deliver a modern, macOS Finder–style list view with advanced interactivity and layout control. Users can reorder and resize columns, while developers can choose internal behaviors or fully manage state externally for sorting, column reordering, and resizing. 
+[Mantine ListViewTable](https://gfazioli.github.io/mantine-list-view-table/) is a robust React component that enhances Mantine’s Table to deliver a modern, macOS Finder–style list view with advanced interactivity and layout control. Users can reorder and resize columns (with two resize modes: standard and Finder-style), double-click to auto-fit column widths, and select rows with single or multiple selection — including Cmd/Ctrl+Click, Shift+Click range select, and full keyboard navigation (Arrow keys, Enter, Space, Cmd+A).
 
-The component provides fine‑grained typography control—via ellipsis and noWrap—and allows distinct header vs. cell presentation using cellStyle. It supports wide datasets through Table.ScrollContainer for horizontal scrolling, with optional sticky identifier columns, and works seamlessly inside ScrollArea with sticky headers and adjustable offsets. 
+The component supports context menus via Mantine’s `Menu` component, column visibility toggling (programmatic and via right-click on the header), and controlled/uncontrolled modes for sorting, selection, column reordering, and column visibility. All internal hooks (`useSorting`, `useColumnResize`, `useRowSelection`, `useKeyboardNavigation`, `useColumnReorder`, `useColumnVisibility`) are publicly exported for advanced use cases.
+
+It provides fine-grained typography control — via ellipsis and noWrap — and allows distinct header vs. cell presentation using cellStyle. It supports wide datasets through Table.ScrollContainer for horizontal scrolling, with optional sticky identifier columns, and works seamlessly inside ScrollArea with sticky headers and adjustable offsets.
 
 For UX polish, it ships with configurable loading overlays (including custom loaders) and rich empty states ranging from simple messages to fully styled components with actions. These features make ListViewTable ideal for applications that need a clear, scalable, and highly interactive tabular list experience.
 
