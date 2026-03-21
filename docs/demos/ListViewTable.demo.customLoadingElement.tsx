@@ -29,7 +29,6 @@ function Demo() {
 const code = `
 import { ListViewTable } from '@gfazioli/mantine-list-view-table';
 import { RingProgress, Stack, Text } from '@mantine/core';
-import { columns } from './columns';
 
 function Demo() {
   // Custom loading component as React element
@@ -48,7 +47,7 @@ function Demo() {
 
   return (
     <ListViewTable
-      columns={columns}
+      columns={[]}
       data={[]}
       rowKey="id"
       height={400}

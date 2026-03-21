@@ -26,14 +26,27 @@ function Demo() {
       withRowBorders
       renderContextMenu={({ record }) => (
         <>
-          <Menu.Item leftSection={<IconCopy size={14} />} onClick={() => console.log('Copy', record.name)}>
+          <Menu.Item
+            leftSection={<IconCopy size={14} />}
+            // eslint-disable-next-line no-alert, prefer-template
+            onClick={() => alert('Copy: ' + record.name)}
+          >
             Copy
           </Menu.Item>
-          <Menu.Item leftSection={<IconDownload size={14} />} onClick={() => console.log('Download', record.name)}>
+          <Menu.Item
+            leftSection={<IconDownload size={14} />}
+            // eslint-disable-next-line no-alert, prefer-template
+            onClick={() => alert('Download: ' + record.name)}
+          >
             Download
           </Menu.Item>
           <Menu.Divider />
-          <Menu.Item color="red" leftSection={<IconTrash size={14} />} onClick={() => console.log('Delete', record.name)}>
+          <Menu.Item
+            color="red"
+            leftSection={<IconTrash size={14} />}
+            // eslint-disable-next-line no-alert, prefer-template
+            onClick={() => alert('Delete: ' + record.name)}
+          >
             Delete
           </Menu.Item>
         </>
@@ -62,13 +75,15 @@ function Demo() {
         <>
           <Menu.Item
             leftSection={<IconCopy size={14} />}
-            onClick={() => console.log('Copy', record.name)}
+            // eslint-disable-next-line no-alert, prefer-template
+            onClick={() => alert('Copy: ' + record.name)}
           >
             Copy
           </Menu.Item>
           <Menu.Item
             leftSection={<IconDownload size={14} />}
-            onClick={() => console.log('Download', record.name)}
+            // eslint-disable-next-line no-alert, prefer-template
+            onClick={() => alert('Download: ' + record.name)}
           >
             Download
           </Menu.Item>
@@ -76,7 +91,8 @@ function Demo() {
           <Menu.Item
             color="red"
             leftSection={<IconTrash size={14} />}
-            onClick={() => console.log('Delete', record.name)}
+            // eslint-disable-next-line no-alert, prefer-template
+            onClick={() => alert('Delete: ' + record.name)}
           >
             Delete
           </Menu.Item>

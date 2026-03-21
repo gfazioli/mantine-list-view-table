@@ -807,10 +807,14 @@ export const ListViewTable = factory<ListViewTableFactory>((_props, ref) => {
                 <Table.Th
                   {...getStyles('headerCell', { style: { width: visibleColumns[0]?.width } })}
                 >
-                  {(row as any)[visibleColumns[0].key as string]}
+                  {visibleColumns[0].renderCell
+                    ? visibleColumns[0].renderCell(row, rowIndex)
+                    : getNestedValue(row, visibleColumns[0].key as string)}
                 </Table.Th>
                 <Table.Td {...getStyles('cell', { style: { width: visibleColumns[1]?.width } })}>
-                  {(row as any)[visibleColumns[1].key as string]}
+                  {visibleColumns[1].renderCell
+                    ? visibleColumns[1].renderCell(row, rowIndex)
+                    : getNestedValue(row, visibleColumns[1].key as string)}
                 </Table.Td>
               </Table.Tr>
             ))}
@@ -920,7 +924,11 @@ export const ListViewTable = factory<ListViewTableFactory>((_props, ref) => {
       {/* Context Menu */}
       <Menu
         opened={contextMenu !== null}
-        onChange={(opened) => { if (!opened) setContextMenu(null); }}
+        onChange={(opened) => {
+          if (!opened) {
+            setContextMenu(null);
+          }
+        }}
         closeOnItemClick={contextMenu?.type !== 'header-visibility'}
         position="bottom-start"
         withinPortal
