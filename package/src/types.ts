@@ -117,7 +117,8 @@ export interface ListViewTableSortStatus {
 export interface ListViewTableContextMenuInfo<T = any> {
   record: T;
   index: number;
-  event: React.MouseEvent;
+  /** Mouse event when triggered via right-click, undefined when triggered via long-press on touch */
+  event?: React.MouseEvent;
 }
 
 // === Styles ===

@@ -578,7 +578,10 @@ export const ListViewTable = factory<ListViewTableFactory>((_props, ref) => {
       }
       const { record, index } = rowData;
 
-      const content = renderContextMenu({ record, index, event: undefined as any });
+      // Mirror right-click behavior: call onRowContextMenu callback
+      onRowContextMenu?.(record, index, undefined as any);
+
+      const content = renderContextMenu({ record, index });
       if (content) {
         setContextMenu({ x, y, type: 'row', content });
       }
@@ -639,7 +642,14 @@ export const ListViewTable = factory<ListViewTableFactory>((_props, ref) => {
 
             <UnstyledButton
               {...getStyles('headerButton', { style: { flex: 1 } })}
-              onClick={() => column.sortable && handleSort(column.key as string)}
+              onClick={() => {
+                // Suppress click after a long-press on touch (header context menu)
+                if (headerLongPress.didLongPressRef.current) {
+                  headerLongPress.didLongPressRef.current = false;
+                  return;
+                }
+                column.sortable && handleSort(column.key as string);
+              }}
               onFocus={() => setFocusedColumn(index)}
               onBlur={() => setFocusedColumn(null)}
               disabled={!column.sortable}
@@ -922,6 +932,11 @@ export const ListViewTable = factory<ListViewTableFactory>((_props, ref) => {
                 {...getStyles('row', { style: combinedStyle })}
                 className={rowClasses || undefined}
                 onClick={(event) => {
+                  // Suppress click after a long-press on touch
+                  if (rowLongPress.didLongPressRef.current) {
+                    rowLongPress.didLongPressRef.current = false;
+                    return;
+                  }
                   if (selectionMode) {
                     handleSelectionClick(rowIndex, event);
                     setFocusedRowIndex(rowIndex);

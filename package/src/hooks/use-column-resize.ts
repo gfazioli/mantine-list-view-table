@@ -207,15 +207,17 @@ export function useColumnResize({
         }
       };
 
-      const handlePointerUp = () => {
+      const cleanup = () => {
         document.removeEventListener('pointermove', handlePointerMove);
-        document.removeEventListener('pointerup', handlePointerUp);
+        document.removeEventListener('pointerup', cleanup);
+        document.removeEventListener('pointercancel', cleanup);
         resizeCleanupRef.current = null;
       };
 
-      resizeCleanupRef.current = handlePointerUp;
+      resizeCleanupRef.current = cleanup;
       document.addEventListener('pointermove', handlePointerMove);
-      document.addEventListener('pointerup', handlePointerUp);
+      document.addEventListener('pointerup', cleanup);
+      document.addEventListener('pointercancel', cleanup);
     },
     [columnWidths, isResizeActive, visibleColumns, resizeMode, snapshotColumnWidths, onColumnResize]
   );
