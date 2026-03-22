@@ -24,6 +24,60 @@ The `ListViewTable` component brings advanced table functionality inspired by th
 
 <Demo data={demos.configurator} />
 
+## Sticky Header
+
+The `stickyHeader` prop enables the table header to remain fixed at the top of the viewport (or scroll container) when the user scrolls through the table content. This is particularly useful for long tables where you want to keep the column headers visible at all times.
+
+The sticky header feature works both with the document scroll and when the table is used inside a `ScrollArea`. When enabled, the header will maintain its position and remain accessible during scrolling, improving the user experience by providing constant context about the data structure.
+
+You can also use the `stickyHeaderOffset` prop to adjust the sticky header position when your page has a fixed navigation bar or header. This ensures the table header doesn't overlap with other fixed elements on the page.
+
+<Demo data={demos.stickyHeader} />
+
+## Row Selection
+
+The `ListViewTable` component supports row selection with both single and multiple selection modes, inspired by macOS Finder behavior.
+
+### Basic Selection
+
+Enable row selection by setting the `selectionMode` prop. In `multiple` mode, use **Cmd/Ctrl+Click** to toggle individual rows and **Shift+Click** for range selection.
+
+<Demo data={demos.selection} />
+
+### Controlled Selection
+
+For full control over the selection state, use the `selectedRows` and `onSelectionChange` props.
+
+<Demo data={demos.controlledSelection} />
+
+## Keyboard Navigation
+
+When `selectionMode` is set, keyboard navigation is automatically enabled. You can also explicitly control it with the `enableKeyboardNavigation` prop.
+
+**Key bindings:**
+
+- **Arrow Up/Down** — Move focus between rows
+- **Enter** — Activate the focused row (`onRowActivate`)
+- **Space** — Toggle selection on the focused row
+- **Home/End** — Jump to first/last row
+- **Cmd/Ctrl+A** — Select all (multiple mode)
+
+<Demo data={demos.keyboardNavigation} />
+
+## Context Menu
+
+Right-click on a row to show a custom context menu using the `renderContextMenu` prop. The right-clicked row is automatically selected before the menu appears.
+
+On touch devices, **long-press** a row to open the context menu — the same gesture works for the header column visibility toggle.
+
+<Demo data={demos.contextMenu} />
+
+## Column Visibility
+
+Control which columns are visible with the `hiddenColumns` prop. You can also enable a built-in column visibility toggle by right-clicking on the table header with `enableColumnVisibilityToggle`.
+
+<Demo data={demos.columnVisibility} />
+
 ## Column Width Constraints
 
 You can control column widths using `width`, `minWidth`, and `maxWidth` properties. The component automatically adjusts initial widths to respect these constraints and prevents resizing beyond the specified limits.
@@ -61,6 +115,21 @@ When no `width` is specified for a column, it automatically adjusts to the conte
 You can combine auto-width and fixed-width columns in the same table. This is particularly useful when you have some columns that need consistent sizing (like actions or status) and others that should adapt to content (like names or descriptions).
 
 <Demo data={demos.mixedWidthConstraints} />
+
+## Auto-Fit Columns
+
+When column resizing is enabled, double-click on a resize handle to auto-fit the column width to its content. On touch devices, double-tap the resize handle.
+
+<Demo data={demos.autoFitColumns} />
+
+## Resize Mode
+
+The `resizeMode` prop controls how column resizing behaves:
+
+- **`standard`** (default): dragging the resize handle trades width between the left column and its right neighbor. The total table width stays fixed.
+- **`finder`**: dragging only changes the left column width. The table grows or shrinks freely, similar to macOS Finder. Use with `Table.ScrollContainer` for horizontal scrolling when the table exceeds its container.
+
+<Demo data={demos.resizeMode} />
 
 ## Text Truncation with Ellipsis
 
@@ -150,44 +219,6 @@ When used inside a `ScrollArea`, the `stickyHeader` prop will make the table hea
 
 <Demo data={demos.scrollArea} />
 
-## Styles API
-
-`ListViewTable` supports [Styles API](https://mantine.dev/styles/styles-api/), you can add styles to any inner element of the component with `classNames` prop. Follow [Styles API](https://mantine.dev/styles/styles-api/) documentation to learn more.
-
-You can customize the appearance of the `ListViewTable` component using the Styles API. This allows you to modify styles for various parts of the component, such as the root, header cells, data cells, rows, and more.
-
-<Demo data={demos.stylesApi} />
-
-## Advanced Features
-
-The `ListViewTable` component provides internal implementations for sorting, column reordering, and column resizing by default. However, developers can take full control over these features when needed for custom business logic or integration with external state management.
-
-### External Sorting Control
-
-By default, the component handles sorting internally when you click on sortable column headers. However, you can override this behavior to implement custom sorting logic, integrate with external APIs, or manage sorting state in your application's state management system.
-
-When you provide both `sortStatus` and `onSort` props, the component will use external sorting mode. You'll need to handle the data sorting logic yourself and update the `sortStatus` when the user clicks on column headers.
-
-<Demo data={demos.externalSorting} />
-
-### External Column Reordering and Resizing
-
-Similarly, column reordering and resizing are handled internally by default. You can override these behaviors by providing `onColumnReorder` and `onColumnResize` callbacks. This is useful when you need to persist column configurations, sync with external state, or implement custom reordering logic.
-
-The component will still provide the visual feedback and drag-and-drop functionality, but you'll have full control over how the state changes are handled.
-
-<Demo data={demos.externalReorderingAndResizing} />
-
-## Sticky Header
-
-The `stickyHeader` prop enables the table header to remain fixed at the top of the viewport (or scroll container) when the user scrolls through the table content. This is particularly useful for long tables where you want to keep the column headers visible at all times.
-
-The sticky header feature works both with the document scroll and when the table is used inside a `ScrollArea`. When enabled, the header will maintain its position and remain accessible during scrolling, improving the user experience by providing constant context about the data structure.
-
-You can also use the `stickyHeaderOffset` prop to adjust the sticky header position when your page has a fixed navigation bar or header. This ensures the table header doesn't overlap with other fixed elements on the page.
-
-<Demo data={demos.stickyHeader} />
-
 ## Table States
 
 The `ListViewTable` component provides built-in support for common table states to enhance user experience during data loading and when no data is available.
@@ -245,65 +276,6 @@ For more sophisticated empty states, you can pass a React component that include
 
 <Demo data={demos.customEmptyState} />
 
-## Row Selection
-
-The `ListViewTable` component supports row selection with both single and multiple selection modes, inspired by macOS Finder behavior.
-
-### Basic Selection
-
-Enable row selection by setting the `selectionMode` prop. In `multiple` mode, use **Cmd/Ctrl+Click** to toggle individual rows and **Shift+Click** for range selection.
-
-<Demo data={demos.selection} />
-
-### Controlled Selection
-
-For full control over the selection state, use the `selectedRows` and `onSelectionChange` props.
-
-<Demo data={demos.controlledSelection} />
-
-## Keyboard Navigation
-
-When `selectionMode` is set, keyboard navigation is automatically enabled. You can also explicitly control it with the `enableKeyboardNavigation` prop.
-
-**Key bindings:**
-
-- **Arrow Up/Down** — Move focus between rows
-- **Enter** — Activate the focused row (`onRowActivate`)
-- **Space** — Toggle selection on the focused row
-- **Home/End** — Jump to first/last row
-- **Cmd/Ctrl+A** — Select all (multiple mode)
-
-<Demo data={demos.keyboardNavigation} />
-
-## Context Menu
-
-Right-click on a row to show a custom context menu using the `renderContextMenu` prop. The right-clicked row is automatically selected before the menu appears.
-
-On touch devices, **long-press** a row to open the context menu — the same gesture works for the header column visibility toggle.
-
-<Demo data={demos.contextMenu} />
-
-## Column Visibility
-
-Control which columns are visible with the `hiddenColumns` prop. You can also enable a built-in column visibility toggle by right-clicking on the table header with `enableColumnVisibilityToggle`.
-
-<Demo data={demos.columnVisibility} />
-
-## Auto-Fit Columns
-
-When column resizing is enabled, double-click on a resize handle to auto-fit the column width to its content.
-
-<Demo data={demos.autoFitColumns} />
-
-## Resize Mode
-
-The `resizeMode` prop controls how column resizing behaves:
-
-- **`standard`** (default): dragging the resize handle trades width between the left column and its right neighbor. The total table width stays fixed.
-- **`finder`**: dragging only changes the left column width. The table grows or shrinks freely, similar to macOS Finder. Use with `Table.ScrollContainer` for horizontal scrolling when the table exceeds its container.
-
-<Demo data={demos.resizeMode} />
-
 ## Vertical Variant
 
 The `ListViewTable` component supports the `variant="vertical"` prop from [Mantine Table component](https://mantine.dev/core/table/), which displays data in a key-value format where each row represents a property-value pair. This is particularly useful for displaying detailed information about a single item, such as configuration settings, user profiles, or metadata.
@@ -311,6 +283,34 @@ The `ListViewTable` component supports the `variant="vertical"` prop from [Manti
 When using the vertical variant, consider setting `layout="fixed"` to ensure consistent column widths and a more structured appearance.
 
 <Demo data={demos.verticalVariant} />
+
+## External State Control
+
+The `ListViewTable` component provides internal implementations for sorting, column reordering, and column resizing by default. However, developers can take full control over these features when needed for custom business logic or integration with external state management.
+
+### External Sorting Control
+
+By default, the component handles sorting internally when you click on sortable column headers. However, you can override this behavior to implement custom sorting logic, integrate with external APIs, or manage sorting state in your application's state management system.
+
+When you provide both `sortStatus` and `onSort` props, the component will use external sorting mode. You'll need to handle the data sorting logic yourself and update the `sortStatus` when the user clicks on column headers.
+
+<Demo data={demos.externalSorting} />
+
+### External Column Reordering and Resizing
+
+Similarly, column reordering and resizing are handled internally by default. You can override these behaviors by providing `onColumnReorder` and `onColumnResize` callbacks. This is useful when you need to persist column configurations, sync with external state, or implement custom reordering logic.
+
+The component will still provide the visual feedback and drag-and-drop functionality, but you'll have full control over how the state changes are handled.
+
+<Demo data={demos.externalReorderingAndResizing} />
+
+## Styles API
+
+`ListViewTable` supports [Styles API](https://mantine.dev/styles/styles-api/), you can add styles to any inner element of the component with `classNames` prop. Follow [Styles API](https://mantine.dev/styles/styles-api/) documentation to learn more.
+
+You can customize the appearance of the `ListViewTable` component using the Styles API. This allows you to modify styles for various parts of the component, such as the root, header cells, data cells, rows, and more.
+
+<Demo data={demos.stylesApi} />
 
 ## Mobile & Touch Support
 
