@@ -5,6 +5,12 @@
   outline: none;
 }
 
+.root[data-dragging='true'],
+.root[data-resizing='true'] {
+  user-select: none;
+  -webkit-user-select: none;
+}
+
 .root:focus-visible {
   outline: 2px solid var(--mantine-primary-color-filled);
   outline-offset: -2px;
@@ -80,6 +86,7 @@
   cursor: grab;
   color: var(--mantine-color-gray-6);
   transition: color 150ms ease;
+  touch-action: none;
 }
 
 .dragHandle:hover {
@@ -99,6 +106,7 @@
   background: transparent;
   cursor: col-resize;
   z-index: 1;
+  touch-action: none;
 }
 
 /* Visible indicator line — thin, centered in the hit area */
@@ -199,15 +207,19 @@
   color: var(--mantine-color-dark-2);
 }
 
-/* Responsive design */
+/* Responsive design — larger touch targets on mobile */
 @media (max-width: 768px) {
   .dragHandle {
-    display: none;
+    min-width: 44px;
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 
   .resizeHandle {
-    width: 20px;
-    right: -10px;
+    width: 24px;
+    right: -12px;
   }
 }
 
