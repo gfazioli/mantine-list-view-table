@@ -1,3 +1,4 @@
+import { Table } from '@mantine/core';
 import { InstallScript } from './components/InstallScript/InstallScript';
 import * as demos from './demos';
 
@@ -278,6 +279,8 @@ When `selectionMode` is set, keyboard navigation is automatically enabled. You c
 
 Right-click on a row to show a custom context menu using the `renderContextMenu` prop. The right-clicked row is automatically selected before the menu appears.
 
+On touch devices, **long-press** a row to open the context menu — the same gesture works for the header column visibility toggle.
+
 <Demo data={demos.contextMenu} />
 
 ## Column Visibility
@@ -308,3 +311,56 @@ The `ListViewTable` component supports the `variant="vertical"` prop from [Manti
 When using the vertical variant, consider setting `layout="fixed"` to ensure consistent column widths and a more structured appearance.
 
 <Demo data={demos.verticalVariant} />
+
+## Mobile & Touch Support
+
+The `ListViewTable` component works on touch devices (iPad, tablets, phones) with no additional configuration required. All interactive features automatically adapt to touch input:
+
+<Table withTableBorder withColumnBorders>
+  <Table.Thead>
+    <Table.Tr>
+      <Table.Th>Feature</Table.Th>
+      <Table.Th>Desktop</Table.Th>
+      <Table.Th>Touch devices</Table.Th>
+    </Table.Tr>
+  </Table.Thead>
+  <Table.Tbody>
+    <Table.Tr>
+      <Table.Td>**Column reordering**</Table.Td>
+      <Table.Td>Drag the grip handle</Table.Td>
+      <Table.Td>Touch and drag the grip handle</Table.Td>
+    </Table.Tr>
+    <Table.Tr>
+      <Table.Td>**Column resizing**</Table.Td>
+      <Table.Td>Drag the resize handle</Table.Td>
+      <Table.Td>Touch and drag the resize handle</Table.Td>
+    </Table.Tr>
+    <Table.Tr>
+      <Table.Td>**Auto-fit column**</Table.Td>
+      <Table.Td>Double-click resize handle</Table.Td>
+      <Table.Td>Double-tap resize handle</Table.Td>
+    </Table.Tr>
+    <Table.Tr>
+      <Table.Td>**Context menu**</Table.Td>
+      <Table.Td>Right-click</Table.Td>
+      <Table.Td>Long-press (~500ms)</Table.Td>
+    </Table.Tr>
+    <Table.Tr>
+      <Table.Td>**Column visibility**</Table.Td>
+      <Table.Td>Right-click on header</Table.Td>
+      <Table.Td>Long-press on header</Table.Td>
+    </Table.Tr>
+    <Table.Tr>
+      <Table.Td>**Row selection**</Table.Td>
+      <Table.Td>Click / Cmd+Click / Shift+Click</Table.Td>
+      <Table.Td>Tap</Table.Td>
+    </Table.Tr>
+    <Table.Tr>
+      <Table.Td>**Sorting**</Table.Td>
+      <Table.Td>Click column header</Table.Td>
+      <Table.Td>Tap column header</Table.Td>
+    </Table.Tr>
+  </Table.Tbody>
+</Table>
+
+Touch targets for drag and resize handles are automatically enlarged on smaller screens (following Apple's 44×44pt minimum guideline) to ensure a comfortable interaction area.
