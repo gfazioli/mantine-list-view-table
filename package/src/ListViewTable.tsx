@@ -607,9 +607,6 @@ export const ListViewTable = factory<ListViewTableFactory>((_props, ref) => {
                 : { position: 'relative' }),
               ...columnStyle,
               textAlign: column.textAlign,
-              whiteSpace: column.noWrap || noWrap ? 'nowrap' : undefined,
-              textOverflow: column.ellipsis ? 'ellipsis' : undefined,
-              overflow: column.ellipsis ? 'hidden' : undefined,
               top: 0,
             },
           })}
@@ -641,7 +638,14 @@ export const ListViewTable = factory<ListViewTableFactory>((_props, ref) => {
             )}
 
             <UnstyledButton
-              {...getStyles('headerButton', { style: { flex: 1 } })}
+              {...getStyles('headerButton', {
+                style: {
+                  flex: 1,
+                  overflow: column.ellipsis ? 'hidden' : undefined,
+                  textOverflow: column.ellipsis ? 'ellipsis' : undefined,
+                  whiteSpace: column.noWrap || noWrap ? 'nowrap' : undefined,
+                },
+              })}
               onClick={() => {
                 // Suppress click after a long-press on touch (header context menu)
                 if (headerLongPress.didLongPressRef.current) {
@@ -681,17 +685,18 @@ export const ListViewTable = factory<ListViewTableFactory>((_props, ref) => {
                   ))}
               </Group>
             </UnstyledButton>
-
-            {enableColumnResizing &&
-              column.resizable !== false &&
-              index < visibleColumns.length - 1 && (
-                <Box
-                  {...getStyles('resizeHandle')}
-                  onPointerDown={(e) => handleResizeStart(index, e)}
-                  onDoubleClick={() => handleResizeDoubleClick(index)}
-                />
-              )}
           </Group>
+
+          {/* Resize handle as direct child of Th for correct absolute positioning */}
+          {enableColumnResizing &&
+            column.resizable !== false &&
+            index < visibleColumns.length - 1 && (
+              <Box
+                {...getStyles('resizeHandle')}
+                onPointerDown={(e) => handleResizeStart(index, e)}
+                onDoubleClick={() => handleResizeDoubleClick(index)}
+              />
+            )}
         </Table.Th>
       );
     },
