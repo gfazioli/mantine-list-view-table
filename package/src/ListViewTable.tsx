@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useRef, useState } from 'react';
 import {
   IconChevronDown,
   IconChevronUp,
@@ -31,6 +31,7 @@ import { useColumnReorder } from './hooks/use-column-reorder';
 import { useColumnResize } from './hooks/use-column-resize';
 import { useColumnVisibility } from './hooks/use-column-visibility';
 import { useKeyboardNavigation } from './hooks/use-keyboard-navigation';
+import { useLongPress } from './hooks/use-long-press';
 import { useRowSelection } from './hooks/use-row-selection';
 import { useSorting } from './hooks/use-sorting';
 import type {
@@ -452,20 +453,12 @@ export const ListViewTable = factory<ListViewTableFactory>((_props, ref) => {
     onSort,
   });
 
-  const {
-    effectiveColumns,
-    draggedColumn,
-    dragOverColumn,
-    handleColumnDragStart,
-    handleColumnDragOver,
-    handleColumnDragLeave,
-    handleColumnDrop,
-    handleColumnDragEnd,
-  } = useColumnReorder({
-    columns,
-    enableColumnReordering: enableColumnReordering!,
-    onColumnReorder,
-  });
+  const { effectiveColumns, draggedColumn, dragOverColumn, handleDragHandlePointerDown } =
+    useColumnReorder({
+      columns,
+      enableColumnReordering: enableColumnReordering!,
+      onColumnReorder,
+    });
 
   const { visibleColumns, hiddenColumnKeys, toggleColumn } = useColumnVisibility({
     columns: effectiveColumns,
@@ -565,6 +558,33 @@ export const ListViewTable = factory<ListViewTableFactory>((_props, ref) => {
     [enableColumnVisibilityToggle]
   );
 
+  // Long-press support for header context menu on touch devices
+  const headerLongPress = useLongPress({
+    onLongPress: (x, y) => {
+      if (enableColumnVisibilityToggle) {
+        setContextMenu({ x, y, type: 'header-visibility' });
+      }
+    },
+  });
+
+  // Long-press ref for row context menu on touch devices
+  const longPressRowRef = useRef<{ record: any; index: number } | null>(null);
+
+  const rowLongPress = useLongPress({
+    onLongPress: (x, y) => {
+      const rowData = longPressRowRef.current;
+      if (!rowData || !renderContextMenu) {
+        return;
+      }
+      const { record, index } = rowData;
+
+      const content = renderContextMenu({ record, index, event: undefined as any });
+      if (content) {
+        setContextMenu({ x, y, type: 'row', content });
+      }
+    },
+  });
+
   // Render header cell
   const renderHeaderCell = useCallback(
     (column: ListViewTableColumn, index: number) => {
@@ -590,12 +610,6 @@ export const ListViewTable = factory<ListViewTableFactory>((_props, ref) => {
               top: 0,
             },
           })}
-          draggable={enableColumnReordering && column.draggable !== false}
-          onDragStart={(e) => handleColumnDragStart(index, e)}
-          onDragOver={(e) => handleColumnDragOver(index, e)}
-          onDragLeave={handleColumnDragLeave}
-          onDrop={(e) => handleColumnDrop(index, e)}
-          onDragEnd={handleColumnDragEnd}
           data-dragging={draggedColumn === index ? 'true' : undefined}
           data-drag-over={dragOverColumn === index ? 'true' : undefined}
           data-focused={focusedColumn === index ? 'true' : undefined}
@@ -613,7 +627,12 @@ export const ListViewTable = factory<ListViewTableFactory>((_props, ref) => {
             }
           >
             {enableColumnReordering && column.draggable !== false && (
-              <ActionIcon size="xs" variant="subtle" {...getStyles('dragHandle')}>
+              <ActionIcon
+                size="xs"
+                variant="subtle"
+                {...getStyles('dragHandle')}
+                onPointerDown={(e) => handleDragHandlePointerDown(index, e)}
+              >
                 <IconGripVertical size={12} />
               </ActionIcon>
             )}
@@ -658,7 +677,7 @@ export const ListViewTable = factory<ListViewTableFactory>((_props, ref) => {
               index < visibleColumns.length - 1 && (
                 <Box
                   {...getStyles('resizeHandle')}
-                  onMouseDown={(e) => handleResizeStart(index, e)}
+                  onPointerDown={(e) => handleResizeStart(index, e)}
                   onDoubleClick={() => handleResizeDoubleClick(index)}
                 />
               )}
@@ -676,11 +695,7 @@ export const ListViewTable = factory<ListViewTableFactory>((_props, ref) => {
       visibleColumns,
       noWrap,
       handleSort,
-      handleColumnDragStart,
-      handleColumnDragOver,
-      handleColumnDragLeave,
-      handleColumnDrop,
-      handleColumnDragEnd,
+      handleDragHandlePointerDown,
       handleResizeStart,
       handleResizeDoubleClick,
       getColumnStyle,
@@ -831,6 +846,8 @@ export const ListViewTable = factory<ListViewTableFactory>((_props, ref) => {
       ref={ref}
       tabIndex={kbEnabled ? 0 : undefined}
       onKeyDown={kbEnabled ? handleKeyDown : undefined}
+      data-dragging={draggedColumn !== null ? 'true' : undefined}
+      data-resizing={isResizeActive ? 'true' : undefined}
       {...others}
     >
       <Table
@@ -856,6 +873,14 @@ export const ListViewTable = factory<ListViewTableFactory>((_props, ref) => {
         <Table.Thead
           {...getStyles('header')}
           onContextMenu={enableColumnVisibilityToggle ? handleHeaderContextMenu : undefined}
+          {...(enableColumnVisibilityToggle
+            ? {
+                onPointerDown: headerLongPress.onPointerDown,
+                onPointerMove: headerLongPress.onPointerMove,
+                onPointerUp: headerLongPress.onPointerUp,
+                onPointerCancel: headerLongPress.onPointerCancel,
+              }
+            : {})}
         >
           <Table.Tr>
             {visibleColumns.map((column, index) => renderHeaderCell(column, index))}
@@ -909,6 +934,17 @@ export const ListViewTable = factory<ListViewTableFactory>((_props, ref) => {
                     ? (event) => handleRowContextMenu(record, rowIndex, event)
                     : undefined
                 }
+                {...(renderContextMenu
+                  ? {
+                      onPointerDown: (e: React.PointerEvent) => {
+                        longPressRowRef.current = { record, index: rowIndex };
+                        rowLongPress.onPointerDown(e);
+                      },
+                      onPointerMove: rowLongPress.onPointerMove,
+                      onPointerUp: rowLongPress.onPointerUp,
+                      onPointerCancel: rowLongPress.onPointerCancel,
+                    }
+                  : {})}
                 data-selected={selected ? 'true' : undefined}
                 data-focused={focused ? 'true' : undefined}
               >

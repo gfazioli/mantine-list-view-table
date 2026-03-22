@@ -21,3 +21,6 @@ export type {
   UseColumnVisibilityOptions,
   UseColumnVisibilityReturn,
 } from './use-column-visibility';
+
+export { useLongPress } from './use-long-press';
+export type { UseLongPressOptions, UseLongPressReturn } from './use-long-press';

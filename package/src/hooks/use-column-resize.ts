@@ -40,7 +40,7 @@ export interface UseColumnResizeReturn {
   isResizeActive: boolean;
   getColumnStyle: (col: ListViewTableColumn, idx: number) => React.CSSProperties;
   getTableStyle: () => React.CSSProperties;
-  handleResizeStart: (index: number, event: React.MouseEvent) => void;
+  handleResizeStart: (index: number, event: React.PointerEvent) => void;
   handleResizeDoubleClick: (index: number) => void;
   resetColumnWidths: () => void;
   tableRef: React.RefObject<HTMLTableElement | null>;
@@ -136,7 +136,7 @@ export function useColumnResize({
   }, [isResizeActive, resizeMode, visibleColumns, columnWidths, tableWidth]);
 
   const handleResizeStart = useCallback(
-    (index: number, event: React.MouseEvent) => {
+    (index: number, event: React.PointerEvent) => {
       // Skip if this mousedown is part of a double-click (detail >= 2)
       if (event.detail >= 2) {
         return;
@@ -168,7 +168,7 @@ export function useColumnResize({
       const rightMin = rightColumn ? parseSizeToPixels(rightColumn.minWidth, 50)! : 0;
       const rightMax = rightColumn ? parseSizeToPixels(rightColumn.maxWidth, Infinity)! : Infinity;
 
-      const handleMouseMove = (e: MouseEvent) => {
+      const handlePointerMove = (e: PointerEvent) => {
         const diff = e.clientX - startX;
 
         if (resizeMode === 'standard' && rightColumn && rightKey) {
@@ -207,15 +207,15 @@ export function useColumnResize({
         }
       };
 
-      const handleMouseUp = () => {
-        document.removeEventListener('mousemove', handleMouseMove);
-        document.removeEventListener('mouseup', handleMouseUp);
+      const handlePointerUp = () => {
+        document.removeEventListener('pointermove', handlePointerMove);
+        document.removeEventListener('pointerup', handlePointerUp);
         resizeCleanupRef.current = null;
       };
 
-      resizeCleanupRef.current = handleMouseUp;
-      document.addEventListener('mousemove', handleMouseMove);
-      document.addEventListener('mouseup', handleMouseUp);
+      resizeCleanupRef.current = handlePointerUp;
+      document.addEventListener('pointermove', handlePointerMove);
+      document.addEventListener('pointerup', handlePointerUp);
     },
     [columnWidths, isResizeActive, visibleColumns, resizeMode, snapshotColumnWidths, onColumnResize]
   );
