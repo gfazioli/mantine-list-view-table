@@ -1,4 +1,4 @@
-import { useCallback, useRef } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 
 export interface UseLongPressOptions {
   /** Callback fired when a long-press is detected (touch only) */
@@ -14,6 +14,8 @@ export interface UseLongPressReturn {
   onPointerMove: (event: React.PointerEvent) => void;
   onPointerUp: () => void;
   onPointerCancel: () => void;
+  /** Whether a long-press was just triggered — use to suppress the next click */
+  didLongPressRef: React.RefObject<boolean>;
 }
 
 export function useLongPress({
@@ -23,6 +25,7 @@ export function useLongPress({
 }: UseLongPressOptions): UseLongPressReturn {
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const startPosRef = useRef<{ x: number; y: number } | null>(null);
+  const didLongPressRef = useRef(false);
 
   const cancel = useCallback(() => {
     if (timerRef.current !== null) {
@@ -32,6 +35,15 @@ export function useLongPress({
     startPosRef.current = null;
   }, []);
 
+  // Cleanup on unmount to prevent firing on unmounted component
+  useEffect(() => {
+    return () => {
+      if (timerRef.current !== null) {
+        clearTimeout(timerRef.current);
+      }
+    };
+  }, []);
+
   const onPointerDown = useCallback(
     (event: React.PointerEvent) => {
       // Only activate for touch input
@@ -39,18 +51,25 @@ export function useLongPress({
         return;
       }
 
+      // Cancel any pending timer before starting a new one (multi-touch safety)
+      cancel();
+      didLongPressRef.current = false;
+
       const { clientX, clientY } = event;
       startPosRef.current = { x: clientX, y: clientY };
 
       timerRef.current = setTimeout(() => {
         timerRef.current = null;
         startPosRef.current = null;
+        didLongPressRef.current = true;
         // Haptic feedback (Android — no-ops silently on iOS)
-        navigator.vibrate?.(50);
+        if (typeof navigator !== 'undefined' && typeof navigator.vibrate === 'function') {
+          navigator.vibrate(50);
+        }
         onLongPress(clientX, clientY);
       }, delay);
     },
-    [onLongPress, delay]
+    [onLongPress, delay, cancel]
   );
 
   const onPointerMove = useCallback(
@@ -72,5 +91,6 @@ export function useLongPress({
     onPointerMove,
     onPointerUp: cancel,
     onPointerCancel: cancel,
+    didLongPressRef,
   };
 }

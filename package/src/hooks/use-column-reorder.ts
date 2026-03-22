@@ -34,9 +34,13 @@ export function useColumnReorder({
     activated: boolean;
   } | null>(null);
 
+  // Ref to always access latest columns inside document-level listeners
+  const internalColumnsRef = useRef<ListViewTableColumn[]>(columns);
+
   // Reset internal columns if columns prop changes
   useEffect(() => {
     setInternalColumns(columns);
+    internalColumnsRef.current = columns;
   }, [columns]);
 
   // Cleanup on unmount
@@ -87,7 +91,7 @@ export function useColumnReorder({
           if (th) {
             const columnKey = th.getAttribute('data-column-key');
             // Find the index of this column in the current columns
-            const cols = internalColumns;
+            const cols = internalColumnsRef.current;
             const overIndex = cols.findIndex((col) => (col.key as string) === columnKey);
             if (overIndex !== -1 && overIndex !== state.fromIndex) {
               setDragOverColumn(overIndex);
@@ -100,11 +104,12 @@ export function useColumnReorder({
         }
       };
 
-      const handlePointerUp = () => {
+      const handlePointerEnd = () => {
         const state = dragStateRef.current;
 
         document.removeEventListener('pointermove', handlePointerMove);
-        document.removeEventListener('pointerup', handlePointerUp);
+        document.removeEventListener('pointerup', handlePointerEnd);
+        document.removeEventListener('pointercancel', handlePointerEnd);
         cleanupRef.current = null;
         dragStateRef.current = null;
 
@@ -130,12 +135,14 @@ export function useColumnReorder({
 
       cleanupRef.current = () => {
         document.removeEventListener('pointermove', handlePointerMove);
-        document.removeEventListener('pointerup', handlePointerUp);
+        document.removeEventListener('pointerup', handlePointerEnd);
+        document.removeEventListener('pointercancel', handlePointerEnd);
       };
       document.addEventListener('pointermove', handlePointerMove);
-      document.addEventListener('pointerup', handlePointerUp);
+      document.addEventListener('pointerup', handlePointerEnd);
+      document.addEventListener('pointercancel', handlePointerEnd);
     },
-    [enableColumnReordering, internalColumns, onColumnReorder]
+    [enableColumnReordering, onColumnReorder]
   );
 
   // Use internal columns if managing reorder internally
