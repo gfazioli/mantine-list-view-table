@@ -83,10 +83,16 @@
 }
 
 .dragHandle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
   cursor: grab;
   color: var(--mantine-color-gray-6);
   transition: color 150ms ease;
   touch-action: none;
+  flex-shrink: 0;
 }
 
 .dragHandle:hover {

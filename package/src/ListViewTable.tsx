@@ -6,7 +6,6 @@ import {
   IconSelector,
 } from '@tabler/icons-react';
 import {
-  ActionIcon,
   Box,
   BoxProps,
   Center,
@@ -627,14 +626,12 @@ export const ListViewTable = factory<ListViewTableFactory>((_props, ref) => {
             }
           >
             {enableColumnReordering && column.draggable !== false && (
-              <ActionIcon
-                size="xs"
-                variant="subtle"
+              <Box
                 {...getStyles('dragHandle')}
                 onPointerDown={(e) => handleDragHandlePointerDown(index, e)}
               >
                 <IconGripVertical size={12} />
-              </ActionIcon>
+              </Box>
             )}
 
             <UnstyledButton
