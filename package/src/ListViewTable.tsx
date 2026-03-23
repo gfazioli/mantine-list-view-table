@@ -452,12 +452,21 @@ export const ListViewTable = factory<ListViewTableFactory>((_props, ref) => {
     onSort,
   });
 
-  const { effectiveColumns, draggedColumn, dragOverColumn, handleDragHandlePointerDown } =
-    useColumnReorder({
-      columns,
-      enableColumnReordering: enableColumnReordering!,
-      onColumnReorder,
-    });
+  const {
+    effectiveColumns,
+    draggedColumn,
+    dragOverColumn,
+    handleColumnDragStart,
+    handleColumnDragOver,
+    handleColumnDragLeave,
+    handleColumnDrop,
+    handleColumnDragEnd,
+    handleDragHandlePointerDown,
+  } = useColumnReorder({
+    columns,
+    enableColumnReordering: enableColumnReordering!,
+    onColumnReorder,
+  });
 
   const { visibleColumns, hiddenColumnKeys, toggleColumn } = useColumnVisibility({
     columns: effectiveColumns,
@@ -609,6 +618,12 @@ export const ListViewTable = factory<ListViewTableFactory>((_props, ref) => {
               top: 0,
             },
           })}
+          draggable={enableColumnReordering && column.draggable !== false}
+          onDragStart={(e) => handleColumnDragStart(index, e)}
+          onDragOver={(e) => handleColumnDragOver(index, e)}
+          onDragLeave={handleColumnDragLeave}
+          onDrop={(e) => handleColumnDrop(index, e)}
+          onDragEnd={handleColumnDragEnd}
           data-dragging={draggedColumn === index ? 'true' : undefined}
           data-drag-over={dragOverColumn === index ? 'true' : undefined}
           data-focused={focusedColumn === index ? 'true' : undefined}
@@ -707,6 +722,11 @@ export const ListViewTable = factory<ListViewTableFactory>((_props, ref) => {
       visibleColumns,
       noWrap,
       handleSort,
+      handleColumnDragStart,
+      handleColumnDragOver,
+      handleColumnDragLeave,
+      handleColumnDrop,
+      handleColumnDragEnd,
       handleDragHandlePointerDown,
       handleResizeStart,
       handleResizeDoubleClick,
