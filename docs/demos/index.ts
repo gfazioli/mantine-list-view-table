@@ -1,6 +1,7 @@
 export { autoFitColumns } from './ListViewTable.demo.autoFitColumns';
 export { cellStyleDifferences } from './ListViewTable.demo.cellStyleDifferences';
 export { columnVisibility } from './ListViewTable.demo.columnVisibility';
+export { columnVisibilityToggle } from './ListViewTable.demo.columnVisibilityToggle';
 export { configurator } from './ListViewTable.demo.configurator';
 export { contextMenu } from './ListViewTable.demo.contextMenu';
 export { controlledSelection } from './ListViewTable.demo.controlledSelection';
