@@ -279,9 +279,9 @@ export interface ListViewTableBaseProps<T = any> {
   renderContextMenu?: (info: ListViewTableContextMenuInfo<T>) => React.ReactNode;
 
   /**
-   * Callback fired on right-click on a row.
+   * Callback fired on right-click (desktop) or long-press (touch) on a row.
    */
-  onRowContextMenu?: (record: T, index: number, event: React.MouseEvent) => void;
+  onRowContextMenu?: (record: T, index: number, event?: React.MouseEvent) => void;
 
   /**
    * Controlled hidden column keys.
@@ -587,7 +587,7 @@ export const ListViewTable = factory<ListViewTableFactory>((_props, ref) => {
       const { record, index } = rowData;
 
       // Mirror right-click behavior: call onRowContextMenu callback
-      onRowContextMenu?.(record, index, undefined as any);
+      onRowContextMenu?.(record, index);
 
       const content = renderContextMenu({ record, index });
       if (content) {

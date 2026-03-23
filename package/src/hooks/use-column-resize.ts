@@ -137,7 +137,7 @@ export function useColumnResize({
 
   const handleResizeStart = useCallback(
     (index: number, event: React.PointerEvent) => {
-      // Skip if this mousedown is part of a double-click (detail >= 2)
+      // Skip if this pointerdown is part of a double-click (detail >= 2)
       if (event.detail >= 2) {
         return;
       }
