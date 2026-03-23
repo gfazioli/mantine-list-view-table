@@ -1024,9 +1024,12 @@ export const ListViewTable = factory<ListViewTableFactory>((_props, ref) => {
               .map((col) => {
                 const key = col.key as string;
                 const title = col.title || humanize(key);
+                const isVisible = !hiddenColumnKeys.has(key);
+                const isLastVisible = isVisible && visibleColumns.length === 1;
                 return (
                   <Menu.Item
                     key={key}
+                    disabled={isLastVisible}
                     leftSection={
                       <Box
                         component="span"

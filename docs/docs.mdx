@@ -82,6 +82,8 @@ Control which columns are visible with the `hiddenColumns` prop.
 
 Set `enableColumnVisibilityToggle` to allow users to toggle column visibility by right-clicking on the table header. On touch devices, long-press the header to open the same menu.
 
+> The built-in menu prevents hiding the last visible column — when only one column remains, its menu item is automatically disabled. This safeguard only applies to the built-in toggle menu; programmatic control via `hiddenColumns` is unrestricted.
+
 <Demo data={demos.columnVisibilityToggle} />
 
 ## Column Width Constraints
