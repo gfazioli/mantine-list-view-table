@@ -36,8 +36,9 @@ export function useColumnReorder({
     ghostOffsetY: number;
   } | null>(null);
 
-  // Ref to always access latest columns inside document-level listeners
+  // Ref to always access latest columns inside document-level listeners (mirror pattern)
   const internalColumnsRef = useRef<ListViewTableColumn[]>(columns);
+  internalColumnsRef.current = internalColumns;
 
   // Ghost element ref for drag preview
   const ghostRef = useRef<HTMLElement | null>(null);
