@@ -11,6 +11,13 @@ export interface UseColumnReorderReturn {
   effectiveColumns: ListViewTableColumn[];
   draggedColumn: number | null;
   dragOverColumn: number | null;
+  // HTML5 DnD handlers (desktop)
+  handleColumnDragStart: (index: number, event: React.DragEvent) => void;
+  handleColumnDragOver: (index: number, event: React.DragEvent) => void;
+  handleColumnDragLeave: () => void;
+  handleColumnDrop: (toIndex: number, event: React.DragEvent) => void;
+  handleColumnDragEnd: () => void;
+  // Pointer handler (touch fallback)
   handleDragHandlePointerDown: (index: number, event: React.PointerEvent) => void;
 }
 
@@ -26,7 +33,57 @@ export function useColumnReorder({
   const [dragOverColumn, setDragOverColumn] = useState<number | null>(null);
   const [internalColumns, setInternalColumns] = useState<ListViewTableColumn[]>(columns);
 
-  // Refs for document-level listeners (avoid stale closures)
+  // Reset internal columns if columns prop changes
+  useEffect(() => {
+    setInternalColumns(columns);
+  }, [columns]);
+
+  // ─── HTML5 DnD handlers (desktop) — identical to master ─────────────
+
+  const handleColumnDragStart = useCallback((index: number, event: React.DragEvent) => {
+    event.dataTransfer.effectAllowed = 'move';
+    event.dataTransfer.setData('text/html', index.toString());
+    setDraggedColumn(index);
+  }, []);
+
+  const handleColumnDragOver = useCallback((index: number, event: React.DragEvent) => {
+    event.preventDefault();
+    event.dataTransfer.dropEffect = 'move';
+    setDragOverColumn(index);
+  }, []);
+
+  const handleColumnDragLeave = useCallback(() => {
+    setDragOverColumn(null);
+  }, []);
+
+  const handleColumnDrop = useCallback(
+    (toIndex: number, event: React.DragEvent) => {
+      event.preventDefault();
+      if (draggedColumn !== null && draggedColumn !== toIndex) {
+        if (onColumnReorder) {
+          onColumnReorder(draggedColumn, toIndex);
+        } else if (enableColumnReordering) {
+          setInternalColumns((prev) => {
+            const newColumns = [...prev];
+            const [moved] = newColumns.splice(draggedColumn, 1);
+            newColumns.splice(toIndex, 0, moved);
+            return newColumns;
+          });
+        }
+      }
+      setDraggedColumn(null);
+      setDragOverColumn(null);
+    },
+    [draggedColumn, onColumnReorder, enableColumnReordering]
+  );
+
+  const handleColumnDragEnd = useCallback(() => {
+    setDraggedColumn(null);
+    setDragOverColumn(null);
+  }, []);
+
+  // ─── Pointer-based drag (touch only) ────────────────────────────────
+
   const dragStateRef = useRef<{
     fromIndex: number;
     startX: number;
@@ -36,20 +93,12 @@ export function useColumnReorder({
     ghostOffsetY: number;
   } | null>(null);
 
-  // Ref to always access latest columns inside document-level listeners (mirror pattern)
+  // Ref to always access latest columns inside document-level listeners
   const internalColumnsRef = useRef<ListViewTableColumn[]>(columns);
   internalColumnsRef.current = internalColumns;
 
-  // Ghost element ref for drag preview
   const ghostRef = useRef<HTMLElement | null>(null);
 
-  // Reset internal columns if columns prop changes
-  useEffect(() => {
-    setInternalColumns(columns);
-    internalColumnsRef.current = columns;
-  }, [columns]);
-
-  // Cleanup on unmount
   const cleanupRef = useRef<(() => void) | null>(null);
   useEffect(() => {
     return () => {
@@ -60,7 +109,8 @@ export function useColumnReorder({
 
   const handleDragHandlePointerDown = useCallback(
     (index: number, event: React.PointerEvent) => {
-      if (!enableColumnReordering) {
+      // Only activate for touch — on desktop, HTML5 DnD handles everything
+      if (event.pointerType !== 'touch' || !enableColumnReordering) {
         return;
       }
 
@@ -133,7 +183,6 @@ export function useColumnReorder({
           const th = elementUnderPointer.closest('th[data-column-key]');
           if (th) {
             const columnKey = th.getAttribute('data-column-key');
-            // Find the index of this column in the current columns
             const cols = internalColumnsRef.current;
             const overIndex = cols.findIndex((col) => (col.key as string) === columnKey);
             if (overIndex !== -1 && overIndex !== state.fromIndex) {
@@ -156,7 +205,6 @@ export function useColumnReorder({
         cleanupRef.current = null;
         dragStateRef.current = null;
 
-        // Remove ghost element
         ghostRef.current?.remove();
         ghostRef.current = null;
 
@@ -174,7 +222,7 @@ export function useColumnReorder({
               });
             }
           }
-          return null; // Reset dragOverColumn
+          return null;
         });
 
         setDraggedColumn(null);
@@ -201,6 +249,11 @@ export function useColumnReorder({
     effectiveColumns,
     draggedColumn,
     dragOverColumn,
+    handleColumnDragStart,
+    handleColumnDragOver,
+    handleColumnDragLeave,
+    handleColumnDrop,
+    handleColumnDragEnd,
     handleDragHandlePointerDown,
   };
 }
