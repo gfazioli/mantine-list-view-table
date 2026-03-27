@@ -12,7 +12,6 @@ import {
   createVarsResolver,
   factory,
   Factory,
-  getBaseValue,
   Group,
   Loader,
   MantineColor,
@@ -357,6 +356,9 @@ const defaultProps: Partial<ListViewTableProps> = {
   cellFontWeight: 400,
 };
 
+// Most CSS variables are set to undefined here because they are managed by
+// ListViewTableMediaVariables via InlineStyles + CSS media queries to support
+// responsive breakpoint values. Only non-responsive variables are resolved here.
 const varsResolver = createVarsResolver<ListViewTableFactory>((_, { selectedRowColor }) => ({
   root: {
     '--list-view-height': undefined,
@@ -945,8 +947,9 @@ export const ListViewTable = factory<ListViewTableFactory>((_props, ref) => {
         stripedColor={stripedColor}
         highlightOnHover={highlightOnHover && !selectionMode}
         highlightOnHoverColor={highlightOnHoverColor}
-        horizontalSpacing={getBaseValue(horizontalSpacing) as MantineSpacing}
-        verticalSpacing={getBaseValue(verticalSpacing) as MantineSpacing}
+        /* horizontalSpacing and verticalSpacing are intentionally NOT passed here.
+           Cell padding is controlled via --list-view-horizontal-spacing / --list-view-vertical-spacing
+           CSS variables set by ListViewTableMediaVariables, which supports responsive breakpoints. */
         borderColor={borderColor}
         captionSide={captionSide}
         stickyHeader={stickyHeader}
