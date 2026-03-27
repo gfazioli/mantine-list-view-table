@@ -25,12 +25,19 @@ export const ListViewTableStylesApi: StylesApiData<ListViewTableFactory> = {
 
   vars: {
     root: {
-      '--list-view-height': 'Controls ListView height',
-      '--list-view-width': 'Controls ListView width',
-      '--list-view-header-title-font-size': 'Controls font size of header titles',
-      '--list-view-header-title-font-weight': 'Controls font weight of header titles',
-      '--list-view-cell-font-size': 'Controls font size of cell content',
-      '--list-view-cell-font-weight': 'Controls font weight of cell content',
+      '--list-view-height': 'Controls ListView height – supports responsive values',
+      '--list-view-width': 'Controls ListView width – supports responsive values',
+      '--list-view-horizontal-spacing':
+        'Controls horizontal cell padding – supports responsive values',
+      '--list-view-vertical-spacing': 'Controls vertical cell padding – supports responsive values',
+      '--list-view-header-title-font-size':
+        'Controls font size of header titles – supports responsive values',
+      '--list-view-header-title-font-weight':
+        'Controls font weight of header titles – supports responsive values',
+      '--list-view-cell-font-size':
+        'Controls font size of cell content – supports responsive values',
+      '--list-view-cell-font-weight':
+        'Controls font weight of cell content – supports responsive values',
       '--list-view-selected-row-color': 'Controls background color of selected rows',
       '--list-view-sticky-blur': 'Controls blur amount for sticky column overlay',
     },

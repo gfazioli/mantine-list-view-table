@@ -22,6 +22,7 @@ export { minAndMaxWidth } from './ListViewTable.demo.minAndMaxWidth';
 export { minWidth } from './ListViewTable.demo.minWidth';
 export { mixedWidthConstraints } from './ListViewTable.demo.mixedWidthConstraints';
 export { resizeMode } from './ListViewTable.demo.resizeMode';
+export { responsiveProps } from './ListViewTable.demo.responsiveProps';
 export { scrollArea } from './ListViewTable.demo.scrollArea';
 export { scrollContainer } from './ListViewTable.demo.scrollContainer';
 export { scrollContainerWithSticky } from './ListViewTable.demo.scrollContainerWithSticky';

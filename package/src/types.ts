@@ -149,6 +149,8 @@ export type ListViewTableCssVariables = {
   root:
     | '--list-view-height'
     | '--list-view-width'
+    | '--list-view-horizontal-spacing'
+    | '--list-view-vertical-spacing'
     | '--list-view-header-title-font-size'
     | '--list-view-header-title-font-weight'
     | '--list-view-cell-font-size'

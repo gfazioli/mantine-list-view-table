@@ -28,7 +28,7 @@
 Yarn workspaces monorepo with two workspaces: `package/` (npm package) and `docs/` (Next.js 15 documentation site).
 
 ### Package Source (`package/src/`)
-Single-file component (`ListViewTable.tsx`, ~1200 lines) using Mantine's `factory` pattern: `factory<ListViewTableFactory> -> useProps -> useStyles -> varsResolver`. Exports a single `ListViewTable` component with no compound components.
+Main component (`ListViewTable.tsx`) using Mantine's `factory` pattern: `factory<ListViewTableFactory> -> useProps -> useStyles -> varsResolver`. Exports a single `ListViewTable` component with no compound components. Responsive CSS variables are managed by `ListViewTableMediaVariables.tsx` following the Mantine-native pattern (`InlineStyles` + CSS media queries).
 
 ### Build Pipeline
 Rollup bundles to dual ESM/CJS with `'use client'` banner. CSS modules hashed with `hash-css-selector` (prefix `me`). TypeScript declarations via `rollup-plugin-dts`. CSS split into `styles.css` and `styles.layer.css`.
@@ -50,7 +50,10 @@ Sticky columns use inline `position: sticky` with z-index layering (11 for heade
 ### Styles API
 All visual parts are targetable via `stylesNames`: `root`, `table`, `header`, `headerCell`, `headerButton`, `headerTitle`, `sortIcon`, `dragHandle`, `resizeHandle`, `body`, `row`, `cell`, `emptyState`, `loader`, `stickyColumn`, `stickyHeaderColumn`.
 
-CSS variables on root: `--list-view-height`, `--list-view-width`, `--list-view-header-title-font-size`, `--list-view-header-title-font-weight`, `--list-view-cell-font-size`, `--list-view-cell-font-weight`.
+CSS variables on root (all support responsive breakpoint values via `StyleProp<T>`): `--list-view-height`, `--list-view-width`, `--list-view-horizontal-spacing`, `--list-view-vertical-spacing`, `--list-view-header-title-font-size`, `--list-view-header-title-font-weight`, `--list-view-cell-font-size`, `--list-view-cell-font-weight`, `--list-view-selected-row-color`, `--list-view-sticky-blur`.
+
+### Responsive CSS (Mantine-native)
+Dimension/size props (`height`, `width`, `horizontalSpacing`, `verticalSpacing`, `headerTitleFontSize`, `headerTitleFontWeight`, `cellFontSize`, `cellFontWeight`) use `StyleProp<T>` from `@mantine/core`. Responsive values are resolved via `ListViewTableMediaVariables` component using `InlineStyles` + CSS media queries — no JS re-renders.
 
 ### Adding a New Prop
 1. Add to `ListViewTableBaseProps` interface (with JSDoc)

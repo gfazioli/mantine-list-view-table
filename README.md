@@ -23,6 +23,8 @@ This component is created on top of the [Mantine](https://mantine.dev/) library.
 
 The component supports context menus via Mantine’s `Menu` component, column visibility toggling (programmatic and via built-in right-click menu with `enableColumnVisibilityToggle`), and controlled/uncontrolled modes for sorting, selection, column reordering, and column visibility. It also provides full **mobile and touch support** — column reordering, resizing, and context menus work seamlessly on iPad and other touch devices via pointer events and long-press gestures. All internal hooks (`useSorting`, `useColumnResize`, `useRowSelection`, `useKeyboardNavigation`, `useColumnReorder`, `useColumnVisibility`) are publicly exported for advanced use cases.
 
+All dimension and typography props (`height`, `width`, spacing, font size/weight) support **responsive breakpoint values** via Mantine's `StyleProp`, resolved purely through CSS media queries with zero JavaScript re-renders.
+
 It provides fine-grained typography control — via ellipsis and noWrap — and allows distinct header vs. cell presentation using cellStyle. It supports wide datasets through Table.ScrollContainer for horizontal scrolling, with optional sticky identifier columns, and works seamlessly inside ScrollArea with sticky headers and adjustable offsets.
 
 For UX polish, it ships with configurable loading overlays (including custom loaders) and rich empty states ranging from simple messages to fully styled components with actions. These features make ListViewTable ideal for applications that need a clear, scalable, and highly interactive tabular list experience.
