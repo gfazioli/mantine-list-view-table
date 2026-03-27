@@ -446,6 +446,20 @@ export const ListViewTable = factory<ListViewTableFactory>((_props, ref) => {
 
   const responsiveClassName = useRandomClassName();
 
+  const mediaVariables = (
+    <ListViewTableMediaVariables
+      selector={`.${responsiveClassName}`}
+      height={height}
+      width={width}
+      horizontalSpacing={horizontalSpacing}
+      verticalSpacing={verticalSpacing}
+      headerTitleFontSize={headerTitleFontSize}
+      headerTitleFontWeight={headerTitleFontWeight}
+      cellFontSize={cellFontSize}
+      cellFontWeight={cellFontWeight}
+    />
+  );
+
   const [focusedColumn, setFocusedColumn] = useState<number | null>(null);
 
   // Context menu state
@@ -824,18 +838,8 @@ export const ListViewTable = factory<ListViewTableFactory>((_props, ref) => {
   if (loading) {
     return (
       <Box {...getStyles('root', { className: responsiveClassName })} ref={ref} {...others}>
-        <ListViewTableMediaVariables
-          selector={`.${responsiveClassName}`}
-          height={height}
-          width={width}
-          horizontalSpacing={horizontalSpacing}
-          verticalSpacing={verticalSpacing}
-          headerTitleFontSize={headerTitleFontSize}
-          headerTitleFontWeight={headerTitleFontWeight}
-          cellFontSize={cellFontSize}
-          cellFontWeight={cellFontWeight}
-        />
-        <Center h={getBaseValue(height)} {...getStyles('loader')} role="status">
+        {mediaVariables}
+        <Center h="100%" {...getStyles('loader')} role="status">
           {loadingComponent ? (
             React.isValidElement(loadingComponent) ? (
               loadingComponent
@@ -854,18 +858,8 @@ export const ListViewTable = factory<ListViewTableFactory>((_props, ref) => {
   if (!data || data.length === 0) {
     return (
       <Box {...getStyles('root', { className: responsiveClassName })} ref={ref} {...others}>
-        <ListViewTableMediaVariables
-          selector={`.${responsiveClassName}`}
-          height={height}
-          width={width}
-          horizontalSpacing={horizontalSpacing}
-          verticalSpacing={verticalSpacing}
-          headerTitleFontSize={headerTitleFontSize}
-          headerTitleFontWeight={headerTitleFontWeight}
-          cellFontSize={cellFontSize}
-          cellFontWeight={cellFontWeight}
-        />
-        <Center h={getBaseValue(height)} {...getStyles('emptyState')}>
+        {mediaVariables}
+        <Center h="100%" {...getStyles('emptyState')}>
           <Stack align="center" gap="md">
             {typeof emptyText === 'string' ? (
               <Text size="lg" c="dimmed">
@@ -886,18 +880,8 @@ export const ListViewTable = factory<ListViewTableFactory>((_props, ref) => {
     if (visibleColumns.length < 2) {
       return (
         <Box {...getStyles('root', { className: responsiveClassName })} ref={ref} {...others}>
-          <ListViewTableMediaVariables
-            selector={`.${responsiveClassName}`}
-            height={height}
-            width={width}
-            horizontalSpacing={horizontalSpacing}
-            verticalSpacing={verticalSpacing}
-            headerTitleFontSize={headerTitleFontSize}
-            headerTitleFontWeight={headerTitleFontWeight}
-            cellFontSize={cellFontSize}
-            cellFontWeight={cellFontWeight}
-          />
-          <Center h={getBaseValue(height)} {...getStyles('emptyState')}>
+          {mediaVariables}
+          <Center h="100%" {...getStyles('emptyState')}>
             <Text size="lg" c="dimmed">
               Vertical variant requires at least 2 columns
             </Text>
@@ -908,17 +892,7 @@ export const ListViewTable = factory<ListViewTableFactory>((_props, ref) => {
 
     return (
       <Box {...getStyles('root', { className: responsiveClassName })} ref={ref} {...others}>
-        <ListViewTableMediaVariables
-          selector={`.${responsiveClassName}`}
-          height={height}
-          width={width}
-          horizontalSpacing={horizontalSpacing}
-          verticalSpacing={verticalSpacing}
-          headerTitleFontSize={headerTitleFontSize}
-          headerTitleFontWeight={headerTitleFontWeight}
-          cellFontSize={cellFontSize}
-          cellFontWeight={cellFontWeight}
-        />
+        {mediaVariables}
         <Table
           {...getStyles('table')}
           withTableBorder={withTableBorder}
@@ -961,17 +935,7 @@ export const ListViewTable = factory<ListViewTableFactory>((_props, ref) => {
       data-resizing={isResizeActive ? 'true' : undefined}
       {...others}
     >
-      <ListViewTableMediaVariables
-        selector={`.${responsiveClassName}`}
-        height={height}
-        width={width}
-        horizontalSpacing={horizontalSpacing}
-        verticalSpacing={verticalSpacing}
-        headerTitleFontSize={headerTitleFontSize}
-        headerTitleFontWeight={headerTitleFontWeight}
-        cellFontSize={cellFontSize}
-        cellFontWeight={cellFontWeight}
-      />
+      {mediaVariables}
       <Table
         {...getStyles('table', { style: getTableStyle() })}
         withTableBorder={withTableBorder}

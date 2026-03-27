@@ -365,4 +365,61 @@ describe('ListViewTable', () => {
 
     expect(container.querySelector('[data-testid="inner-table"]')).toBeTruthy();
   });
+
+  // === Responsive Props tests ===
+
+  it('renders with responsive height prop (object)', () => {
+    const { container } = render(
+      <ListViewTable
+        columns={testColumns as any}
+        data={testData}
+        rowKey="id"
+        height={{ base: 200, sm: 300, md: 400 }}
+      />
+    );
+    // Should render a <style> tag with CSS variables from ListViewTableMediaVariables
+    const styleTags = container.querySelectorAll('style');
+    const styleContent = Array.from(styleTags)
+      .map((s) => s.textContent)
+      .join('');
+    expect(styleContent).toContain('--list-view-height');
+  });
+
+  it('renders with responsive font and spacing props', () => {
+    const { container } = render(
+      <ListViewTable
+        columns={testColumns as any}
+        data={testData}
+        rowKey="id"
+        horizontalSpacing={{ base: 'xs', md: 'sm' }}
+        verticalSpacing={{ base: 'xs', md: 'sm' }}
+        headerTitleFontSize={{ base: 'xs', md: 'sm' }}
+        cellFontSize={{ base: 'xs', md: 'sm' }}
+        cellFontWeight={{ base: 400, lg: 500 }}
+      />
+    );
+    const styleTags = container.querySelectorAll('style');
+    const styleContent = Array.from(styleTags)
+      .map((s) => s.textContent)
+      .join('');
+    expect(styleContent).toContain('--list-view-horizontal-spacing');
+    expect(styleContent).toContain('--list-view-cell-font-size');
+  });
+
+  it('renders with scalar (non-responsive) props without errors', () => {
+    const { container } = render(
+      <ListViewTable
+        columns={testColumns as any}
+        data={testData}
+        rowKey="id"
+        height={400}
+        width="100%"
+        horizontalSpacing="md"
+        verticalSpacing="sm"
+        headerTitleFontSize="sm"
+        cellFontSize="xs"
+      />
+    );
+    expect(container.querySelector('table')).toBeTruthy();
+  });
 });

@@ -67,7 +67,7 @@ Dimension/size props (`height`, `width`, `horizontalSpacing`, `verticalSpacing`,
 Jest with `jsdom`, `esbuild-jest` transform, CSS mocked via `identity-obj-proxy`. Tests use `@mantine-tests/core` render helper. Test file: `package/src/ListViewTable.test.tsx`.
 
 ## Ecosystem
-This repo is part of the Mantine Extensions ecosystem, derived from the `mantine-base-component` template. See the workspace CLAUDE.md at `/Users/giovambattistafazioli/Lavoro/GitHub/Mantine Extensions/CLAUDE.md` for:
+This repo is part of the Mantine Extensions ecosystem, derived from the `mantine-base-component` template. See the workspace CLAUDE.md at `../CLAUDE.md` for:
 - Development checklist (code -> test -> build -> docs -> release)
 - Cross-cutting patterns (compound components, responsive CSS, GitHub sync)
 - Update packages workflow
