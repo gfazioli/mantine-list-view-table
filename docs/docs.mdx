@@ -24,6 +24,25 @@ The `ListViewTable` component brings advanced table functionality inspired by th
 
 <Demo data={demos.configurator} />
 
+## Responsive Props
+
+The `ListViewTable` component follows the Mantine-native responsive CSS approach. Props like `height`, `width`, `horizontalSpacing`, `verticalSpacing`, `headerTitleFontSize`, `headerTitleFontWeight`, `cellFontSize`, and `cellFontWeight` accept responsive objects keyed by breakpoint, generating CSS media queries for each value.
+
+This means no JavaScript re-renders on resize — values are resolved purely via CSS `@media` rules.
+
+```tsx
+// Simple scalar value (works as before)
+<ListViewTable height={400} />
+
+// Responsive object per breakpoint
+<ListViewTable
+  height={{ base: 200, sm: 300, md: 400 }}
+  cellFontSize={{ base: 'xs', md: 'sm' }}
+/>
+```
+
+<Demo data={demos.responsiveProps} />
+
 ## Sticky Header
 
 The `stickyHeader` prop enables the table header to remain fixed at the top of the viewport (or scroll container) when the user scrolls through the table content. This is particularly useful for long tables where you want to keep the column headers visible at all times.

@@ -29,6 +29,7 @@
 
 .headerCell {
   /* No overflow:hidden here — it would clip the resize handle that extends beyond the th */
+  padding: var(--list-view-vertical-spacing) var(--list-view-horizontal-spacing);
 
   * {
     text-overflow: inherit;
@@ -149,6 +150,7 @@
 .cell {
   /* Let Mantine handle basic cell styling, only add custom overrides */
   overflow: hidden;
+  padding: var(--list-view-vertical-spacing) var(--list-view-horizontal-spacing);
   font-size: var(--list-view-cell-font-size);
   font-weight: var(--list-view-cell-font-weight);
 

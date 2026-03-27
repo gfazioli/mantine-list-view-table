@@ -12,6 +12,7 @@ import {
   createVarsResolver,
   factory,
   Factory,
+  getBaseValue,
   Group,
   Loader,
   MantineColor,
@@ -24,7 +25,9 @@ import {
   Text,
   UnstyledButton,
   useProps,
+  useRandomClassName,
   useStyles,
+  type StyleProp,
 } from '@mantine/core';
 import { useColumnReorder } from './hooks/use-column-reorder';
 import { useColumnResize } from './hooks/use-column-resize';
@@ -33,6 +36,7 @@ import { useKeyboardNavigation } from './hooks/use-keyboard-navigation';
 import { useLongPress } from './hooks/use-long-press';
 import { useRowSelection } from './hooks/use-row-selection';
 import { useSorting } from './hooks/use-sorting';
+import { ListViewTableMediaVariables } from './ListViewTableMediaVariables';
 import type {
   ListViewTableColumn,
   ListViewTableContextMenuInfo,
@@ -62,14 +66,14 @@ export interface ListViewTableBaseProps<T = any> {
   rowKey?: keyof T | ((record: T, index: number) => React.Key);
 
   /**
-   * Height of the ListViewTable.
+   * Height of the ListViewTable. Supports responsive values.
    */
-  height?: string | number;
+  height?: StyleProp<React.CSSProperties['height']>;
 
   /**
-   * Width of the ListViewTable.
+   * Width of the ListViewTable. Supports responsive values.
    */
-  width?: string | number;
+  width?: StyleProp<React.CSSProperties['width']>;
 
   /**
    * Value of `table-layout` style. When `enableColumnResizing` is active and no explicit value is provided, defaults to `fixed`.
@@ -137,14 +141,14 @@ export interface ListViewTableBaseProps<T = any> {
   borderColor?: MantineColor;
 
   /**
-   * Horizontal spacing between columns.
+   * Horizontal spacing between columns. Supports responsive values.
    */
-  horizontalSpacing?: MantineSpacing;
+  horizontalSpacing?: StyleProp<MantineSpacing>;
 
   /**
-   * Vertical spacing between rows.
+   * Vertical spacing between rows. Supports responsive values.
    */
-  verticalSpacing?: MantineSpacing;
+  verticalSpacing?: StyleProp<MantineSpacing>;
 
   /**
    * Additional props passed directly to the Mantine Table component.
@@ -302,6 +306,26 @@ export interface ListViewTableBaseProps<T = any> {
    * Enable column visibility toggle via right-click on header. Default: `false`.
    */
   enableColumnVisibilityToggle?: boolean;
+
+  /**
+   * Font size for header titles. Supports responsive values. Default: `'sm'`.
+   */
+  headerTitleFontSize?: StyleProp<string | number>;
+
+  /**
+   * Font weight for header titles. Supports responsive values. Default: `500`.
+   */
+  headerTitleFontWeight?: StyleProp<React.CSSProperties['fontWeight']>;
+
+  /**
+   * Font size for body cells. Supports responsive values. Default: `'sm'`.
+   */
+  cellFontSize?: StyleProp<string | number>;
+
+  /**
+   * Font weight for body cells. Supports responsive values. Default: `400`.
+   */
+  cellFontWeight?: StyleProp<React.CSSProperties['fontWeight']>;
 }
 
 export interface ListViewTableProps<T = any>
@@ -327,22 +351,26 @@ const defaultProps: Partial<ListViewTableProps> = {
   verticalAlign: 'middle',
   horizontalSpacing: 'sm',
   verticalSpacing: 'xs',
+  headerTitleFontSize: 'sm',
+  headerTitleFontWeight: 500,
+  cellFontSize: 'sm',
+  cellFontWeight: 400,
 };
 
-const varsResolver = createVarsResolver<ListViewTableFactory>(
-  (_, { height, width, selectedRowColor }) => ({
-    root: {
-      '--list-view-height': typeof height === 'number' ? `${height}px` : height || '400px',
-      '--list-view-width': typeof width === 'number' ? `${width}px` : width || '100%',
-      '--list-view-header-title-font-size': 'var(--mantine-font-size-sm)',
-      '--list-view-header-title-font-weight': '500',
-      '--list-view-cell-font-size': 'var(--mantine-font-size-sm)',
-      '--list-view-cell-font-weight': '400',
-      '--list-view-selected-row-color': selectedRowColor || undefined,
-      '--list-view-sticky-blur': undefined,
-    },
-  })
-);
+const varsResolver = createVarsResolver<ListViewTableFactory>((_, { selectedRowColor }) => ({
+  root: {
+    '--list-view-height': undefined,
+    '--list-view-width': undefined,
+    '--list-view-horizontal-spacing': undefined,
+    '--list-view-vertical-spacing': undefined,
+    '--list-view-header-title-font-size': undefined,
+    '--list-view-header-title-font-weight': undefined,
+    '--list-view-cell-font-size': undefined,
+    '--list-view-cell-font-weight': undefined,
+    '--list-view-selected-row-color': selectedRowColor || undefined,
+    '--list-view-sticky-blur': undefined,
+  },
+}));
 
 export const ListViewTable = factory<ListViewTableFactory>((_props, ref) => {
   const props = useProps('ListViewTable', defaultProps, _props);
@@ -408,8 +436,15 @@ export const ListViewTable = factory<ListViewTableFactory>((_props, ref) => {
     defaultHiddenColumns,
     onHiddenColumnsChange,
     enableColumnVisibilityToggle,
+    // Font props
+    headerTitleFontSize,
+    headerTitleFontWeight,
+    cellFontSize,
+    cellFontWeight,
     ...others
   } = props;
+
+  const responsiveClassName = useRandomClassName();
 
   const [focusedColumn, setFocusedColumn] = useState<number | null>(null);
 
@@ -788,8 +823,19 @@ export const ListViewTable = factory<ListViewTableFactory>((_props, ref) => {
   // === Render: Loading ===
   if (loading) {
     return (
-      <Box {...getStyles('root')} ref={ref} {...others}>
-        <Center h={height} {...getStyles('loader')} role="status">
+      <Box {...getStyles('root', { className: responsiveClassName })} ref={ref} {...others}>
+        <ListViewTableMediaVariables
+          selector={`.${responsiveClassName}`}
+          height={height}
+          width={width}
+          horizontalSpacing={horizontalSpacing}
+          verticalSpacing={verticalSpacing}
+          headerTitleFontSize={headerTitleFontSize}
+          headerTitleFontWeight={headerTitleFontWeight}
+          cellFontSize={cellFontSize}
+          cellFontWeight={cellFontWeight}
+        />
+        <Center h={getBaseValue(height)} {...getStyles('loader')} role="status">
           {loadingComponent ? (
             React.isValidElement(loadingComponent) ? (
               loadingComponent
@@ -807,8 +853,19 @@ export const ListViewTable = factory<ListViewTableFactory>((_props, ref) => {
   // === Render: Empty ===
   if (!data || data.length === 0) {
     return (
-      <Box {...getStyles('root')} ref={ref} {...others}>
-        <Center h={height} {...getStyles('emptyState')}>
+      <Box {...getStyles('root', { className: responsiveClassName })} ref={ref} {...others}>
+        <ListViewTableMediaVariables
+          selector={`.${responsiveClassName}`}
+          height={height}
+          width={width}
+          horizontalSpacing={horizontalSpacing}
+          verticalSpacing={verticalSpacing}
+          headerTitleFontSize={headerTitleFontSize}
+          headerTitleFontWeight={headerTitleFontWeight}
+          cellFontSize={cellFontSize}
+          cellFontWeight={cellFontWeight}
+        />
+        <Center h={getBaseValue(height)} {...getStyles('emptyState')}>
           <Stack align="center" gap="md">
             {typeof emptyText === 'string' ? (
               <Text size="lg" c="dimmed">
@@ -828,8 +885,19 @@ export const ListViewTable = factory<ListViewTableFactory>((_props, ref) => {
     // Bug #6 guard: vertical needs at least 2 columns
     if (visibleColumns.length < 2) {
       return (
-        <Box {...getStyles('root')} ref={ref} {...others}>
-          <Center h={height} {...getStyles('emptyState')}>
+        <Box {...getStyles('root', { className: responsiveClassName })} ref={ref} {...others}>
+          <ListViewTableMediaVariables
+            selector={`.${responsiveClassName}`}
+            height={height}
+            width={width}
+            horizontalSpacing={horizontalSpacing}
+            verticalSpacing={verticalSpacing}
+            headerTitleFontSize={headerTitleFontSize}
+            headerTitleFontWeight={headerTitleFontWeight}
+            cellFontSize={cellFontSize}
+            cellFontWeight={cellFontWeight}
+          />
+          <Center h={getBaseValue(height)} {...getStyles('emptyState')}>
             <Text size="lg" c="dimmed">
               Vertical variant requires at least 2 columns
             </Text>
@@ -839,7 +907,18 @@ export const ListViewTable = factory<ListViewTableFactory>((_props, ref) => {
     }
 
     return (
-      <Box {...getStyles('root')} ref={ref} {...others}>
+      <Box {...getStyles('root', { className: responsiveClassName })} ref={ref} {...others}>
+        <ListViewTableMediaVariables
+          selector={`.${responsiveClassName}`}
+          height={height}
+          width={width}
+          horizontalSpacing={horizontalSpacing}
+          verticalSpacing={verticalSpacing}
+          headerTitleFontSize={headerTitleFontSize}
+          headerTitleFontWeight={headerTitleFontWeight}
+          cellFontSize={cellFontSize}
+          cellFontWeight={cellFontWeight}
+        />
         <Table
           {...getStyles('table')}
           withTableBorder={withTableBorder}
@@ -874,7 +953,7 @@ export const ListViewTable = factory<ListViewTableFactory>((_props, ref) => {
   // === Render: Normal table ===
   return (
     <Box
-      {...getStyles('root')}
+      {...getStyles('root', { className: responsiveClassName })}
       ref={ref}
       tabIndex={kbEnabled ? 0 : undefined}
       onKeyDown={kbEnabled ? handleKeyDown : undefined}
@@ -882,6 +961,17 @@ export const ListViewTable = factory<ListViewTableFactory>((_props, ref) => {
       data-resizing={isResizeActive ? 'true' : undefined}
       {...others}
     >
+      <ListViewTableMediaVariables
+        selector={`.${responsiveClassName}`}
+        height={height}
+        width={width}
+        horizontalSpacing={horizontalSpacing}
+        verticalSpacing={verticalSpacing}
+        headerTitleFontSize={headerTitleFontSize}
+        headerTitleFontWeight={headerTitleFontWeight}
+        cellFontSize={cellFontSize}
+        cellFontWeight={cellFontWeight}
+      />
       <Table
         {...getStyles('table', { style: getTableStyle() })}
         withTableBorder={withTableBorder}
@@ -891,8 +981,8 @@ export const ListViewTable = factory<ListViewTableFactory>((_props, ref) => {
         stripedColor={stripedColor}
         highlightOnHover={highlightOnHover && !selectionMode}
         highlightOnHoverColor={highlightOnHoverColor}
-        horizontalSpacing={horizontalSpacing}
-        verticalSpacing={verticalSpacing}
+        horizontalSpacing={getBaseValue(horizontalSpacing) as MantineSpacing}
+        verticalSpacing={getBaseValue(verticalSpacing) as MantineSpacing}
         borderColor={borderColor}
         captionSide={captionSide}
         stickyHeader={stickyHeader}
