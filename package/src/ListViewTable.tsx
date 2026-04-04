@@ -811,8 +811,7 @@ export const ListViewTable = factory<ListViewTableFactory>((_props) => {
         <Table.Td
           key={column.key as React.Key}
           {...getStyles('cell', {
-            className:
-              [stickyColumnClass, finalCellClassName].filter(Boolean).join(' ') || undefined,
+            className: finalCellClassName || undefined,
             style: {
               ...columnStyle,
               textAlign: column.textAlign,
