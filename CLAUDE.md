@@ -1,20 +1,20 @@
 # CLAUDE.md
 
 ## Project
-`@gfazioli/mantine-list-view-table` -- a Finder-style list view table component for Mantine 8.x with sorting, column reordering, column resizing, sticky columns, and drag handles.
+`@gfazioli/mantine-list-view-table` — a Finder-style list view table component for Mantine 9 with sorting, column reordering, column resizing, sticky columns, and drag handles. Requires React 19 and TypeScript 6.
 
 ## Commands
 | Command | Purpose |
 |---------|---------|
 | `yarn build` | Build the npm package via Rollup |
 | `yarn dev` | Start the Next.js docs dev server (port 9281) |
-| `yarn test` | Full test suite (syncpack + prettier + typecheck + lint + jest) |
+| `yarn test` | Full test suite (syncpack + oxfmt + typecheck + lint + jest) |
 | `yarn jest` | Run only Jest unit tests |
 | `yarn docgen` | Generate component API docs (docgen.json) |
 | `yarn docs:build` | Build the Next.js docs site for production |
 | `yarn docs:deploy` | Build and deploy docs to GitHub Pages |
-| `yarn lint` | Run ESLint + Stylelint |
-| `yarn prettier:write` | Format all files with Prettier |
+| `yarn lint` | Run oxlint + Stylelint |
+| `yarn format:write` | Format all files with oxfmt |
 | `yarn storybook` | Start Storybook dev server |
 | `yarn clean` | Remove build artifacts |
 | `yarn release:patch` | Bump patch version and deploy docs |
