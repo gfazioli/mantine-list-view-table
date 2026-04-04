@@ -374,7 +374,7 @@ const varsResolver = createVarsResolver<ListViewTableFactory>((_, { selectedRowC
   },
 }));
 
-export const ListViewTable = factory<ListViewTableFactory>((_props, ref) => {
+export const ListViewTable = factory<ListViewTableFactory>((_props) => {
   const props = useProps('ListViewTable', defaultProps, _props);
   const {
     classNames,
@@ -839,7 +839,7 @@ export const ListViewTable = factory<ListViewTableFactory>((_props, ref) => {
   // === Render: Loading ===
   if (loading) {
     return (
-      <Box {...getStyles('root', { className: responsiveClassName })} ref={ref} {...others}>
+      <Box {...getStyles('root', { className: responsiveClassName })} {...others}>
         {mediaVariables}
         <Center h="100%" {...getStyles('loader')} role="status">
           {loadingComponent ? (
@@ -859,7 +859,7 @@ export const ListViewTable = factory<ListViewTableFactory>((_props, ref) => {
   // === Render: Empty ===
   if (!data || data.length === 0) {
     return (
-      <Box {...getStyles('root', { className: responsiveClassName })} ref={ref} {...others}>
+      <Box {...getStyles('root', { className: responsiveClassName })} {...others}>
         {mediaVariables}
         <Center h="100%" {...getStyles('emptyState')}>
           <Stack align="center" gap="md">
@@ -881,7 +881,7 @@ export const ListViewTable = factory<ListViewTableFactory>((_props, ref) => {
     // Bug #6 guard: vertical needs at least 2 columns
     if (visibleColumns.length < 2) {
       return (
-        <Box {...getStyles('root', { className: responsiveClassName })} ref={ref} {...others}>
+        <Box {...getStyles('root', { className: responsiveClassName })} {...others}>
           {mediaVariables}
           <Center h="100%" {...getStyles('emptyState')}>
             <Text size="lg" c="dimmed">
@@ -893,7 +893,7 @@ export const ListViewTable = factory<ListViewTableFactory>((_props, ref) => {
     }
 
     return (
-      <Box {...getStyles('root', { className: responsiveClassName })} ref={ref} {...others}>
+      <Box {...getStyles('root', { className: responsiveClassName })} {...others}>
         {mediaVariables}
         <Table
           {...getStyles('table')}
@@ -930,7 +930,6 @@ export const ListViewTable = factory<ListViewTableFactory>((_props, ref) => {
   return (
     <Box
       {...getStyles('root', { className: responsiveClassName })}
-      ref={ref}
       tabIndex={kbEnabled ? 0 : undefined}
       onKeyDown={kbEnabled ? handleKeyDown : undefined}
       data-dragging={draggedColumn !== null ? 'true' : undefined}
