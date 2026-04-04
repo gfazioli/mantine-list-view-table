@@ -783,6 +783,7 @@ export const ListViewTable = factory<ListViewTableFactory>((_props) => {
       handleResizeDoubleClick,
       getColumnStyle,
       getStyles,
+      headerLongPress.didLongPressRef,
     ]
   );
 
@@ -809,9 +810,9 @@ export const ListViewTable = factory<ListViewTableFactory>((_props) => {
       return (
         <Table.Td
           key={column.key as React.Key}
-          className={finalCellClassName}
           {...getStyles('cell', {
-            className: stickyColumnClass,
+            className:
+              [stickyColumnClass, finalCellClassName].filter(Boolean).join(' ') || undefined,
             style: {
               ...columnStyle,
               textAlign: column.textAlign,
