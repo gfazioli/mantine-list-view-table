@@ -18,6 +18,7 @@
 ## Overview
 
 This component is created on top of the [Mantine](https://mantine.dev/) library.
+It requires **Mantine 9.x** and **React 19**.
 
 [Mantine ListViewTable](https://gfazioli.github.io/mantine-list-view-table/) is a robust React component that enhances Mantine’s Table to deliver a modern, macOS Finder–style list view with advanced interactivity and layout control. Users can reorder and resize columns (with two resize modes: standard and Finder-style), double-click to auto-fit column widths, sort by clicking column headers, and select rows with single or multiple selection — including Cmd/Ctrl+Click, Shift+Click range select, and full keyboard navigation (Arrow keys, Enter, Space, Home/End, Cmd+A).
 
