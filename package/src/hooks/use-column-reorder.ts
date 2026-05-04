@@ -88,6 +88,12 @@ export function useColumnReorder({
         return;
       }
 
+      // Re-entry guard: if a previous drag is still in flight (multi-touch,
+      // a second pointerdown landing on a different handle, or any other
+      // case where pointerup hasn't fired yet), tear down the previous
+      // listeners and body style changes before starting the new drag.
+      cleanupRef.current?.();
+
       event.preventDefault();
       event.stopPropagation();
 

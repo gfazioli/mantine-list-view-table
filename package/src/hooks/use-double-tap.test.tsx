@@ -1,5 +1,5 @@
 import React from 'react';
-import { render } from '@testing-library/react';
+import { render } from '@mantine-tests/core';
 import { useDoubleTap } from './use-double-tap';
 
 function TestTarget({ onDoubleTap }: { onDoubleTap: () => void }) {
