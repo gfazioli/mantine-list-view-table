@@ -372,7 +372,6 @@ const varsResolver = createVarsResolver<ListViewTableFactory>((_, { selectedRowC
     '--list-view-cell-font-size': undefined,
     '--list-view-cell-font-weight': undefined,
     '--list-view-selected-row-color': selectedRowColor || undefined,
-    '--list-view-sticky-blur': undefined,
     // Sticky-column shadow vars — `*-opacity` are written by `useStickyShadow`
     // on every horizontal scroll. `*-color` and `*-width` use CSS fallbacks
     // (declared via `var(name, fallback)` in the stylesheet) so consumers can
