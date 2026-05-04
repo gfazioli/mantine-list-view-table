@@ -1,5 +1,5 @@
 import { ListViewTable } from '@gfazioli/mantine-list-view-table';
-import { Table, Text } from '@mantine/core';
+import { Text } from '@mantine/core';
 import { MantineDemo } from '@mantinex/demo';
 import { columnsFiles } from './columns-files';
 import { dataFilesExtended, dataFilesExtendedCode } from './data-files-extended';
@@ -40,39 +40,38 @@ const columns = [
 
 function Demo() {
   return (
-    <Table.ScrollContainer minWidth={1200}>
-      <ListViewTable
-        columns={columns}
-        data={data}
-        rowKey="id"
-        withTableBorder
-        withColumnBorders
-        highlightOnHover
-        enableColumnResizing={false}
-      />
-    </Table.ScrollContainer>
+    <ListViewTable
+      columns={columns}
+      data={data}
+      rowKey="id"
+      withTableBorder
+      borderRadius="md"
+      withColumnBorders
+      highlightOnHover
+      enableColumnResizing={false}
+      scrollProps={{ minWidth: 1200 }}
+    />
   );
 }
 
 const code = `
 import { ListViewTable } from '@gfazioli/mantine-list-view-table';
-import { Table } from '@mantine/core';
 import { data } from './data';
 import { columns } from './columns';
 
 function Demo() {
   return (
-    <Table.ScrollContainer minWidth={1200}>
-      <ListViewTable
-        columns={columns}
-        data={data}
-        rowKey="id"
-        withTableBorder
-        withColumnBorders
-        highlightOnHover
-        enableColumnResizing={false}
-      />
-    </Table.ScrollContainer>
+    <ListViewTable
+      columns={columns}
+      data={data}
+      rowKey="id"
+      withTableBorder
+      borderRadius="md"
+      withColumnBorders
+      highlightOnHover
+      enableColumnResizing={false}
+      scrollProps={{ minWidth: 1200 }}
+    />
   );
 }
 `;
