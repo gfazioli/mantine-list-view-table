@@ -697,18 +697,25 @@ export const ListViewTable = factory<ListViewTableFactory>((_props) => {
             ? 'right'
             : undefined;
 
+      // Always pin both `left` and `right` explicitly so the renderer never
+      // ends up with a stale value from a class rule. With both `left: 0` and
+      // `right: 0` set simultaneously the browser stretches the sticky cell
+      // and the underlying scroll content briefly leaks at the edges during
+      // scroll, which is exactly the artifact we are guarding against here.
       const stickyPositionStyle =
         stickySide === 'left'
           ? {
               position: 'sticky' as const,
               left: 0,
+              right: 'auto' as const,
               zIndex: 11,
-              // Allow the shadow ::after to extend outside the cell border.
+              // Allow the shadow span to extend outside the cell border.
               overflow: 'visible' as const,
             }
           : stickySide === 'right'
             ? {
                 position: 'sticky' as const,
+                left: 'auto' as const,
                 right: 0,
                 zIndex: 11,
                 overflow: 'visible' as const,
@@ -893,11 +900,25 @@ export const ListViewTable = factory<ListViewTableFactory>((_props) => {
         <span {...getStyles('stickyColumnShadow')} data-side={shadowSide} aria-hidden />
       ) : null;
 
+      // See the matching comment in renderHeaderCell: pin both `left` and
+      // `right` explicitly so a stale class rule cannot leave both at `0`.
       const stickyPositionStyle =
         stickySide === 'left'
-          ? { position: 'sticky' as const, left: 0, zIndex: 10, overflow: 'visible' as const }
+          ? {
+              position: 'sticky' as const,
+              left: 0,
+              right: 'auto' as const,
+              zIndex: 10,
+              overflow: 'visible' as const,
+            }
           : stickySide === 'right'
-            ? { position: 'sticky' as const, right: 0, zIndex: 10, overflow: 'visible' as const }
+            ? {
+                position: 'sticky' as const,
+                left: 'auto' as const,
+                right: 0,
+                zIndex: 10,
+                overflow: 'visible' as const,
+              }
             : {
                 whiteSpace: column.noWrap || noWrap ? ('nowrap' as const) : undefined,
                 textOverflow: column.ellipsis ? ('ellipsis' as const) : undefined,
