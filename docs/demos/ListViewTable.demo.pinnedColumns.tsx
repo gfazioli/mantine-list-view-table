@@ -1,5 +1,5 @@
 import { ListViewTable } from '@gfazioli/mantine-list-view-table';
-import { Badge, Table, Text } from '@mantine/core';
+import { Badge, Text } from '@mantine/core';
 import { MantineDemo } from '@mantinex/demo';
 import { dataFilesExtended } from './data-files-extended';
 
@@ -54,22 +54,22 @@ const columns = [
 
 function Demo() {
   return (
-    <Table.ScrollContainer minWidth={1300}>
-      <ListViewTable
-        columns={columns}
-        data={dataFilesExtended}
-        rowKey="id"
-        withTableBorder
-        withColumnBorders
-        highlightOnHover
-      />
-    </Table.ScrollContainer>
+    <ListViewTable
+      columns={columns}
+      data={dataFilesExtended}
+      rowKey="id"
+      withTableBorder
+      borderRadius="md"
+      withColumnBorders
+      highlightOnHover
+      scrollProps={{ minWidth: 1300 }}
+    />
   );
 }
 
 const code = `
 import { ListViewTable } from '@gfazioli/mantine-list-view-table';
-import { Badge, Table } from '@mantine/core';
+import { Badge } from '@mantine/core';
 import { data } from './data';
 
 const columns = [
@@ -94,16 +94,18 @@ const columns = [
 
 function Demo() {
   return (
-    <Table.ScrollContainer minWidth={1300}>
-      <ListViewTable
-        columns={columns}
-        data={data}
-        rowKey="id"
-        withTableBorder
-        withColumnBorders
-        highlightOnHover
-      />
-    </Table.ScrollContainer>
+    // Built-in scroll wrapper with a fixed outer border + border-radius —
+    // no need to wrap in Table.ScrollContainer.
+    <ListViewTable
+      columns={columns}
+      data={data}
+      rowKey="id"
+      withTableBorder
+      borderRadius="md"
+      withColumnBorders
+      highlightOnHover
+      scrollProps={{ minWidth: 1300 }}
+    />
   );
 }
 `;

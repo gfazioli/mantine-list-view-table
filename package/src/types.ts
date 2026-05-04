@@ -151,7 +151,8 @@ export type ListViewTableStylesNames =
   | 'emptyState'
   | 'loader'
   | 'stickyColumn'
-  | 'stickyHeaderColumn';
+  | 'stickyHeaderColumn'
+  | 'scrollViewport';
 
 // === CSS Variables ===
 

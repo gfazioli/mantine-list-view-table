@@ -19,6 +19,8 @@ export const ListViewTableStylesApi: StylesApiData<ListViewTableFactory> = {
     focusedRow: 'Focused row outline (keyboard navigation)',
     stickyColumn: 'Sticky column cell (td)',
     stickyHeaderColumn: 'Sticky header column cell (th)',
+    scrollViewport:
+      'Internal scroll wrapper rendered when `scrollProps` is set; carries the native horizontal/vertical scroll while the outer container holds the (fixed) border and border-radius',
     emptyState: 'Empty state container when no data',
     loader: 'Loading state container',
   },
