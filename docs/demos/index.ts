@@ -21,6 +21,7 @@ export { maxWidth } from './ListViewTable.demo.maxWidth';
 export { minAndMaxWidth } from './ListViewTable.demo.minAndMaxWidth';
 export { minWidth } from './ListViewTable.demo.minWidth';
 export { mixedWidthConstraints } from './ListViewTable.demo.mixedWidthConstraints';
+export { pinnedColumns } from './ListViewTable.demo.pinnedColumns';
 export { reordering } from './ListViewTable.demo.reordering';
 export { resizeMode } from './ListViewTable.demo.resizeMode';
 export { responsiveProps } from './ListViewTable.demo.responsiveProps';

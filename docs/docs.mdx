@@ -53,6 +53,31 @@ You can also use the `stickyHeaderOffset` prop to adjust the sticky header posit
 
 <Demo data={demos.stickyHeader} />
 
+## Pinned Columns
+
+Set `column.sticky` to `'left'` or `'right'` to pin a column to the corresponding edge of the table when the user scrolls horizontally. The legacy `sticky: true` is preserved as an alias for `'left'`.
+
+A subtle gradient shadow appears on the inner edge of the **last** sticky-left column and the **first** sticky-right column whenever there is content scrolled past the edge — the same visual cue users expect from spreadsheet-style data grids. The shadow fades out smoothly when the table is scrolled fully to the relevant side, and is hidden entirely on tables that fit within the viewport.
+
+The shadow is rendered as a real `<span>` element exposed via the `stickyColumnShadow` Styles API selector, and its opacity is driven by two CSS variables (`--lvt-shadow-left-opacity` / `--lvt-shadow-right-opacity`) that the internal `useStickyShadow` hook updates on horizontal scroll — **no React re-renders** during scroll.
+
+Customize via:
+
+- `--lvt-shadow-color` — gradient color (default `rgba(0, 0, 0, 0.15)` light / `rgba(0, 0, 0, 0.4)` dark)
+- `--lvt-shadow-width` — width of the shadow strip (default `4px`)
+
+```tsx
+const columns = [
+  { key: 'name', title: 'Name', width: 200, sticky: 'left' },
+  { key: 'kind', title: 'Kind', width: 140 },
+  { key: 'size', title: 'Size', width: 120 },
+  // …more columns…
+  { key: 'actions', title: 'Actions', width: 110, sticky: 'right' },
+];
+```
+
+<Demo data={demos.pinnedColumns} />
+
 ## Row Selection
 
 The `ListViewTable` component supports row selection with both single and multiple selection modes, inspired by macOS Finder behavior.

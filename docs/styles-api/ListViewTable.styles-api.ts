@@ -18,6 +18,8 @@ export const ListViewTableStylesApi: StylesApiData<ListViewTableFactory> = {
     selectedRow: 'Selected row highlight',
     focusedRow: 'Focused row outline (keyboard navigation)',
     stickyColumn: 'Sticky column cell (td)',
+    stickyColumnShadow:
+      'Gradient shadow rendered on the inner edge of the last sticky-left and first sticky-right cell, fading in when there is content scrolled past the edge',
     stickyHeaderColumn: 'Sticky header column cell (th)',
     emptyState: 'Empty state container when no data',
     loader: 'Loading state container',
@@ -40,6 +42,13 @@ export const ListViewTableStylesApi: StylesApiData<ListViewTableFactory> = {
         'Controls font weight of cell content – supports responsive values',
       '--list-view-selected-row-color': 'Controls background color of selected rows',
       '--list-view-sticky-blur': 'Controls blur amount for sticky column overlay',
+      '--lvt-shadow-color':
+        'Color of the sticky-column gradient shadow. Default: `rgba(0, 0, 0, 0.15)` (light) / `rgba(0, 0, 0, 0.4)` (dark)',
+      '--lvt-shadow-width': 'Width of the sticky-column gradient shadow in px. Default: `4px`',
+      '--lvt-shadow-left-opacity':
+        'Opacity of the left-side shadow. Driven automatically by `useStickyShadow` based on horizontal scroll position',
+      '--lvt-shadow-right-opacity':
+        'Opacity of the right-side shadow. Driven automatically by `useStickyShadow` based on horizontal scroll position',
     },
   },
 
@@ -83,6 +92,22 @@ export const ListViewTableStylesApi: StylesApiData<ListViewTableFactory> = {
       selector: 'headerCell',
       modifier: 'data-drag-over',
       condition: 'column is drag target',
+    },
+    {
+      selector: 'headerCell',
+      modifier: 'data-sticky-side',
+      condition: '`"left"` or `"right"` when the column is pinned',
+    },
+    {
+      selector: 'cell',
+      modifier: 'data-sticky-side',
+      condition: '`"left"` or `"right"` when the column is pinned',
+    },
+    {
+      selector: 'stickyColumnShadow',
+      modifier: 'data-side',
+      condition:
+        '`"left"` (shadow on right edge of pinned-left) or `"right"` (shadow on left edge of pinned-right)',
     },
   ],
 };
