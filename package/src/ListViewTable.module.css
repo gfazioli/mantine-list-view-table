@@ -241,28 +241,31 @@
 }
 
 /*
- * Sticky column styles.
+ * Sticky column styles — modeled after `mantine-datatable`.
  *
  * `position: sticky`, `left`, and `right` are set inline by the renderer so
- * each cell can pick the correct side for its `column.sticky` value.
+ * each cell can pick the correct side for its `column.sticky` value. The
+ * class only carries the cosmetic concerns that apply equally to left- and
+ * right-pinned cells.
  *
- * Background must be **opaque and explicit** — `<tr>` ships with no
- * background, so anything `inherit`-based bleeds the scroll content
- * through the sticky cell. `--lvt-sticky-bg` is exposed so consumers can
- * theme it without overriding the rule directly; it also feeds the outer
- * stop of the gradient shadow so the gradient transitions into solid
- * cell color, not into transparency.
+ * Background MUST be opaque and explicit — `<tr>` ships with no
+ * background, so `inherit` would let the scroll content bleed through.
+ * `--lvt-sticky-bg` resolves to `--mantine-color-body` and gets a
+ * dark-scheme override below.
  */
 .stickyColumn {
   z-index: 10;
   --lvt-sticky-bg: var(--mantine-color-body);
   background: var(--lvt-sticky-bg);
+  /* Allow the shadow ::after to render outside the cell border. */
+  overflow: visible;
 }
 
 .stickyHeaderColumn {
   z-index: 11; /* Higher than body sticky columns */
   --lvt-sticky-bg: var(--mantine-color-body);
   background: var(--lvt-sticky-bg);
+  overflow: visible;
 }
 
 [data-mantine-color-scheme='dark'] .stickyColumn,
@@ -271,53 +274,52 @@
 }
 
 /*
- * Sticky column shadow.
- *
- * Rendered as a real <span> element inside the *last* sticky-left cell and
- * the *first* sticky-right cell of each row (header + body). The horizontal
- * `useStickyShadow` hook writes `--lvt-shadow-left-opacity` /
- * `--lvt-shadow-right-opacity` on the table root in response to scroll, and
- * those variables cascade down to fade the shadow in and out without
- * triggering a React re-render.
+ * Sticky column shadow — rendered as an `::after` pseudo-element on the
+ * cell carrying `data-sticky-shadow`. Two stacked linear gradients with
+ * a low alpha produce the soft, slightly-doubled shadow look used by
+ * `mantine-datatable`. Opacity is driven by the CSS variables that the
+ * `useStickyShadow` hook updates on horizontal scroll — no React
+ * re-renders during scroll.
  */
-.stickyColumnShadow {
+.stickyColumn[data-sticky-shadow]::after,
+.stickyHeaderColumn[data-sticky-shadow]::after {
+  content: '';
   position: absolute;
   top: 0;
   bottom: 0;
-  width: var(--lvt-shadow-width, 4px);
+  width: var(--lvt-shadow-width, 8px);
   pointer-events: none;
   transition: opacity 200ms ease;
-  z-index: 0;
 }
 
-/*
- * Both gradient stops are fully opaque: the inner stop is the shadow color
- * (darker than the cell), the outer stop is the cell's own background. As
- * the gradient fades it transitions into solid cell color — never into
- * transparency — so the underlying scroll content cannot peek through the
- * shadow strip while it scrolls past.
- */
-.stickyColumnShadow[data-side='left'] {
-  right: calc(-1 * var(--lvt-shadow-width, 4px));
-  background: linear-gradient(
-    to right,
-    var(--lvt-shadow-color, rgba(0, 0, 0, 0.15)),
-    var(--lvt-sticky-bg, var(--mantine-color-body))
-  );
+.stickyColumn[data-sticky-shadow='left']::after,
+.stickyHeaderColumn[data-sticky-shadow='left']::after {
+  right: calc(-1 * var(--lvt-shadow-width, 8px));
+  background:
+    linear-gradient(to right, rgba(0, 0, 0, 0.05), rgba(0, 0, 0, 0)),
+    linear-gradient(to right, rgba(0, 0, 0, 0.05), rgba(0, 0, 0, 0) 30%);
   opacity: var(--lvt-shadow-left-opacity, 0);
 }
 
-.stickyColumnShadow[data-side='right'] {
-  left: calc(-1 * var(--lvt-shadow-width, 4px));
-  background: linear-gradient(
-    to left,
-    var(--lvt-shadow-color, rgba(0, 0, 0, 0.15)),
-    var(--lvt-sticky-bg, var(--mantine-color-body))
-  );
+.stickyColumn[data-sticky-shadow='right']::after,
+.stickyHeaderColumn[data-sticky-shadow='right']::after {
+  left: calc(-1 * var(--lvt-shadow-width, 8px));
+  background:
+    linear-gradient(to left, rgba(0, 0, 0, 0.05), rgba(0, 0, 0, 0)),
+    linear-gradient(to left, rgba(0, 0, 0, 0.05), rgba(0, 0, 0, 0) 30%);
   opacity: var(--lvt-shadow-right-opacity, 0);
 }
 
-/* Slightly stronger shadow on dark color scheme so it stays visible */
-[data-mantine-color-scheme='dark'] .stickyColumnShadow {
-  --lvt-shadow-color: rgba(0, 0, 0, 0.4);
+[data-mantine-color-scheme='dark'] .stickyColumn[data-sticky-shadow='left']::after,
+[data-mantine-color-scheme='dark'] .stickyHeaderColumn[data-sticky-shadow='left']::after {
+  background:
+    linear-gradient(to right, rgba(0, 0, 0, 0.25), rgba(0, 0, 0, 0)),
+    linear-gradient(to right, rgba(0, 0, 0, 0.25), rgba(0, 0, 0, 0) 30%);
+}
+
+[data-mantine-color-scheme='dark'] .stickyColumn[data-sticky-shadow='right']::after,
+[data-mantine-color-scheme='dark'] .stickyHeaderColumn[data-sticky-shadow='right']::after {
+  background:
+    linear-gradient(to left, rgba(0, 0, 0, 0.25), rgba(0, 0, 0, 0)),
+    linear-gradient(to left, rgba(0, 0, 0, 0.25), rgba(0, 0, 0, 0) 30%);
 }
