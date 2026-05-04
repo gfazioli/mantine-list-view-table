@@ -268,9 +268,21 @@
   overflow: visible;
 }
 
+/*
+ * Dark-mode override.
+ *
+ * `background` is repeated explicitly here because the existing
+ * `[data-mantine-color-scheme='dark'] .headerCell { background: transparent }`
+ * rule has the same specificity (0,1,1) and would otherwise win the cascade
+ * for the header sticky cell — leaving it visually transparent and
+ * letting the underlying scrolled column bleed through. With `background`
+ * declared in this rule too the cascade picks the later declaration (this
+ * one), so the sticky cell stays opaque.
+ */
 [data-mantine-color-scheme='dark'] .stickyColumn,
 [data-mantine-color-scheme='dark'] .stickyHeaderColumn {
   --lvt-sticky-bg: var(--mantine-color-dark-7);
+  background: var(--lvt-sticky-bg);
 }
 
 /*
