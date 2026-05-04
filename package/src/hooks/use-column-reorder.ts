@@ -11,17 +11,15 @@ export interface UseColumnReorderReturn {
   effectiveColumns: ListViewTableColumn[];
   draggedColumn: number | null;
   dragOverColumn: number | null;
-  // HTML5 DnD handlers (desktop)
-  handleColumnDragStart: (index: number, event: React.DragEvent) => void;
-  handleColumnDragOver: (index: number, event: React.DragEvent) => void;
-  handleColumnDragLeave: () => void;
-  handleColumnDrop: (toIndex: number, event: React.DragEvent) => void;
-  handleColumnDragEnd: () => void;
-  // Pointer handler (touch fallback)
-  handleDragHandlePointerDown: (index: number, event: React.PointerEvent) => void;
+  /**
+   * Unified pointer-event drag entry point. Wired on the drag handle's
+   * `onPointerDown` for mouse, touch, and pen — replaces the previous
+   * HTML5 DnD path that did not work reliably on mobile browsers.
+   */
+  handleColumnDragStart: (index: number, event: React.PointerEvent) => void;
 }
 
-/** Drag activation threshold in pixels — prevents accidental drags on touch */
+/** Drag activation threshold in pixels — distinguishes click from drag */
 const DRAG_THRESHOLD = 5;
 
 export function useColumnReorder({
@@ -38,51 +36,7 @@ export function useColumnReorder({
     setInternalColumns(columns);
   }, [columns]);
 
-  // ─── HTML5 DnD handlers (desktop) — identical to master ─────────────
-
-  const handleColumnDragStart = useCallback((index: number, event: React.DragEvent) => {
-    event.dataTransfer.effectAllowed = 'move';
-    event.dataTransfer.setData('text/html', index.toString());
-    setDraggedColumn(index);
-  }, []);
-
-  const handleColumnDragOver = useCallback((index: number, event: React.DragEvent) => {
-    event.preventDefault();
-    event.dataTransfer.dropEffect = 'move';
-    setDragOverColumn(index);
-  }, []);
-
-  const handleColumnDragLeave = useCallback(() => {
-    setDragOverColumn(null);
-  }, []);
-
-  const handleColumnDrop = useCallback(
-    (toIndex: number, event: React.DragEvent) => {
-      event.preventDefault();
-      if (draggedColumn !== null && draggedColumn !== toIndex) {
-        if (onColumnReorder) {
-          onColumnReorder(draggedColumn, toIndex);
-        } else if (enableColumnReordering) {
-          setInternalColumns((prev) => {
-            const newColumns = [...prev];
-            const [moved] = newColumns.splice(draggedColumn, 1);
-            newColumns.splice(toIndex, 0, moved);
-            return newColumns;
-          });
-        }
-      }
-      setDraggedColumn(null);
-      setDragOverColumn(null);
-    },
-    [draggedColumn, onColumnReorder, enableColumnReordering]
-  );
-
-  const handleColumnDragEnd = useCallback(() => {
-    setDraggedColumn(null);
-    setDragOverColumn(null);
-  }, []);
-
-  // ─── Pointer-based drag (touch only) ────────────────────────────────
+  // ─── Unified pointer-event drag (mouse, touch, pen) ─────────────────
 
   const dragStateRef = useRef<{
     fromIndex: number;
@@ -91,11 +45,27 @@ export function useColumnReorder({
     activated: boolean;
     ghostOffsetX: number;
     ghostOffsetY: number;
+    /**
+     * The header row of the table where the drag started — captured at
+     * pointerdown via `event.currentTarget.closest('tr')`. All later DOM
+     * lookups (ghost source, geometric fallback) MUST be scoped to this row.
+     * A bare `document.querySelector('th[data-column-key="..."]')` returns
+     * the first match across the whole page, which on a page with multiple
+     * `ListViewTable` instances is almost always the wrong `<th>`.
+     */
+    headerRow: HTMLElement | null;
   } | null>(null);
 
-  // Ref to always access latest columns inside document-level listeners
+  // Always-fresh access to columns inside document-level listeners
   const internalColumnsRef = useRef<ListViewTableColumn[]>(columns);
   internalColumnsRef.current = internalColumns;
+
+  // Mirror of `dragOverColumn` in a ref so `finish()` can read the current
+  // drop target synchronously, without putting side effects inside a setState
+  // updater (React StrictMode replays updaters for purity checks, and any
+  // side effect inside would run multiple times — that previously caused the
+  // reorder to be applied twice per drop).
+  const dragOverColumnRef = useRef<number | null>(null);
 
   const ghostRef = useRef<HTMLElement | null>(null);
 
@@ -107,15 +77,25 @@ export function useColumnReorder({
     };
   }, []);
 
-  const handleDragHandlePointerDown = useCallback(
+  const handleColumnDragStart = useCallback(
     (index: number, event: React.PointerEvent) => {
-      // Only activate for touch — on desktop, HTML5 DnD handles everything
-      if (event.pointerType !== 'touch' || !enableColumnReordering) {
+      if (!enableColumnReordering) {
+        return;
+      }
+
+      // Ignore non-primary mouse buttons (right-click, middle-click)
+      if (event.pointerType === 'mouse' && event.button !== 0) {
         return;
       }
 
       event.preventDefault();
       event.stopPropagation();
+
+      // Scope every later DOM lookup to the header row of the table where the
+      // drag started. `event.currentTarget` is the drag handle the consumer
+      // wired our handler to; its closest `<tr>` is the header row.
+      const handleEl = event.currentTarget as HTMLElement | null;
+      const headerRow = handleEl?.closest('tr') as HTMLElement | null;
 
       dragStateRef.current = {
         fromIndex: index,
@@ -124,7 +104,20 @@ export function useColumnReorder({
         activated: false,
         ghostOffsetX: 0,
         ghostOffsetY: 0,
+        headerRow,
       };
+
+      // Suppress text selection / native gestures while the drag is active.
+      // Touch browsers in particular start a selection on long touch-and-drag
+      // unless `user-select` is locked down on the document.
+      const previousUserSelect = document.body.style.userSelect;
+      const previousWebkitUserSelect = (document.body.style as any).webkitUserSelect as
+        | string
+        | undefined;
+      const previousCursor = document.body.style.cursor;
+      document.body.style.userSelect = 'none';
+      (document.body.style as any).webkitUserSelect = 'none';
+      document.body.style.cursor = 'grabbing';
 
       const handlePointerMove = (e: PointerEvent) => {
         const state = dragStateRef.current;
@@ -132,7 +125,8 @@ export function useColumnReorder({
           return;
         }
 
-        // Check drag threshold before activating
+        // Defer activation until the pointer has moved past the threshold.
+        // This lets a click on the handle pass through without starting a drag.
         if (!state.activated) {
           const dx = e.clientX - state.startX;
           const dy = e.clientY - state.startY;
@@ -142,11 +136,12 @@ export function useColumnReorder({
           state.activated = true;
           setDraggedColumn(state.fromIndex);
 
-          // Create ghost element from the source header cell
+          // Create a ghost element from the source header cell — scoped to
+          // the header row of THIS table, not a global document query.
           const cols = internalColumnsRef.current;
-          const sourceTh = document.querySelector(
-            `th[data-column-key="${String(cols[state.fromIndex]?.key)}"]`
-          );
+          const sourceKey = String(cols[state.fromIndex]?.key);
+          const sourceTh =
+            state.headerRow?.querySelector(`th[data-column-key="${sourceKey}"]`) ?? null;
           if (sourceTh) {
             const rect = sourceTh.getBoundingClientRect();
             state.ghostOffsetX = state.startX - rect.left;
@@ -171,78 +166,126 @@ export function useColumnReorder({
           }
         }
 
-        // Move ghost element
+        // Track the ghost to the pointer.
         if (ghostRef.current && state.activated) {
           ghostRef.current.style.left = `${e.clientX - state.ghostOffsetX}px`;
           ghostRef.current.style.top = `${e.clientY - state.ghostOffsetY}px`;
         }
 
-        // Find which header cell the pointer is currently over
+        // Resolve the column under the pointer.
+        // Primary: elementFromPoint (ghost has `pointer-events: none`).
+        // Fallback: when the pointer is past the leftmost or rightmost header
+        // edge, target the first/last column geometrically — otherwise dropping
+        // before the first or after the last column would never commit because
+        // elementFromPoint returns nothing usable outside the header row.
+        let overIndex: number | null = null;
         const elementUnderPointer = document.elementFromPoint(e.clientX, e.clientY);
-        if (elementUnderPointer) {
-          const th = elementUnderPointer.closest('th[data-column-key]');
-          if (th) {
-            const columnKey = th.getAttribute('data-column-key');
-            const cols = internalColumnsRef.current;
-            const overIndex = cols.findIndex((col) => (col.key as string) === columnKey);
-            if (overIndex !== -1 && overIndex !== state.fromIndex) {
-              setDragOverColumn(overIndex);
-            } else {
-              setDragOverColumn(null);
-            }
-          } else {
-            setDragOverColumn(null);
+        const cols = internalColumnsRef.current;
+        const columnKey = elementUnderPointer
+          ?.closest('th[data-column-key]')
+          ?.getAttribute('data-column-key');
+        if (columnKey) {
+          const idx = cols.findIndex((col) => (col.key as string) === columnKey);
+          if (idx !== -1) {
+            overIndex = idx;
           }
+        }
+
+        if (overIndex === null && state.headerRow) {
+          // Geometric fallback — scoped to the captured header row only,
+          // never a global document query (which would pick up `<th>` nodes
+          // from sibling demos on the same page).
+          const ths = Array.from(
+            state.headerRow.querySelectorAll('th[data-column-key]')
+          ) as HTMLElement[];
+          if (ths.length > 0) {
+            const firstRect = ths[0].getBoundingClientRect();
+            const lastRect = ths[ths.length - 1].getBoundingClientRect();
+            if (e.clientX < firstRect.left) {
+              overIndex = 0;
+            } else if (e.clientX > lastRect.right) {
+              overIndex = ths.length - 1;
+            }
+          }
+        }
+
+        const next = overIndex !== null && overIndex !== state.fromIndex ? overIndex : null;
+        if (dragOverColumnRef.current !== next) {
+          dragOverColumnRef.current = next;
+          setDragOverColumn(next);
         }
       };
 
-      const handlePointerEnd = () => {
+      const finish = (commit: boolean) => {
         const state = dragStateRef.current;
 
         document.removeEventListener('pointermove', handlePointerMove);
-        document.removeEventListener('pointerup', handlePointerEnd);
-        document.removeEventListener('pointercancel', handlePointerEnd);
+        document.removeEventListener('pointerup', handlePointerUp);
+        document.removeEventListener('pointercancel', handlePointerCancel);
+        document.removeEventListener('keydown', handleKeyDown);
         cleanupRef.current = null;
         dragStateRef.current = null;
+
+        document.body.style.userSelect = previousUserSelect;
+        (document.body.style as any).webkitUserSelect = previousWebkitUserSelect ?? '';
+        document.body.style.cursor = previousCursor;
 
         ghostRef.current?.remove();
         ghostRef.current = null;
 
-        // Use setState callback to access latest dragOverColumn
-        setDragOverColumn((currentOver) => {
-          if (state?.activated && currentOver !== null && state.fromIndex !== currentOver) {
-            if (onColumnReorder) {
-              onColumnReorder(state.fromIndex, currentOver);
-            } else if (enableColumnReordering) {
-              setInternalColumns((prev) => {
-                const newColumns = [...prev];
-                const [moved] = newColumns.splice(state.fromIndex, 1);
-                newColumns.splice(currentOver, 0, moved);
-                return newColumns;
-              });
-            }
-          }
-          return null;
-        });
+        // Read the latest drop target from the ref — NEVER from a setState
+        // updater. React StrictMode (and concurrent rendering) intentionally
+        // replays setState updaters to surface impure logic, which would
+        // cause `setInternalColumns` (called inside) to run multiple times
+        // and apply the reorder more than once.
+        const currentOver = dragOverColumnRef.current;
+        dragOverColumnRef.current = null;
 
+        if (commit && state?.activated && currentOver !== null && state.fromIndex !== currentOver) {
+          if (onColumnReorder) {
+            onColumnReorder(state.fromIndex, currentOver);
+          } else if (enableColumnReordering) {
+            setInternalColumns((prev) => {
+              const newColumns = [...prev];
+              const [moved] = newColumns.splice(state.fromIndex, 1);
+              newColumns.splice(currentOver, 0, moved);
+              return newColumns;
+            });
+          }
+        }
+
+        setDragOverColumn(null);
         setDraggedColumn(null);
+      };
+
+      const handlePointerUp = () => finish(true);
+      const handlePointerCancel = () => finish(false);
+      const handleKeyDown = (e: KeyboardEvent) => {
+        if (e.key === 'Escape') {
+          finish(false);
+        }
       };
 
       cleanupRef.current = () => {
         document.removeEventListener('pointermove', handlePointerMove);
-        document.removeEventListener('pointerup', handlePointerEnd);
-        document.removeEventListener('pointercancel', handlePointerEnd);
+        document.removeEventListener('pointerup', handlePointerUp);
+        document.removeEventListener('pointercancel', handlePointerCancel);
+        document.removeEventListener('keydown', handleKeyDown);
+        document.body.style.userSelect = previousUserSelect;
+        (document.body.style as any).webkitUserSelect = previousWebkitUserSelect ?? '';
+        document.body.style.cursor = previousCursor;
         ghostRef.current?.remove();
         ghostRef.current = null;
       };
       document.addEventListener('pointermove', handlePointerMove);
-      document.addEventListener('pointerup', handlePointerEnd);
-      document.addEventListener('pointercancel', handlePointerEnd);
+      document.addEventListener('pointerup', handlePointerUp);
+      document.addEventListener('pointercancel', handlePointerCancel);
+      document.addEventListener('keydown', handleKeyDown);
     },
     [enableColumnReordering, onColumnReorder]
   );
 
-  // Use internal columns if managing reorder internally
+  // Use internal columns when the consumer is not controlling reordering
   const effectiveColumns = enableColumnReordering && !onColumnReorder ? internalColumns : columns;
 
   return {
@@ -250,10 +293,5 @@ export function useColumnReorder({
     draggedColumn,
     dragOverColumn,
     handleColumnDragStart,
-    handleColumnDragOver,
-    handleColumnDragLeave,
-    handleColumnDrop,
-    handleColumnDragEnd,
-    handleDragHandlePointerDown,
   };
 }
