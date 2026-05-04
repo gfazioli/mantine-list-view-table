@@ -46,8 +46,18 @@ export interface ListViewTableColumn<T = any> {
 
   /**
    * Whether the column is sticky (pinned).
+   *
+   * - `true` or `'left'` — pinned to the left edge of the table
+   * - `'right'` — pinned to the right edge of the table
+   * - `false` (default) — not pinned
+   *
+   * When the table scrolls horizontally, an opacity-driven gradient shadow
+   * appears on the inner edge of the **last** sticky column on each side
+   * to indicate that there is hidden content underneath. Customize via the
+   * `--lvt-shadow-color` and `--lvt-shadow-width` CSS variables, or via the
+   * `stickyColumnShadow` Styles API selector.
    */
-  sticky?: boolean;
+  sticky?: boolean | 'left' | 'right';
 
   /**
    * Text alignment for the column.
@@ -141,6 +151,7 @@ export type ListViewTableStylesNames =
   | 'emptyState'
   | 'loader'
   | 'stickyColumn'
+  | 'stickyColumnShadow'
   | 'stickyHeaderColumn';
 
 // === CSS Variables ===
@@ -156,7 +167,11 @@ export type ListViewTableCssVariables = {
     | '--list-view-cell-font-size'
     | '--list-view-cell-font-weight'
     | '--list-view-selected-row-color'
-    | '--list-view-sticky-blur';
+    | '--list-view-sticky-blur'
+    | '--lvt-shadow-color'
+    | '--lvt-shadow-width'
+    | '--lvt-shadow-left-opacity'
+    | '--lvt-shadow-right-opacity';
 };
 
 // Note: ListViewTableBaseProps, ListViewTableProps, and ListViewTableFactory

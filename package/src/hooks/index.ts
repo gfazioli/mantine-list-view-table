@@ -21,3 +21,6 @@ export type {
   UseColumnVisibilityOptions,
   UseColumnVisibilityReturn,
 } from './use-column-visibility';
+
+export { useStickyShadow } from './use-sticky-shadow';
+export type { UseStickyShadowOptions } from './use-sticky-shadow';

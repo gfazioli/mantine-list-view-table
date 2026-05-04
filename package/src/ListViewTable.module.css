@@ -270,3 +270,40 @@
   z-index: 11; /* Higher than body sticky columns */
   background: inherit;
 }
+
+/*
+ * Sticky column shadow.
+ *
+ * Rendered as a real <span> element inside the *last* sticky-left cell and
+ * the *first* sticky-right cell of each row (header + body). The horizontal
+ * `useStickyShadow` hook writes `--lvt-shadow-left-opacity` /
+ * `--lvt-shadow-right-opacity` on the table root in response to scroll, and
+ * those variables cascade down to fade the shadow in and out without
+ * triggering a React re-render.
+ */
+.stickyColumnShadow {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: var(--lvt-shadow-width, 4px);
+  pointer-events: none;
+  transition: opacity 200ms ease;
+  z-index: 0;
+}
+
+.stickyColumnShadow[data-side='left'] {
+  right: calc(-1 * var(--lvt-shadow-width, 4px));
+  background: linear-gradient(to right, var(--lvt-shadow-color, rgba(0, 0, 0, 0.15)), transparent);
+  opacity: var(--lvt-shadow-left-opacity, 0);
+}
+
+.stickyColumnShadow[data-side='right'] {
+  left: calc(-1 * var(--lvt-shadow-width, 4px));
+  background: linear-gradient(to left, var(--lvt-shadow-color, rgba(0, 0, 0, 0.15)), transparent);
+  opacity: var(--lvt-shadow-right-opacity, 0);
+}
+
+/* Slightly stronger shadow on dark color scheme so it stays visible */
+[data-mantine-color-scheme='dark'] .stickyColumnShadow {
+  --lvt-shadow-color: rgba(0, 0, 0, 0.4);
+}
