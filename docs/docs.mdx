@@ -271,19 +271,19 @@ The `cellStyle` property can be either a static style object or a function that 
 
 This approach is particularly useful when building data-heavy interfaces where header clarity and cell readability have different requirements.
 
-## Horizontal Scrolling with Table.ScrollContainer
+## Horizontal Scrolling
 
-When your table content is wider than the available container width, you can use Mantine's [`Table.ScrollContainer`](https://mantine.dev/core/table/#scroll-container) component to enable smooth horizontal scrolling. This is especially useful for tables with many columns or when you need to maintain fixed column widths.
+When your table content is wider than the available container width, set `scrollProps={{ minWidth }}` to enable smooth horizontal scrolling. The recommended pattern is the built-in `scrollProps` API: it renders a non-scrolling outer wrapper that keeps `withTableBorder` and `borderRadius` fixed at the edges regardless of scroll position. Mantine's [`Table.ScrollContainer`](https://mantine.dev/core/table/#scroll-container) is also supported (just wrap `<ListViewTable>`), but the table border will move with the scroll content — see the **Pinned Columns** section above for the trade-off.
 
 ### Basic Horizontal Scrolling
 
-Wrap your `ListViewTable` with `Table.ScrollContainer` and set a `minWidth` to enable horizontal scrolling when the content exceeds the container width. All columns will scroll together horizontally.
+Set `scrollProps={{ minWidth }}` to enable horizontal scrolling when the content exceeds the container width. All non-sticky columns scroll together horizontally; the outer border and rounded corners stay put.
 
 <Demo data={demos.scrollContainer} />
 
 ### Horizontal Scrolling with Sticky Columns
 
-You can combine horizontal scrolling with sticky columns to keep important identifier columns (like names or IDs) visible while other columns scroll horizontally. Set `sticky: true` on the columns you want to remain fixed.
+Combine `scrollProps` with `sticky: 'left'` (or `'right'`) on individual columns to keep important identifier columns visible while other columns scroll horizontally. The legacy `sticky: true` is preserved as an alias for `'left'`.
 
 <Demo data={demos.scrollContainerWithSticky} />
 
