@@ -249,23 +249,43 @@
  * `mantine-datatable`. No backdrop-filter, no transparency: the only edge
  * cue is the gradient shadow span (see `.stickyColumnShadow` below).
  */
+/*
+ * `position: sticky`, `left`, and `right` are set inline by the renderer so
+ * each cell can pick the correct side for its `column.sticky` value. The
+ * class only carries the cosmetic concerns (background + z-index) that
+ * apply equally to left- and right-pinned cells.
+ */
 .stickyColumn {
-  position: sticky;
-  left: 0;
   z-index: 10;
   background: var(--mantine-color-body);
 }
 
 .stickyHeaderColumn {
-  position: sticky;
-  left: 0;
   z-index: 11; /* Higher than body sticky columns */
   background: var(--mantine-color-body);
 }
 
-[data-mantine-color-scheme='dark'] .stickyColumn,
-[data-mantine-color-scheme='dark'] .stickyHeaderColumn {
-  background: var(--mantine-color-dark-7);
+/*
+ * Background "extension" on the inner edge of the last sticky-left and
+ * first sticky-right cell.
+ *
+ * The gradient shadow span (`.stickyColumnShadow`) fades from opaque
+ * shadow-color to transparent on its outer edge. Without this extension
+ * the transparent portion would let the underlying scroll content peek
+ * through — visible as fragments of letters drifting across the edge as
+ * the user scrolls. Adding a sharp `box-shadow` of the cell's own
+ * background color creates a 4px-wide opaque strip outside the cell that
+ * occludes whatever scrolls underneath, so the gradient fades into the
+ * cell's color rather than into bleeding-through content.
+ */
+.stickyColumn[data-sticky-shadow='left'],
+.stickyHeaderColumn[data-sticky-shadow='left'] {
+  box-shadow: var(--lvt-shadow-width, 4px) 0 0 0 var(--mantine-color-body);
+}
+
+.stickyColumn[data-sticky-shadow='right'],
+.stickyHeaderColumn[data-sticky-shadow='right'] {
+  box-shadow: calc(-1 * var(--lvt-shadow-width, 4px)) 0 0 0 var(--mantine-color-body);
 }
 
 /*
