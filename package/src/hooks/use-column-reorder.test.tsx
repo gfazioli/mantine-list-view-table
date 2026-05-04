@@ -1,5 +1,6 @@
 import React from 'react';
-import { act, render } from '@testing-library/react';
+import { act } from '@testing-library/react';
+import { render } from '@mantine-tests/core';
 import { useColumnReorder } from './use-column-reorder';
 
 const COLUMNS = [
@@ -371,6 +372,45 @@ describe('useColumnReorder', () => {
 
     restore();
     expect(onReorder).toHaveBeenCalledWith(0, 2);
+  });
+
+  it('cleans up the previous drag if a new pointerdown lands while one is in flight', () => {
+    // Multi-touch / overlapping drags: the second pointerdown must tear down
+    // the first set of document listeners and body styles before starting fresh.
+    const onReorder = jest.fn();
+    const { getByTestId } = render(<Host onReorder={onReorder} />);
+
+    const restore = mockElementFromPoint(() => findTh('c'));
+
+    act(() => {
+      firePointerDown(getByTestId('handle-a'), 10, 10);
+    });
+    // First drag started — body styles should be locked
+    expect(document.body.style.userSelect).toBe('none');
+    expect(document.body.style.cursor).toBe('grabbing');
+
+    // A second pointerdown lands while the first is still active. The hook
+    // must clean up the first drag before starting the second.
+    act(() => {
+      firePointerDown(getByTestId('handle-b'), 10, 10);
+    });
+    // Body styles still locked — but for the new drag, not the old one
+    expect(document.body.style.userSelect).toBe('none');
+
+    act(() => {
+      fireDocPointerEvent('pointermove', 250, 10);
+      fireDocPointerEvent('pointerup', 250, 10);
+    });
+
+    // Only ONE reorder fires (from the second drag, source index 1)
+    expect(onReorder).toHaveBeenCalledTimes(1);
+    expect(onReorder).toHaveBeenCalledWith(1, 2);
+
+    // Body styles are no longer in the "drag lock" state
+    expect(document.body.style.userSelect).not.toBe('none');
+    expect(document.body.style.cursor).not.toBe('grabbing');
+
+    restore();
   });
 
   it('ignores right-click (mouse button !== 0)', () => {
