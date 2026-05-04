@@ -23,6 +23,7 @@ export {
   useKeyboardNavigation,
   useRowSelection,
   useSorting,
+  useStickyShadow,
 } from './hooks';
 export type {
   UseColumnReorderOptions,
@@ -37,4 +38,5 @@ export type {
   UseRowSelectionReturn,
   UseSortingOptions,
   UseSortingReturn,
+  UseStickyShadowOptions,
 } from './hooks';

@@ -422,4 +422,66 @@ describe('ListViewTable', () => {
     );
     expect(container.querySelector('table')).toBeTruthy();
   });
+
+  describe('pinned columns', () => {
+    const pinnedColumns = [
+      { key: 'name', title: 'Name', sticky: 'left' as const },
+      { key: 'value', title: 'Value' },
+      { key: 'tags', title: 'Tags' },
+      { key: 'actions', title: 'Actions', sticky: 'right' as const },
+    ];
+
+    const pinnedData = [
+      { id: 1, name: 'A', value: 'v1', tags: 't1', actions: 'open' },
+      { id: 2, name: 'B', value: 'v2', tags: 't2', actions: 'open' },
+    ];
+
+    it('attaches data-sticky-side="left" to columns with sticky="left"', () => {
+      const { container } = render(
+        <ListViewTable columns={pinnedColumns as any} data={pinnedData} rowKey="id" />
+      );
+      const leftHeader = container.querySelector('th[data-column-key="name"]');
+      expect(leftHeader?.getAttribute('data-sticky-side')).toBe('left');
+    });
+
+    it('attaches data-sticky-side="right" to columns with sticky="right"', () => {
+      const { container } = render(
+        <ListViewTable columns={pinnedColumns as any} data={pinnedData} rowKey="id" />
+      );
+      const rightHeader = container.querySelector('th[data-column-key="actions"]');
+      expect(rightHeader?.getAttribute('data-sticky-side')).toBe('right');
+    });
+
+    it('treats sticky=true as sticky="left" for backward compatibility', () => {
+      const cols = [
+        { key: 'name', title: 'Name', sticky: true },
+        { key: 'value', title: 'Value' },
+      ];
+      const { container } = render(
+        <ListViewTable columns={cols as any} data={pinnedData} rowKey="id" />
+      );
+      const header = container.querySelector('th[data-column-key="name"]');
+      expect(header?.getAttribute('data-sticky-side')).toBe('left');
+    });
+
+    it('renders the shadow span only on the last sticky-left and first sticky-right columns', () => {
+      const { container } = render(
+        <ListViewTable columns={pinnedColumns as any} data={pinnedData} rowKey="id" />
+      );
+      // Only one shadow per side per row (header + body × 2 rows = 3 of each side)
+      const leftShadows = container.querySelectorAll('[data-side="left"]');
+      const rightShadows = container.querySelectorAll('[data-side="right"]');
+      // 1 header + 2 body rows = 3 each
+      expect(leftShadows.length).toBe(3);
+      expect(rightShadows.length).toBe(3);
+    });
+
+    it('does not render shadows when no column is sticky', () => {
+      const { container } = render(
+        <ListViewTable columns={testColumns as any} data={testData} rowKey="id" />
+      );
+      expect(container.querySelectorAll('[data-side="left"]').length).toBe(0);
+      expect(container.querySelectorAll('[data-side="right"]').length).toBe(0);
+    });
+  });
 });

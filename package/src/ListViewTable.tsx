@@ -35,6 +35,7 @@ import { useKeyboardNavigation } from './hooks/use-keyboard-navigation';
 import { useLongPress } from './hooks/use-long-press';
 import { useRowSelection } from './hooks/use-row-selection';
 import { useSorting } from './hooks/use-sorting';
+import { useStickyShadow } from './hooks/use-sticky-shadow';
 import { ListViewTableMediaVariables } from './ListViewTableMediaVariables';
 import { ResizeHandle } from './ResizeHandle';
 import type {
@@ -372,6 +373,15 @@ const varsResolver = createVarsResolver<ListViewTableFactory>((_, { selectedRowC
     '--list-view-cell-font-weight': undefined,
     '--list-view-selected-row-color': selectedRowColor || undefined,
     '--list-view-sticky-blur': undefined,
+    // Sticky-column shadow vars — `*-opacity` are written by `useStickyShadow`
+    // on every horizontal scroll. `*-color` and `*-width` use CSS fallbacks
+    // (declared via `var(name, fallback)` in the stylesheet) so consumers can
+    // override them through `vars` or external CSS without us hard-coding a
+    // value here.
+    '--lvt-shadow-color': undefined,
+    '--lvt-shadow-width': undefined,
+    '--lvt-shadow-left-opacity': undefined,
+    '--lvt-shadow-right-opacity': undefined,
   },
 }));
 
@@ -531,6 +541,39 @@ export const ListViewTable = factory<ListViewTableFactory>((_props) => {
     onColumnResize,
   });
 
+  // Pre-compute pinning side per visible column and find the columns that
+  // own the gradient shadow (last sticky-left, first sticky-right).
+  // `sticky === true` is normalized to `'left'` for backward compatibility.
+  const stickyInfo = useMemo(() => {
+    const sides: (null | 'left' | 'right')[] = visibleColumns.map((col) => {
+      if (col.sticky === true || col.sticky === 'left') {
+        return 'left';
+      }
+      if (col.sticky === 'right') {
+        return 'right';
+      }
+      return null;
+    });
+    let lastLeftIdx = -1;
+    let firstRightIdx = -1;
+    sides.forEach((side, i) => {
+      if (side === 'left') {
+        lastLeftIdx = i;
+      }
+      if (side === 'right' && firstRightIdx === -1) {
+        firstRightIdx = i;
+      }
+    });
+    return { sides, lastLeftIdx, firstRightIdx };
+  }, [visibleColumns]);
+
+  const hasStickyColumns = stickyInfo.lastLeftIdx !== -1 || stickyInfo.firstRightIdx !== -1;
+
+  // Drives `--lvt-shadow-left-opacity` / `--lvt-shadow-right-opacity` on the
+  // table element so the CSS pseudo-elements on pinned columns can fade in
+  // when there is content scrolled beyond either edge.
+  useStickyShadow({ tableRef, enabled: hasStickyColumns });
+
   const {
     handleRowClick: handleSelectionClick,
     isSelected,
@@ -647,15 +690,39 @@ export const ListViewTable = factory<ListViewTableFactory>((_props) => {
       const title = column.title || humanize(column.key as string);
       const columnStyle = getColumnStyle(column, index);
 
+      const stickySide = stickyInfo.sides[index];
+      const shadowSide =
+        index === stickyInfo.lastLeftIdx
+          ? 'left'
+          : index === stickyInfo.firstRightIdx
+            ? 'right'
+            : undefined;
+
+      const stickyPositionStyle =
+        stickySide === 'left'
+          ? {
+              position: 'sticky' as const,
+              left: 0,
+              zIndex: 11,
+              // Allow the shadow ::after to extend outside the cell border.
+              overflow: 'visible' as const,
+            }
+          : stickySide === 'right'
+            ? {
+                position: 'sticky' as const,
+                right: 0,
+                zIndex: 11,
+                overflow: 'visible' as const,
+              }
+            : { position: 'relative' as const };
+
       return (
         <Table.Th
           key={column.key as React.Key}
           {...getStyles('headerCell', {
-            className: column.sticky ? getStyles('stickyHeaderColumn').className : undefined,
+            className: stickySide ? getStyles('stickyHeaderColumn').className : undefined,
             style: {
-              ...(column.sticky
-                ? { position: 'sticky', left: 0, zIndex: 11 }
-                : { position: 'relative' }),
+              ...stickyPositionStyle,
               ...columnStyle,
               textAlign: column.textAlign,
               top: 0,
@@ -665,6 +732,8 @@ export const ListViewTable = factory<ListViewTableFactory>((_props) => {
           data-drag-over={dragOverColumn === index ? 'true' : undefined}
           data-focused={focusedColumn === index ? 'true' : undefined}
           data-column-key={column.key as string}
+          data-sticky-side={stickySide ?? undefined}
+          data-sticky-shadow={shadowSide}
         >
           <Group
             gap={0}
@@ -747,6 +816,13 @@ export const ListViewTable = factory<ListViewTableFactory>((_props) => {
                 getStyles={() => getStyles('resizeHandle')}
               />
             )}
+
+          {/* Pinned-column edge shadow — only on the last sticky-left and the
+              first sticky-right column. CSS variables on the table root drive
+              the opacity transition in response to scroll. */}
+          {shadowSide && (
+            <span {...getStyles('stickyColumnShadow')} data-side={shadowSide} aria-hidden />
+          )}
         </Table.Th>
       );
     },
@@ -766,6 +842,7 @@ export const ListViewTable = factory<ListViewTableFactory>((_props) => {
       getColumnStyle,
       getStyles,
       headerLongPress.didLongPressRef,
+      stickyInfo,
     ]
   );
 
@@ -781,13 +858,52 @@ export const ListViewTable = factory<ListViewTableFactory>((_props) => {
           ? column.cellClassName(record, rowIndex)
           : column.cellClassName;
 
-      const stickyColumnClass = column.sticky ? getStyles('stickyColumn').className : '';
+      const stickySide = stickyInfo.sides[colIdx];
+      const shadowSide =
+        colIdx === stickyInfo.lastLeftIdx
+          ? 'left'
+          : colIdx === stickyInfo.firstRightIdx
+            ? 'right'
+            : undefined;
+
+      const stickyColumnClass = stickySide ? getStyles('stickyColumn').className : '';
       const finalCellClassName = [cellClassName, stickyColumnClass].filter(Boolean).join(' ');
 
       const cellStyle =
         typeof column.cellStyle === 'function'
           ? column.cellStyle(record, rowIndex)
           : column.cellStyle;
+
+      // For sticky cells, the Td must keep `overflow: visible` so the shadow
+      // pseudo-element can render outside the cell border. Ellipsis rules
+      // therefore move to an inner wrapper. Non-sticky cells keep the
+      // existing simpler structure (ellipsis directly on the Td).
+      const ellipsisStyle = column.ellipsis
+        ? {
+            whiteSpace: 'nowrap' as const,
+            textOverflow: 'ellipsis' as const,
+            overflow: 'hidden' as const,
+          }
+        : column.noWrap || noWrap
+          ? { whiteSpace: 'nowrap' as const }
+          : undefined;
+
+      const cellInner = stickySide ? <div style={ellipsisStyle}>{cellContent}</div> : cellContent;
+
+      const shadowEl = shadowSide ? (
+        <span {...getStyles('stickyColumnShadow')} data-side={shadowSide} aria-hidden />
+      ) : null;
+
+      const stickyPositionStyle =
+        stickySide === 'left'
+          ? { position: 'sticky' as const, left: 0, zIndex: 10, overflow: 'visible' as const }
+          : stickySide === 'right'
+            ? { position: 'sticky' as const, right: 0, zIndex: 10, overflow: 'visible' as const }
+            : {
+                whiteSpace: column.noWrap || noWrap ? ('nowrap' as const) : undefined,
+                textOverflow: column.ellipsis ? ('ellipsis' as const) : undefined,
+                overflow: 'hidden' as const,
+              };
 
       return (
         <Table.Td
@@ -797,23 +913,21 @@ export const ListViewTable = factory<ListViewTableFactory>((_props) => {
             style: {
               ...columnStyle,
               textAlign: column.textAlign,
-              whiteSpace: column.noWrap || noWrap ? 'nowrap' : undefined,
-              textOverflow: column.ellipsis ? 'ellipsis' : undefined,
-              overflow: 'hidden',
-              position: column.sticky ? 'sticky' : undefined,
-              left: column.sticky ? 0 : undefined,
-              zIndex: column.sticky ? 10 : undefined,
+              ...stickyPositionStyle,
               verticalAlign,
               ...cellStyle,
             },
           })}
           data-column-key={column.key as string}
+          data-sticky-side={stickySide ?? undefined}
+          data-sticky-shadow={shadowSide}
         >
-          {cellContent}
+          {cellInner}
+          {shadowEl}
         </Table.Td>
       );
     },
-    [noWrap, verticalAlign, getStyles, getColumnStyle]
+    [noWrap, verticalAlign, getStyles, getColumnStyle, stickyInfo]
   );
 
   const isVertical = tableProps?.variant === 'vertical';
