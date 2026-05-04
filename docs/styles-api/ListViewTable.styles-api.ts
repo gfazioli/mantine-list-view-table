@@ -18,8 +18,6 @@ export const ListViewTableStylesApi: StylesApiData<ListViewTableFactory> = {
     selectedRow: 'Selected row highlight',
     focusedRow: 'Focused row outline (keyboard navigation)',
     stickyColumn: 'Sticky column cell (td)',
-    stickyColumnShadow:
-      'Gradient shadow rendered on the inner edge of the last sticky-left and first sticky-right cell, fading in when there is content scrolled past the edge',
     stickyHeaderColumn: 'Sticky header column cell (th)',
     emptyState: 'Empty state container when no data',
     loader: 'Loading state container',
@@ -103,10 +101,14 @@ export const ListViewTableStylesApi: StylesApiData<ListViewTableFactory> = {
       condition: '`"left"` or `"right"` when the column is pinned',
     },
     {
-      selector: 'stickyColumnShadow',
-      modifier: 'data-side',
-      condition:
-        '`"left"` (shadow on right edge of pinned-left) or `"right"` (shadow on left edge of pinned-right)',
+      selector: 'cell',
+      modifier: 'data-sticky-shadow',
+      condition: '`"left"` on the last sticky-left cell, `"right"` on the first sticky-right cell',
+    },
+    {
+      selector: 'headerCell',
+      modifier: 'data-sticky-shadow',
+      condition: '`"left"` on the last sticky-left cell, `"right"` on the first sticky-right cell',
     },
   ],
 };

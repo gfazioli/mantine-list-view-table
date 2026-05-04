@@ -464,24 +464,25 @@ describe('ListViewTable', () => {
       expect(header?.getAttribute('data-sticky-side')).toBe('left');
     });
 
-    it('renders the shadow span only on the last sticky-left and first sticky-right columns', () => {
+    it('marks the last sticky-left and first sticky-right cells with data-sticky-shadow', () => {
       const { container } = render(
         <ListViewTable columns={pinnedColumns as any} data={pinnedData} rowKey="id" />
       );
-      // Only one shadow per side per row (header + body × 2 rows = 3 of each side)
-      const leftShadows = container.querySelectorAll('[data-side="left"]');
-      const rightShadows = container.querySelectorAll('[data-side="right"]');
-      // 1 header + 2 body rows = 3 each
-      expect(leftShadows.length).toBe(3);
-      expect(rightShadows.length).toBe(3);
+      // The shadow is rendered as a `::after` pseudo-element on every cell
+      // carrying `data-sticky-shadow`. With one header row + two body rows,
+      // we expect three cells per side to be marked.
+      const leftShadowCells = container.querySelectorAll('[data-sticky-shadow="left"]');
+      const rightShadowCells = container.querySelectorAll('[data-sticky-shadow="right"]');
+      expect(leftShadowCells.length).toBe(3);
+      expect(rightShadowCells.length).toBe(3);
     });
 
-    it('does not render shadows when no column is sticky', () => {
+    it('does not mark any cell with data-sticky-shadow when no column is sticky', () => {
       const { container } = render(
         <ListViewTable columns={testColumns as any} data={testData} rowKey="id" />
       );
-      expect(container.querySelectorAll('[data-side="left"]').length).toBe(0);
-      expect(container.querySelectorAll('[data-side="right"]').length).toBe(0);
+      expect(container.querySelectorAll('[data-sticky-shadow="left"]').length).toBe(0);
+      expect(container.querySelectorAll('[data-sticky-shadow="right"]').length).toBe(0);
     });
   });
 });

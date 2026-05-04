@@ -822,13 +822,6 @@ export const ListViewTable = factory<ListViewTableFactory>((_props) => {
                 getStyles={() => getStyles('resizeHandle')}
               />
             )}
-
-          {/* Pinned-column edge shadow — only on the last sticky-left and the
-              first sticky-right column. CSS variables on the table root drive
-              the opacity transition in response to scroll. */}
-          {shadowSide && (
-            <span {...getStyles('stickyColumnShadow')} data-side={shadowSide} aria-hidden />
-          )}
         </Table.Th>
       );
     },
@@ -896,10 +889,6 @@ export const ListViewTable = factory<ListViewTableFactory>((_props) => {
 
       const cellInner = stickySide ? <div style={ellipsisStyle}>{cellContent}</div> : cellContent;
 
-      const shadowEl = shadowSide ? (
-        <span {...getStyles('stickyColumnShadow')} data-side={shadowSide} aria-hidden />
-      ) : null;
-
       // See the matching comment in renderHeaderCell: pin both `left` and
       // `right` explicitly so a stale class rule cannot leave both at `0`.
       const stickyPositionStyle =
@@ -943,7 +932,6 @@ export const ListViewTable = factory<ListViewTableFactory>((_props) => {
           data-sticky-shadow={shadowSide}
         >
           {cellInner}
-          {shadowEl}
         </Table.Td>
       );
     },
