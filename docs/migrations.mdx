@@ -1,0 +1,139 @@
+import { Code, Table } from '@mantine/core';
+
+## Upgrade guide
+
+This page collects the **breaking changes** and **migration steps** for each major version of `@gfazioli/mantine-list-view-table`. If you are starting a new project, you can skip this page — everything here is about updating existing code from an older version.
+
+New features introduced in a release (that do not break anything) are **not** listed here. See the [GitHub Releases](https://github.com/gfazioli/mantine-list-view-table/releases) page for the full changelog.
+
+## v4
+
+Version 4 unifies the column reorder drag system around a single pointer-event codepath, replacing the dual HTML5 drag-and-drop (desktop) + custom touch-pointer (mobile) implementation that shipped in v3.
+
+For consumers of `<ListViewTable>` itself, **v4 is a drop-in upgrade** — `enableColumnReordering`, `onColumnReorder`, `enableColumnResizing`, `onColumnResize`, the `column.draggable` and `column.resizable` overrides, and every other prop keep the exact same signature and behavior. Existing code does not need to change.
+
+The breaking change only affects code that consumes the **`useColumnReorder` hook directly**. Most apps do not — the hook is an advanced API for building custom table layouts.
+
+### Why this changed
+
+HTML5 drag-and-drop is unreliable on mobile browsers (iOS Safari in particular) and the dual codepath made the touch path brittle. The unified pointer-event implementation:
+
+- Works the same way on **mouse, touch, and pen**, with no `draggable={true}` on `<th>` (which interfered with touch gestures)
+- Restores the column reorder drop **at the table edges** (dropping a column before the first or after the last column was a no-op in v3 because `elementFromPoint` returned `null` outside the header row)
+- Locks `user-select: none` and `cursor: grabbing` on `document.body` while a drag is active, so swipe gestures on touch no longer trigger text selection mid-drag
+- Adds `Escape` to cancel an in-flight drag without committing the reorder
+- Is safe under React Strict Mode (the previous implementation re-applied the reorder twice when StrictMode replayed the setState updater for purity checks)
+
+### Breaking changes in v4
+
+#### `useColumnReorder` return type — five handlers removed, one signature changed
+
+The hook used to expose six handlers, three for the HTML5 DnD path and three for the touch fallback. They are collapsed into a **single** entry point that handles all three pointer types.
+
+<Table striped highlightOnHover withTableBorder withColumnBorders>
+  <Table.Thead>
+    <Table.Tr>
+      <Table.Th>v3 export</Table.Th>
+      <Table.Th>v4 replacement</Table.Th>
+    </Table.Tr>
+  </Table.Thead>
+  <Table.Tbody>
+    <Table.Tr>
+      <Table.Td><Code>{`handleColumnDragStart(index, event: React.DragEvent)`}</Code></Table.Td>
+      <Table.Td>{`Renamed signature: handleColumnDragStart(index, event: React.PointerEvent). Same name, but now accepts a Pointer event and is wired on onPointerDown, not onDragStart.`}</Table.Td>
+    </Table.Tr>
+    <Table.Tr>
+      <Table.Td><Code>handleColumnDragOver</Code></Table.Td>
+      <Table.Td>{`Removed — drop target is resolved internally via document.elementFromPoint on every pointermove.`}</Table.Td>
+    </Table.Tr>
+    <Table.Tr>
+      <Table.Td><Code>handleColumnDragLeave</Code></Table.Td>
+      <Table.Td>Removed — no equivalent needed.</Table.Td>
+    </Table.Tr>
+    <Table.Tr>
+      <Table.Td><Code>handleColumnDrop</Code></Table.Td>
+      <Table.Td>{`Removed — drop is committed internally on pointerup.`}</Table.Td>
+    </Table.Tr>
+    <Table.Tr>
+      <Table.Td><Code>handleColumnDragEnd</Code></Table.Td>
+      <Table.Td>{`Removed — cleanup runs internally on pointerup / pointercancel / Escape.`}</Table.Td>
+    </Table.Tr>
+    <Table.Tr>
+      <Table.Td><Code>handleDragHandlePointerDown</Code></Table.Td>
+      <Table.Td><>Removed — its job is now done by <Code>handleColumnDragStart</Code>.</></Table.Td>
+    </Table.Tr>
+  </Table.Tbody>
+</Table>
+
+#### What you need to change
+
+If your code looks like this in v3:
+
+```tsx
+import { useColumnReorder } from '@gfazioli/mantine-list-view-table';
+
+const {
+  effectiveColumns,
+  handleColumnDragStart,
+  handleColumnDragOver,
+  handleColumnDragLeave,
+  handleColumnDrop,
+  handleColumnDragEnd,
+  handleDragHandlePointerDown,
+} = useColumnReorder({ columns, enableColumnReordering, onColumnReorder });
+
+return columns.map((column, index) => (
+  <th
+    key={column.key}
+    draggable
+    onDragStart={(e) => handleColumnDragStart(index, e)}
+    onDragOver={(e) => handleColumnDragOver(index, e)}
+    onDragLeave={handleColumnDragLeave}
+    onDrop={(e) => handleColumnDrop(index, e)}
+    onDragEnd={handleColumnDragEnd}
+    data-column-key={column.key}
+  >
+    <button onPointerDown={(e) => handleDragHandlePointerDown(index, e)}>
+      ⋮⋮
+    </button>
+    {column.title}
+  </th>
+));
+```
+
+Replace it with:
+
+```tsx
+import { useColumnReorder } from '@gfazioli/mantine-list-view-table';
+
+const { effectiveColumns, handleColumnDragStart } = useColumnReorder({
+  columns,
+  enableColumnReordering,
+  onColumnReorder,
+});
+
+return columns.map((column, index) => (
+  <th key={column.key} data-column-key={column.key}>
+    <button onPointerDown={(e) => handleColumnDragStart(index, e)}>
+      ⋮⋮
+    </button>
+    {column.title}
+  </th>
+));
+```
+
+Key points:
+
+- **No more `draggable={true}` on `<th>`** — the v4 hook does not use HTML5 DnD at all.
+- **No more `onDragStart` / `onDragOver` / `onDragLeave` / `onDrop` / `onDragEnd`** wiring on `<th>`. The hook attaches its own `pointermove` / `pointerup` / `pointercancel` / `keydown` listeners on `document` for the duration of each drag.
+- **Wire `handleColumnDragStart` on the drag handle's `onPointerDown`**, exactly as you previously wired `handleDragHandlePointerDown` for touch — the same call now drives mouse, touch, and pen.
+- **The `data-column-key` attribute on each `<th>` is still required** — the hook reads it to resolve the drop target via `document.elementFromPoint`. Make sure every header cell exposes it.
+
+#### Behavioral notes (no code changes needed)
+
+- The drag handle now activates after a **5px movement threshold** on every pointer type (previously 5px on touch, 0px on mouse). A simple click on the handle without dragging no longer starts a drag.
+- The drop logic now falls back to a **geometric** check against the source header row's bounding rect when `document.elementFromPoint` returns no `<th>`. This makes "drop before the first column" and "drop after the last column" actually work — they were silent no-ops in v3.
+- During a drag, `document.body.style.userSelect` is set to `'none'` and `document.body.style.cursor` is set to `'grabbing'` (both are restored on finish, cancel, or component unmount). If you previously applied custom global styles on these properties during a drag, the hook now manages them for you.
+- Pressing **`Escape`** during a drag cancels the move without committing.
+
+The component-level API (`<ListViewTable enableColumnReordering ... />`) is unchanged. If you do not use `useColumnReorder` directly, no migration is required.
