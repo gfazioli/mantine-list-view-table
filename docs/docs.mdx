@@ -57,24 +57,38 @@ You can also use the `stickyHeaderOffset` prop to adjust the sticky header posit
 
 Set `column.sticky` to `'left'` or `'right'` to pin a column to the corresponding edge of the table when the user scrolls horizontally. The legacy `sticky: true` is preserved as an alias for `'left'`.
 
-A subtle gradient shadow appears on the inner edge of the **last** sticky-left column and the **first** sticky-right column whenever there is content scrolled past the edge — the same visual cue users expect from spreadsheet-style data grids. The shadow fades out smoothly when the table is scrolled fully to the relevant side, and is hidden entirely on tables that fit within the viewport.
-
-The shadow is rendered as a real `<span>` element exposed via the `stickyColumnShadow` Styles API selector, and its opacity is driven by two CSS variables (`--lvt-shadow-left-opacity` / `--lvt-shadow-right-opacity`) that the internal `useStickyShadow` hook updates on horizontal scroll — **no React re-renders** during scroll.
-
-Customize via:
-
-- `--lvt-shadow-color` — gradient color (default `rgba(0, 0, 0, 0.15)` light / `rgba(0, 0, 0, 0.4)` dark)
-- `--lvt-shadow-width` — width of the shadow strip (default `4px`)
+A subtle gradient shadow (`::after` pseudo-element on the cell) appears on the inner edge of the **last** sticky-left column and the **first** sticky-right column whenever there is content scrolled past the edge — the same visual cue users expect from spreadsheet-style data grids. The shadow fades smoothly when the table is scrolled fully to the relevant side and is hidden entirely on tables that fit within the viewport. Opacity is driven by `--lvt-shadow-left-opacity` / `--lvt-shadow-right-opacity` CSS variables that the internal `useStickyShadow` hook updates on horizontal scroll — **no React re-renders** during scroll.
 
 ```tsx
 const columns = [
   { key: 'name', title: 'Name', width: 200, sticky: 'left' },
   { key: 'kind', title: 'Kind', width: 140 },
-  { key: 'size', title: 'Size', width: 120 },
   // …more columns…
   { key: 'actions', title: 'Actions', width: 110, sticky: 'right' },
 ];
 ```
+
+### Recommended setup with scrollProps
+
+When combining sticky columns with `withTableBorder` and/or `borderRadius`, prefer the built-in `scrollProps` over `Mantine.Table.ScrollContainer`. The `scrollProps` API tells `ListViewTable` to render its own scroll wrapper, with the **outer container non-scrolling** — the border and rounded corners stay fixed regardless of scroll position. With `Table.ScrollContainer`, the entire table (including its border) is translated during scroll, so the outer borders briefly disappear at the edges.
+
+```tsx
+<ListViewTable
+  columns={columns}
+  data={data}
+  rowKey="id"
+  withTableBorder
+  borderRadius="md"
+  scrollProps={{ minWidth: 1300 /* enable horizontal scroll when content is wider */ }}
+/>
+```
+
+`scrollProps` accepts:
+
+- `minWidth?: number | string` — minimum width that forces horizontal scroll
+- `maxHeight?: number | string` — maximum height that enables vertical scroll
+
+If both `scrollProps` and an outer `Table.ScrollContainer` are used, `scrollProps` wins — the table will scroll inside its own viewport. You can omit `scrollProps` and continue using `Table.ScrollContainer`, but the outer borders will move with the table during scroll.
 
 <Demo data={demos.pinnedColumns} />
 

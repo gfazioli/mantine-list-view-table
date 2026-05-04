@@ -5,6 +5,33 @@
   outline: none;
 }
 
+/*
+ * When `scrollProps` is set on `<ListViewTable>`, the root `<Box>` becomes
+ * the OUTER non-scrolling container. The native `<table>` border is
+ * disabled (the renderer passes `withTableBorder: false` to Mantine's
+ * Table) and we draw the border here instead, so it stays fixed during
+ * horizontal scroll regardless of sticky-column behavior.
+ *
+ * The border-radius is set inline by the renderer (it depends on the
+ * `borderRadius` prop) — we only handle the border line and the
+ * `overflow: hidden` clip needed to honour the rounded corners.
+ */
+.root[data-with-table-border='true'] {
+  border: rem(0.0625) solid var(--mantine-color-default-border);
+  overflow: hidden;
+}
+
+[data-mantine-color-scheme='dark'] .root[data-with-table-border='true'] {
+  border-color: var(--mantine-color-dark-4);
+}
+
+.scrollViewport {
+  /* Inline `overflow` and `maxHeight` set by the renderer when
+     `scrollProps` is provided; otherwise this element uses
+     `display: contents` and disappears from the layout entirely so the
+     no-internal-scroll case is unaffected. */
+}
+
 .root[data-dragging='true'],
 .root[data-resizing='true'] {
   user-select: none;

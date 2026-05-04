@@ -15,6 +15,7 @@ import {
   Group,
   Loader,
   MantineColor,
+  MantineRadius,
   MantineSpacing,
   Menu,
   Stack,
@@ -82,9 +83,48 @@ export interface ListViewTableBaseProps<T = any> {
   layout?: React.CSSProperties['tableLayout'];
 
   /**
-   * Whether to show table borders.
+   * Whether to show table borders. When `scrollProps` is set the border is
+   * rendered on the outer (non-scrolling) container so it stays fixed during
+   * horizontal scroll, even with sticky columns. When `scrollProps` is not
+   * set the border falls back to Mantine's native `<table>` border (which
+   * scrolls with the content if the table is wrapped in
+   * `Table.ScrollContainer`).
    */
   withTableBorder?: boolean;
+
+  /**
+   * Border radius of the outer container when `scrollProps` is set. Mirrors
+   * Mantine's radius scale; ignored when `scrollProps` is not provided.
+   *
+   * @default 'sm'
+   */
+  borderRadius?: MantineRadius;
+
+  /**
+   * When provided, ListViewTable renders its own scroll wrapper around the
+   * `<Table>` instead of relying on `Mantine.Table.ScrollContainer`. The
+   * outer container is non-scrolling, which lets the table border and
+   * border-radius stay fixed while only the inner viewport scrolls — the
+   * recommended setup for sticky columns combined with `withTableBorder`.
+   *
+   * Pass `minWidth` to force horizontal scroll when the table content is
+   * wider than its container, and `maxHeight` to enable vertical scroll.
+   *
+   * @example
+   * ```tsx
+   * <ListViewTable
+   *   columns={columns}
+   *   data={data}
+   *   withTableBorder
+   *   borderRadius="md"
+   *   scrollProps={{ minWidth: 1300 }}
+   * />
+   * ```
+   */
+  scrollProps?: {
+    minWidth?: number | string;
+    maxHeight?: number | string;
+  };
 
   /**
    * Whether to show column borders.
@@ -344,6 +384,7 @@ const defaultProps: Partial<ListViewTableProps> = {
   width: '100%',
   emptyText: 'No data available',
   withTableBorder: false,
+  borderRadius: 'sm',
   withRowBorders: true,
   withColumnBorders: true,
   highlightOnHover: false,
@@ -401,7 +442,9 @@ export const ListViewTable = factory<ListViewTableFactory>((_props) => {
     layout,
     captionSide,
     borderColor,
+    borderRadius,
     withTableBorder,
+    scrollProps,
     withColumnBorders,
     withRowBorders,
     striped,
@@ -1031,128 +1074,162 @@ export const ListViewTable = factory<ListViewTableFactory>((_props) => {
   }
 
   // === Render: Normal table ===
+  // When `scrollProps` is set, ListViewTable owns the scroll context: an
+  // outer non-scrolling `<Box>` holds the border + border-radius, and an
+  // inner viewport `<div>` does native horizontal/vertical scrolling. This
+  // is the recommended setup for sticky columns + `withTableBorder` because
+  // the border stays fixed regardless of scroll position. When `scrollProps`
+  // is not set we render the `<Table>` inline and let the consumer wrap us
+  // in `Mantine.Table.ScrollContainer` (or any other scroller) — Mantine's
+  // native `<table>` border then carries the border, but it scrolls with
+  // the table content.
+  const scrollEnabled = !!scrollProps;
   return (
     <Box
-      {...getStyles('root', { className: responsiveClassName })}
+      {...getStyles('root', {
+        className: responsiveClassName,
+        style:
+          scrollEnabled && withTableBorder
+            ? { borderRadius: `var(--mantine-radius-${borderRadius || 'sm'})` }
+            : undefined,
+      })}
       tabIndex={kbEnabled ? 0 : undefined}
       onKeyDown={kbEnabled ? handleKeyDown : undefined}
       data-dragging={draggedColumn !== null ? 'true' : undefined}
       data-resizing={isResizeActive ? 'true' : undefined}
+      data-with-table-border={scrollEnabled && withTableBorder ? 'true' : undefined}
+      data-with-scroll={scrollEnabled ? 'true' : undefined}
       {...others}
     >
       {mediaVariables}
-      <Table
-        {...getStyles('table', { style: getTableStyle() })}
-        withTableBorder={withTableBorder}
-        withColumnBorders={withColumnBorders}
-        withRowBorders={withRowBorders}
-        striped={striped}
-        stripedColor={stripedColor}
-        highlightOnHover={highlightOnHover && !selectionMode}
-        highlightOnHoverColor={highlightOnHoverColor}
-        /* horizontalSpacing and verticalSpacing are intentionally NOT passed here.
+      <div
+        {...getStyles('scrollViewport')}
+        style={
+          scrollEnabled
+            ? { overflow: 'auto', maxHeight: scrollProps?.maxHeight }
+            : /* `display: contents` makes the wrapper invisible to layout
+                 so the `<Table>` behaves exactly as if it were a direct
+                 child of the outer `<Box>`, preserving the original
+                 (no-internal-scroll) rendering when `scrollProps` is not
+                 set. */
+              { display: 'contents' }
+        }
+      >
+        <Table
+          {...getStyles('table', {
+            style: { ...getTableStyle(), minWidth: scrollProps?.minWidth },
+          })}
+          withTableBorder={scrollEnabled ? false : withTableBorder}
+          withColumnBorders={withColumnBorders}
+          withRowBorders={withRowBorders}
+          striped={striped}
+          stripedColor={stripedColor}
+          highlightOnHover={highlightOnHover && !selectionMode}
+          highlightOnHoverColor={highlightOnHoverColor}
+          /* horizontalSpacing and verticalSpacing are intentionally NOT passed here.
            Cell padding is controlled via --list-view-horizontal-spacing / --list-view-vertical-spacing
            CSS variables set by ListViewTableMediaVariables, which supports responsive breakpoints. */
-        borderColor={borderColor}
-        captionSide={captionSide}
-        stickyHeader={stickyHeader}
-        stickyHeaderOffset={stickyHeaderOffset}
-        tabularNums={tabularNums}
-        layout={tableLayout}
-        {...tableProps}
-        ref={tableRef}
-      >
-        <Table.Thead
-          {...getStyles('header')}
-          onContextMenu={enableColumnVisibilityToggle ? handleHeaderContextMenu : undefined}
-          {...(enableColumnVisibilityToggle
-            ? {
-                onPointerDown: headerLongPress.onPointerDown,
-                onPointerMove: headerLongPress.onPointerMove,
-                onPointerUp: headerLongPress.onPointerUp,
-                onPointerCancel: headerLongPress.onPointerCancel,
-              }
-            : {})}
+          borderColor={borderColor}
+          captionSide={captionSide}
+          stickyHeader={stickyHeader}
+          stickyHeaderOffset={stickyHeaderOffset}
+          tabularNums={tabularNums}
+          layout={tableLayout}
+          {...tableProps}
+          ref={tableRef}
         >
-          <Table.Tr>
-            {visibleColumns.map((column, index) => renderHeaderCell(column, index))}
-          </Table.Tr>
-        </Table.Thead>
-
-        <Table.Tbody {...getStyles('body')}>
-          {sortedData.map((record, rowIndex) => {
-            const key = getRowKey(record, rowIndex);
-            const rowClassNameValue =
-              typeof rowClassName === 'function' ? rowClassName(record, rowIndex) : rowClassName;
-
-            let rowStyleValue: React.CSSProperties = {};
-            if (typeof rowStyle === 'function') {
-              rowStyleValue = rowStyle(record, rowIndex) || {};
-            } else if (rowStyle) {
-              rowStyleValue = rowStyle;
-            }
-
-            const selected = isSelected(key);
-            const focused = focusedRowIndex === rowIndex;
-
-            const combinedStyle: React.CSSProperties = {
-              cursor: onRowClick || onRowDoubleClick || selectionMode ? 'pointer' : 'default',
-              ...rowStyleValue,
-            };
-
-            const rowClasses = [
-              rowClassNameValue,
-              selected ? getStyles('selectedRow').className : undefined,
-              focused ? getStyles('focusedRow').className : undefined,
-            ]
-              .filter(Boolean)
-              .join(' ');
-
-            return (
-              <Table.Tr
-                key={key}
-                {...getStyles('row', { style: combinedStyle })}
-                className={rowClasses || undefined}
-                onClick={(event) => {
-                  // Suppress click after a long-press on touch
-                  if (rowLongPress.didLongPressRef.current) {
-                    rowLongPress.didLongPressRef.current = false;
-                    return;
-                  }
-                  if (selectionMode) {
-                    handleSelectionClick(rowIndex, event);
-                    setFocusedRowIndex(rowIndex);
-                  }
-                  onRowClick?.(record, rowIndex, event);
-                }}
-                onDoubleClick={(event) => onRowDoubleClick?.(record, rowIndex, event)}
-                onContextMenu={
-                  renderContextMenu || onRowContextMenu
-                    ? (event) => handleRowContextMenu(record, rowIndex, event)
-                    : undefined
+          <Table.Thead
+            {...getStyles('header')}
+            onContextMenu={enableColumnVisibilityToggle ? handleHeaderContextMenu : undefined}
+            {...(enableColumnVisibilityToggle
+              ? {
+                  onPointerDown: headerLongPress.onPointerDown,
+                  onPointerMove: headerLongPress.onPointerMove,
+                  onPointerUp: headerLongPress.onPointerUp,
+                  onPointerCancel: headerLongPress.onPointerCancel,
                 }
-                {...(renderContextMenu
-                  ? {
-                      onPointerDown: (e: React.PointerEvent) => {
-                        longPressRowRef.current = { record, index: rowIndex };
-                        rowLongPress.onPointerDown(e);
-                      },
-                      onPointerMove: rowLongPress.onPointerMove,
-                      onPointerUp: rowLongPress.onPointerUp,
-                      onPointerCancel: rowLongPress.onPointerCancel,
+              : {})}
+          >
+            <Table.Tr>
+              {visibleColumns.map((column, index) => renderHeaderCell(column, index))}
+            </Table.Tr>
+          </Table.Thead>
+
+          <Table.Tbody {...getStyles('body')}>
+            {sortedData.map((record, rowIndex) => {
+              const key = getRowKey(record, rowIndex);
+              const rowClassNameValue =
+                typeof rowClassName === 'function' ? rowClassName(record, rowIndex) : rowClassName;
+
+              let rowStyleValue: React.CSSProperties = {};
+              if (typeof rowStyle === 'function') {
+                rowStyleValue = rowStyle(record, rowIndex) || {};
+              } else if (rowStyle) {
+                rowStyleValue = rowStyle;
+              }
+
+              const selected = isSelected(key);
+              const focused = focusedRowIndex === rowIndex;
+
+              const combinedStyle: React.CSSProperties = {
+                cursor: onRowClick || onRowDoubleClick || selectionMode ? 'pointer' : 'default',
+                ...rowStyleValue,
+              };
+
+              const rowClasses = [
+                rowClassNameValue,
+                selected ? getStyles('selectedRow').className : undefined,
+                focused ? getStyles('focusedRow').className : undefined,
+              ]
+                .filter(Boolean)
+                .join(' ');
+
+              return (
+                <Table.Tr
+                  key={key}
+                  {...getStyles('row', { style: combinedStyle })}
+                  className={rowClasses || undefined}
+                  onClick={(event) => {
+                    // Suppress click after a long-press on touch
+                    if (rowLongPress.didLongPressRef.current) {
+                      rowLongPress.didLongPressRef.current = false;
+                      return;
                     }
-                  : {})}
-                data-selected={selected ? 'true' : undefined}
-                data-focused={focused ? 'true' : undefined}
-              >
-                {visibleColumns.map((column, colIdx) =>
-                  renderCell(record, column, rowIndex, colIdx)
-                )}
-              </Table.Tr>
-            );
-          })}
-        </Table.Tbody>
-      </Table>
+                    if (selectionMode) {
+                      handleSelectionClick(rowIndex, event);
+                      setFocusedRowIndex(rowIndex);
+                    }
+                    onRowClick?.(record, rowIndex, event);
+                  }}
+                  onDoubleClick={(event) => onRowDoubleClick?.(record, rowIndex, event)}
+                  onContextMenu={
+                    renderContextMenu || onRowContextMenu
+                      ? (event) => handleRowContextMenu(record, rowIndex, event)
+                      : undefined
+                  }
+                  {...(renderContextMenu
+                    ? {
+                        onPointerDown: (e: React.PointerEvent) => {
+                          longPressRowRef.current = { record, index: rowIndex };
+                          rowLongPress.onPointerDown(e);
+                        },
+                        onPointerMove: rowLongPress.onPointerMove,
+                        onPointerUp: rowLongPress.onPointerUp,
+                        onPointerCancel: rowLongPress.onPointerCancel,
+                      }
+                    : {})}
+                  data-selected={selected ? 'true' : undefined}
+                  data-focused={focused ? 'true' : undefined}
+                >
+                  {visibleColumns.map((column, colIdx) =>
+                    renderCell(record, column, rowIndex, colIdx)
+                  )}
+                </Table.Tr>
+              );
+            })}
+          </Table.Tbody>
+        </Table>
+      </div>
 
       {/* Context Menu */}
       <Menu
