@@ -1074,30 +1074,29 @@ export const ListViewTable = factory<ListViewTableFactory>((_props) => {
   }
 
   // === Render: Normal table ===
-  // When `scrollProps` is set, ListViewTable owns the scroll context: an
-  // outer non-scrolling `<Box>` holds the border + border-radius, and an
-  // inner viewport `<div>` does native horizontal/vertical scrolling. This
-  // is the recommended setup for sticky columns + `withTableBorder` because
-  // the border stays fixed regardless of scroll position. When `scrollProps`
-  // is not set we render the `<Table>` inline and let the consumer wrap us
-  // in `Mantine.Table.ScrollContainer` (or any other scroller) — Mantine's
-  // native `<table>` border then carries the border, but it scrolls with
-  // the table content.
+  // The outer `<Box>` always owns `withTableBorder` + `borderRadius`. When
+  // `scrollProps` is set, the inner `<div>` becomes the scroll viewport
+  // (native horizontal/vertical scrolling) so the border on the wrapper
+  // stays fixed regardless of scroll position — the recommended setup for
+  // sticky columns. When `scrollProps` is not set, the inner `<div>` uses
+  // `display: contents` (invisible to layout), so the table behaves
+  // exactly as if it were a direct child of the outer `<Box>`. Consumers
+  // can still wrap the component in `Mantine.Table.ScrollContainer` or any
+  // other scroller — but with `scrollProps` the border stays fixed.
   const scrollEnabled = !!scrollProps;
   return (
     <Box
       {...getStyles('root', {
         className: responsiveClassName,
-        style:
-          scrollEnabled && withTableBorder
-            ? { borderRadius: `var(--mantine-radius-${borderRadius || 'sm'})` }
-            : undefined,
+        style: withTableBorder
+          ? { borderRadius: `var(--mantine-radius-${borderRadius || 'sm'})` }
+          : undefined,
       })}
       tabIndex={kbEnabled ? 0 : undefined}
       onKeyDown={kbEnabled ? handleKeyDown : undefined}
       data-dragging={draggedColumn !== null ? 'true' : undefined}
       data-resizing={isResizeActive ? 'true' : undefined}
-      data-with-table-border={scrollEnabled && withTableBorder ? 'true' : undefined}
+      data-with-table-border={withTableBorder ? 'true' : undefined}
       data-with-scroll={scrollEnabled ? 'true' : undefined}
       {...others}
     >
@@ -1119,7 +1118,12 @@ export const ListViewTable = factory<ListViewTableFactory>((_props) => {
           {...getStyles('table', {
             style: { ...getTableStyle(), minWidth: scrollProps?.minWidth },
           })}
-          withTableBorder={scrollEnabled ? false : withTableBorder}
+          /* Border lives on the outer `<Box>` wrapper (see CSS rule on
+             `.root[data-with-table-border='true']`) so it stays fixed
+             regardless of horizontal scroll position and respects
+             `borderRadius`. Mantine's native border on the `<table>` is
+             always disabled here. */
+          withTableBorder={false}
           withColumnBorders={withColumnBorders}
           withRowBorders={withRowBorders}
           striped={striped}
