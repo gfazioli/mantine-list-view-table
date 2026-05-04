@@ -204,6 +204,12 @@ export const configurator: MantineDemo = {
       libraryValue: 'xs',
     },
     {
+      prop: 'borderRadius',
+      type: 'size',
+      initialValue: 'sm',
+      libraryValue: 'sm',
+    },
+    {
       prop: 'verticalAlign',
       type: 'select',
       data: [
