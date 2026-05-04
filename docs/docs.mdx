@@ -158,6 +158,16 @@ The `resizeMode` prop controls how column resizing behaves:
 
 <Demo data={demos.resizeMode} />
 
+## Column Reordering
+
+Enable `enableColumnReordering` to let users rearrange columns by dragging the grip handle on each header. The drag system runs on a single unified pointer-event path — **mouse, touch, and pen** all share the same code, so behavior is identical on desktop and mobile (including iOS Safari, where HTML5 drag-and-drop is unreliable).
+
+A custom ghost element follows the pointer, the target column is highlighted via the `data-drag-over` attribute, and the new position commits on release. Press **`Escape`** during a drag to cancel without committing the move.
+
+Use `onColumnReorder` to receive the `(fromIndex, toIndex)` callback for controlled mode, or omit it to let the component manage the column order internally.
+
+<Demo data={demos.reordering} />
+
 ## Text Truncation with Ellipsis
 
 When dealing with lengthy text content that exceeds the available column width, you can use the `ellipsis` and `noWrap` props to control how text overflow and wrapping are handled.
