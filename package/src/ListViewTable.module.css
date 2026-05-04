@@ -240,35 +240,32 @@
   box-shadow: inset 0 -2px 0 0 var(--mantine-primary-color-filled);
 }
 
-/* Sticky column styles — no !important */
+/*
+ * Sticky column styles.
+ *
+ * Sticky cells render with a fully **opaque** background that matches the
+ * surrounding table body / header so the columns underneath are visually
+ * occluded as the table scrolls horizontally — same behavior as
+ * `mantine-datatable`. No backdrop-filter, no transparency: the only edge
+ * cue is the gradient shadow span (see `.stickyColumnShadow` below).
+ */
 .stickyColumn {
   position: sticky;
   left: 0;
   z-index: 10;
-  background: inherit;
+  background: var(--mantine-color-body);
 }
 
-/* Apply blur effect directly to th and td elements */
-.table th.stickyHeaderColumn::before,
-.table td.stickyColumn::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  width: 100%;
-  backdrop-filter: blur(var(--list-view-sticky-blur, 3px));
-  -webkit-backdrop-filter: blur(var(--list-view-sticky-blur, 3px));
-  z-index: -1;
-  pointer-events: none;
-}
-
-/* Header sticky column */
 .stickyHeaderColumn {
   position: sticky;
   left: 0;
   z-index: 11; /* Higher than body sticky columns */
-  background: inherit;
+  background: var(--mantine-color-body);
+}
+
+[data-mantine-color-scheme='dark'] .stickyColumn,
+[data-mantine-color-scheme='dark'] .stickyHeaderColumn {
+  background: var(--mantine-color-dark-7);
 }
 
 /*

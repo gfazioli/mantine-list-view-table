@@ -167,7 +167,6 @@ export type ListViewTableCssVariables = {
     | '--list-view-cell-font-size'
     | '--list-view-cell-font-weight'
     | '--list-view-selected-row-color'
-    | '--list-view-sticky-blur'
     | '--lvt-shadow-color'
     | '--lvt-shadow-width'
     | '--lvt-shadow-left-opacity'

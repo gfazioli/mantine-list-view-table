@@ -41,7 +41,6 @@ export const ListViewTableStylesApi: StylesApiData<ListViewTableFactory> = {
       '--list-view-cell-font-weight':
         'Controls font weight of cell content – supports responsive values',
       '--list-view-selected-row-color': 'Controls background color of selected rows',
-      '--list-view-sticky-blur': 'Controls blur amount for sticky column overlay',
       '--lvt-shadow-color':
         'Color of the sticky-column gradient shadow. Default: `rgba(0, 0, 0, 0.15)` (light) / `rgba(0, 0, 0, 0.4)` (dark)',
       '--lvt-shadow-width': 'Width of the sticky-column gradient shadow in px. Default: `4px`',
