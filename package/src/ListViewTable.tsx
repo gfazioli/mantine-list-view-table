@@ -36,6 +36,7 @@ import { useLongPress } from './hooks/use-long-press';
 import { useRowSelection } from './hooks/use-row-selection';
 import { useSorting } from './hooks/use-sorting';
 import { ListViewTableMediaVariables } from './ListViewTableMediaVariables';
+import { ResizeHandle } from './ResizeHandle';
 import type {
   ListViewTableColumn,
   ListViewTableContextMenuInfo,
@@ -503,21 +504,12 @@ export const ListViewTable = factory<ListViewTableFactory>((_props) => {
     onSort,
   });
 
-  const {
-    effectiveColumns,
-    draggedColumn,
-    dragOverColumn,
-    handleColumnDragStart,
-    handleColumnDragOver,
-    handleColumnDragLeave,
-    handleColumnDrop,
-    handleColumnDragEnd,
-    handleDragHandlePointerDown,
-  } = useColumnReorder({
-    columns,
-    enableColumnReordering: enableColumnReordering!,
-    onColumnReorder,
-  });
+  const { effectiveColumns, draggedColumn, dragOverColumn, handleColumnDragStart } =
+    useColumnReorder({
+      columns,
+      enableColumnReordering: enableColumnReordering!,
+      onColumnReorder,
+    });
 
   const { visibleColumns, hiddenColumnKeys, toggleColumn } = useColumnVisibility({
     columns: effectiveColumns,
@@ -669,12 +661,6 @@ export const ListViewTable = factory<ListViewTableFactory>((_props) => {
               top: 0,
             },
           })}
-          draggable={enableColumnReordering && column.draggable !== false}
-          onDragStart={(e) => handleColumnDragStart(index, e)}
-          onDragOver={(e) => handleColumnDragOver(index, e)}
-          onDragLeave={handleColumnDragLeave}
-          onDrop={(e) => handleColumnDrop(index, e)}
-          onDragEnd={handleColumnDragEnd}
           data-dragging={draggedColumn === index ? 'true' : undefined}
           data-drag-over={dragOverColumn === index ? 'true' : undefined}
           data-focused={focusedColumn === index ? 'true' : undefined}
@@ -694,7 +680,7 @@ export const ListViewTable = factory<ListViewTableFactory>((_props) => {
             {enableColumnReordering && column.draggable !== false && (
               <Box
                 {...getStyles('dragHandle')}
-                onPointerDown={(e) => handleDragHandlePointerDown(index, e)}
+                onPointerDown={(e) => handleColumnDragStart(index, e)}
               >
                 <IconGripVertical size={12} />
               </Box>
@@ -754,10 +740,11 @@ export const ListViewTable = factory<ListViewTableFactory>((_props) => {
           {enableColumnResizing &&
             column.resizable !== false &&
             index < visibleColumns.length - 1 && (
-              <Box
-                {...getStyles('resizeHandle')}
-                onPointerDown={(e) => handleResizeStart(index, e)}
-                onDoubleClick={() => handleResizeDoubleClick(index)}
+              <ResizeHandle
+                index={index}
+                onResizeStart={handleResizeStart}
+                onResizeDoubleClick={handleResizeDoubleClick}
+                getStyles={() => getStyles('resizeHandle')}
               />
             )}
         </Table.Th>
@@ -774,11 +761,6 @@ export const ListViewTable = factory<ListViewTableFactory>((_props) => {
       noWrap,
       handleSort,
       handleColumnDragStart,
-      handleColumnDragOver,
-      handleColumnDragLeave,
-      handleColumnDrop,
-      handleColumnDragEnd,
-      handleDragHandlePointerDown,
       handleResizeStart,
       handleResizeDoubleClick,
       getColumnStyle,
