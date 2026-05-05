@@ -6,19 +6,22 @@
 }
 
 /*
- * When `scrollProps` is set on `<ListViewTable>`, the root `<Box>` becomes
- * the OUTER non-scrolling container. The native `<table>` border is
- * disabled (the renderer passes `withTableBorder: false` to Mantine's
- * Table) and we draw the border here instead, so it stays fixed during
- * horizontal scroll regardless of sticky-column behavior.
+ * The outer `<Box>` always owns `withTableBorder` (the renderer passes
+ * `withTableBorder: false` to Mantine's Table). The border line is drawn
+ * here so it stays fixed during horizontal scroll regardless of
+ * sticky-column behavior.
  *
- * The border-radius is set inline by the renderer (it depends on the
- * `borderRadius` prop) — we only handle the border line and the
- * `overflow: hidden` clip needed to honour the rounded corners.
+ * The `border-radius` and `clip-path` are set inline by the renderer
+ * (they depend on the `borderRadius` prop). We use `clip-path: inset(0
+ * round X)` instead of `overflow: hidden` to clip the rounded corners,
+ * because `overflow: hidden` would establish a scroll containing block
+ * for `position: sticky` descendants — that breaks `stickyHeader` when
+ * the user scrolls the page (the thead would stay locked inside `.root`
+ * instead of pinning to the viewport). `clip-path` clips visually
+ * without affecting sticky positioning.
  */
 .root[data-with-table-border='true'] {
   border: rem(0.0625) solid var(--mantine-color-default-border);
-  overflow: hidden;
 }
 
 [data-mantine-color-scheme='dark'] .root[data-with-table-border='true'] {

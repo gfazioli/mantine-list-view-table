@@ -1089,7 +1089,15 @@ export const ListViewTable = factory<ListViewTableFactory>((_props) => {
       {...getStyles('root', {
         className: responsiveClassName,
         style: withTableBorder
-          ? { borderRadius: `var(--mantine-radius-${borderRadius || 'sm'})` }
+          ? {
+              borderRadius: `var(--mantine-radius-${borderRadius || 'sm'})`,
+              // `clip-path` clips the rounded corners without making
+              // `.root` a scroll containing block — using `overflow:
+              // hidden` here would break `position: sticky` on the
+              // table header (it would pin to `.root` instead of the
+              // page viewport).
+              clipPath: `inset(0 round var(--mantine-radius-${borderRadius || 'sm'}))`,
+            }
           : undefined,
       })}
       tabIndex={kbEnabled ? 0 : undefined}
