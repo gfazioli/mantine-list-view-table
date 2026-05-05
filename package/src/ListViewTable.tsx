@@ -1089,17 +1089,7 @@ export const ListViewTable = factory<ListViewTableFactory>((_props) => {
       {...getStyles('root', {
         className: responsiveClassName,
         style: withTableBorder
-          ? {
-              borderRadius: `var(--mantine-radius-${borderRadius || 'sm'})`,
-              // `clip-path` clips the rounded corners without making
-              // `.root` a scroll containing block — using `overflow:
-              // hidden` here would break `position: sticky` on the
-              // table header (it would pin to `.root` instead of the
-              // page viewport). The `padding-box` reference keeps the
-              // clip strictly inside the wrapper's border so the border
-              // line is rendered intact at the corners.
-              clipPath: `inset(0 round var(--mantine-radius-${borderRadius || 'sm'})) padding-box`,
-            }
+          ? { borderRadius: `var(--mantine-radius-${borderRadius || 'sm'})` }
           : undefined,
       })}
       tabIndex={kbEnabled ? 0 : undefined}
@@ -1114,14 +1104,27 @@ export const ListViewTable = factory<ListViewTableFactory>((_props) => {
       <div
         {...getStyles('scrollViewport')}
         style={
-          scrollEnabled
-            ? { overflow: 'auto', maxHeight: scrollProps?.maxHeight }
-            : /* `display: contents` makes the wrapper invisible to layout
-                 so the `<Table>` behaves exactly as if it were a direct
-                 child of the outer `<Box>`, preserving the original
-                 (no-internal-scroll) rendering when `scrollProps` is not
-                 set. */
-              { display: 'contents' }
+          /* The wrapper carries `clip-path` (when `withTableBorder` is
+             set) so the table content is clipped to the rounded shape
+             of `.root`. The border lives on `.root` and is left
+             untouched by this clip, so the corners stay crisp.
+             `clip-path` does NOT establish a scroll containing block,
+             which keeps `position: sticky` on the table header working
+             correctly relative to the page viewport.
+
+             In `scrollEnabled` mode this same `<div>` becomes the
+             native scroll viewport; the `clip-path` continues to
+             clip the rounded corners during horizontal/vertical
+             scroll so the wrapper's rounded border always frames the
+             scrolled content. */
+          {
+            ...(scrollEnabled ? { overflow: 'auto', maxHeight: scrollProps?.maxHeight } : null),
+            ...(withTableBorder
+              ? {
+                  clipPath: `inset(0 round var(--mantine-radius-${borderRadius || 'sm'}))`,
+                }
+              : null),
+          }
         }
       >
         <Table

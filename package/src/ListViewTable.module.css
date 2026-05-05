@@ -7,18 +7,21 @@
 
 /*
  * The outer `<Box>` always owns `withTableBorder` (the renderer passes
- * `withTableBorder: false` to Mantine's Table). The border line is drawn
- * here so it stays fixed during horizontal scroll regardless of
- * sticky-column behavior.
+ * `withTableBorder: false` to Mantine's Table). The border lives here
+ * as a real CSS `border` so it stays fixed during horizontal scroll
+ * regardless of sticky-column behavior.
  *
- * The `border-radius` and `clip-path` are set inline by the renderer
- * (they depend on the `borderRadius` prop). We use `clip-path: inset(0
- * round X)` instead of `overflow: hidden` to clip the rounded corners,
- * because `overflow: hidden` would establish a scroll containing block
- * for `position: sticky` descendants — that breaks `stickyHeader` when
- * the user scrolls the page (the thead would stay locked inside `.root`
- * instead of pinning to the viewport). `clip-path` clips visually
- * without affecting sticky positioning.
+ * `border-radius` is set inline by the renderer (it depends on the
+ * `borderRadius` prop). The rounded-corner clipping of the table
+ * content is NOT done on this element — that would either:
+ *   - Use `overflow: hidden` and turn `.root` into a scroll containing
+ *     block, breaking `position: sticky` on the table header, OR
+ *   - Use `clip-path` and antialias-clip the border itself at the
+ *     rounded corners.
+ *
+ * Instead, the inner `.scrollViewport` wrapper takes care of the
+ * `clip-path` so the cells get clipped to the rounded shape while the
+ * border on this element remains untouched.
  */
 .root[data-with-table-border='true'] {
   border: rem(0.0625) solid var(--mantine-color-default-border);
