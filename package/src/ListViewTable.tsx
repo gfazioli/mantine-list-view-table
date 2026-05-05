@@ -593,6 +593,7 @@ export const ListViewTable = factory<ListViewTableFactory>((_props) => {
   });
 
   const {
+    columnWidths,
     isResizeActive,
     getColumnStyle,
     getTableStyle,
@@ -679,21 +680,20 @@ export const ListViewTable = factory<ListViewTableFactory>((_props) => {
     onSelectAll: selectionMode === 'multiple' ? selectAll : undefined,
   });
 
-  // Dynamic table-layout (resolves Issue #4)
-  // While resize is active we explicitly use `auto` even though the
-  // intuition is "lock to fixed for stability". Reason: under
-  // `table-layout: fixed` Chromium re-distributes track widths evenly
-  // when any cell is `position: sticky` (the whole pinned-column case)
-  // and the explicit `width` / `min-width` / `max-width` set inline by
-  // `useColumnResize` is silently ignored. With `auto` the inline cell
-  // widths are honored, and stability is preserved by the locked table
-  // width returned from `getTableStyle()`.
+  // Dynamic table-layout (resolves Issue #4).
+  //
+  // While resize is active we use `fixed` so the explicit pixel widths
+  // the hook writes are honored exactly with no proportional
+  // auto-distribution and no content-driven track expansion. Track
+  // widths are sourced from a `<colgroup>` we render below — this
+  // works even with `position: sticky` cells (where Chromium would
+  // ignore inline `<th>`/`<td>` widths under fixed layout).
   const tableLayout = useMemo(() => {
     if (layout) {
       return layout;
     }
     if (isResizeActive) {
-      return 'auto' as const;
+      return 'fixed' as const;
     }
     return undefined;
   }, [layout, isResizeActive]);
@@ -1200,6 +1200,25 @@ export const ListViewTable = factory<ListViewTableFactory>((_props) => {
           {...tableProps}
           ref={tableRef}
         >
+          {/* `<colgroup>` is the canonical way to lock per-column
+              widths in `table-layout: fixed`. Cell-level inline
+              `width` is ignored by Chromium when any cell is
+              `position: sticky`, but `<col>` widths are always
+              honored. We render it only while resize is active so the
+              non-resize render is unaffected. */}
+          {isResizeActive && (
+            <colgroup>
+              {visibleColumns.map((column) => {
+                const w = columnWidths[column.key as string];
+                return (
+                  <col
+                    key={column.key as React.Key}
+                    style={w ? { width: `${w}px` } : undefined}
+                  />
+                );
+              })}
+            </colgroup>
+          )}
           <Table.Thead
             {...getStyles('header')}
             onContextMenu={enableColumnVisibilityToggle ? handleHeaderContextMenu : undefined}
