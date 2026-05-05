@@ -145,11 +145,17 @@ export function useColumnResize({
       event.preventDefault();
       event.stopPropagation();
 
-      // On first resize, snapshot all widths and enter pixel mode
-      let currentWidths = columnWidths;
+      // Snapshot the *current* rendered widths from the DOM at the
+      // start of every drag. Doing it only on the first drag
+      // (`!isResizeActive`) leaves stale state behind when the user
+      // switches `resizeMode` (e.g. standard → finder) or when other
+      // columns reflowed between drags, and the next drag would then
+      // use those stale widths as its `leftStartWidth` baseline —
+      // producing visibly wrong deltas. Reading from the DOM each
+      // time keeps the resize math in sync with what the user sees.
+      const currentWidths = snapshotColumnWidths();
+      setColumnWidths(currentWidths);
       if (!isResizeActive) {
-        currentWidths = snapshotColumnWidths();
-        setColumnWidths(currentWidths);
         setIsResizeActive(true);
       }
 
