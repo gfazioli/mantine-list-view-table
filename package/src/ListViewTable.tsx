@@ -1171,7 +1171,18 @@ export const ListViewTable = factory<ListViewTableFactory>((_props) => {
       >
         <Table
           {...getStyles('table', {
-            style: { ...getTableStyle(), minWidth: scrollProps?.minWidth },
+            style: {
+              ...getTableStyle(),
+              // Only override `min-width` when `scrollProps.minWidth` is
+              // actually set, otherwise an `undefined` value would clobber
+              // the `min-width` that `getTableStyle()` already set for
+              // Finder/Standard resize and let the CSS-class
+              // `min-width: 100%` take over (which forces the table back
+              // to the parent width and redistributes columns evenly).
+              ...(scrollProps?.minWidth !== undefined
+                ? { minWidth: scrollProps.minWidth }
+                : null),
+            },
           })}
           /* Border lives on the outer `<Box>` wrapper (see CSS rule on
              `.root[data-with-table-border='true']`) so it stays fixed
