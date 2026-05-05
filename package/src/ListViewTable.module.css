@@ -54,10 +54,15 @@
   width: 100%;
 }
 
-/* Header base: let Mantine handle sticky positioning and borders via props */
+/* Header base: let Mantine handle sticky positioning and borders via props.
+ * The `box-shadow` fades in via `--lvt-header-shadow-opacity` (driven by
+ * `useStickyHeaderShadow`) once the thead becomes stuck. The same
+ * pattern as the sticky-column shadow: zero CSS rules to enable, no
+ * React re-renders during scroll. */
 .header {
   background: var(--mantine-color-white);
-  box-shadow: none;
+  box-shadow: 0 rem(4) rem(6) rem(-2) rgb(0 0 0 / calc(0.15 * var(--lvt-header-shadow-opacity, 0)));
+  transition: box-shadow 200ms ease;
 }
 
 .headerCell {
@@ -226,7 +231,7 @@
 [data-mantine-color-scheme='dark'] .header {
   background: var(--mantine-color-dark-7);
   border: none;
-  box-shadow: none;
+  box-shadow: 0 rem(4) rem(6) rem(-2) rgb(0 0 0 / calc(0.4 * var(--lvt-header-shadow-opacity, 0)));
 }
 
 [data-mantine-color-scheme='dark'] .headerCell {

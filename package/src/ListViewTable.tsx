@@ -36,6 +36,7 @@ import { useKeyboardNavigation } from './hooks/use-keyboard-navigation';
 import { useLongPress } from './hooks/use-long-press';
 import { useRowSelection } from './hooks/use-row-selection';
 import { useSorting } from './hooks/use-sorting';
+import { useStickyHeaderShadow } from './hooks/use-sticky-header-shadow';
 import { useStickyShadow } from './hooks/use-sticky-shadow';
 import { ListViewTableMediaVariables } from './ListViewTableMediaVariables';
 import { ResizeHandle } from './ResizeHandle';
@@ -93,12 +94,19 @@ export interface ListViewTableBaseProps<T = any> {
   withTableBorder?: boolean;
 
   /**
-   * Border radius of the outer container when `scrollProps` is set. Mirrors
-   * Mantine's radius scale; ignored when `scrollProps` is not provided.
+   * Border radius of the outer container when `withTableBorder` is set.
+   * Mirrors Mantine's radius scale.
    *
    * @default 'sm'
    */
   borderRadius?: MantineRadius;
+
+  /**
+   * Width of the outer border when `withTableBorder` is set. Accepts any
+   * CSS length (numbers are treated as `px`). When omitted, the default
+   * thickness from the stylesheet is used.
+   */
+  borderWidth?: number | string;
 
   /**
    * When provided, ListViewTable renders its own scroll wrapper around the
@@ -443,6 +451,7 @@ export const ListViewTable = factory<ListViewTableFactory>((_props) => {
     captionSide,
     borderColor,
     borderRadius,
+    borderWidth,
     withTableBorder,
     scrollProps,
     withColumnBorders,
@@ -615,6 +624,14 @@ export const ListViewTable = factory<ListViewTableFactory>((_props) => {
   // table element so the CSS pseudo-elements on pinned columns can fade in
   // when there is content scrolled beyond either edge.
   useStickyShadow({ tableRef, enabled: hasStickyColumns });
+
+  // Drives `--lvt-header-shadow-opacity` so the CSS layer can fade a
+  // soft drop-shadow under the thead when it becomes stuck.
+  useStickyHeaderShadow({
+    tableRef,
+    enabled: !!stickyHeader,
+    offset: stickyHeaderOffset,
+  });
 
   const {
     handleRowClick: handleSelectionClick,
@@ -1089,7 +1106,14 @@ export const ListViewTable = factory<ListViewTableFactory>((_props) => {
       {...getStyles('root', {
         className: responsiveClassName,
         style: withTableBorder
-          ? { borderRadius: `var(--mantine-radius-${borderRadius || 'sm'})` }
+          ? {
+              borderRadius: `var(--mantine-radius-${borderRadius || 'sm'})`,
+              ...(borderWidth !== undefined
+                ? {
+                    borderWidth: typeof borderWidth === 'number' ? `${borderWidth}px` : borderWidth,
+                  }
+                : null),
+            }
           : undefined,
       })}
       tabIndex={kbEnabled ? 0 : undefined}
