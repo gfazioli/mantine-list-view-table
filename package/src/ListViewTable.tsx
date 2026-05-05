@@ -1200,13 +1200,17 @@ export const ListViewTable = factory<ListViewTableFactory>((_props) => {
           {...tableProps}
           ref={tableRef}
         >
-          {/* `<colgroup>` is the canonical way to lock per-column
-              widths in `table-layout: fixed`. Cell-level inline
-              `width` is ignored by Chromium when any cell is
-              `position: sticky`, but `<col>` widths are always
-              honored. We render it only while resize is active so the
-              non-resize render is unaffected. */}
-          {isResizeActive && (
+          {/* `<colgroup>` is rendered only when both resize is active
+              AND a pinned column exists. Cell-level inline `width` on
+              a `position: sticky` `<th>` is ignored by Chromium under
+              `table-layout: fixed`, but `<col>` widths are always
+              honored — so we use the colgroup as the override layer
+              specifically for pinned tables. Non-sticky resize keeps
+              the original `<th>` width path unchanged so its layout
+              behavior (table width clamped by `min-width: 100%`,
+              standard/finder mode column distribution) is identical
+              to what it was before this fix landed. */}
+          {isResizeActive && hasStickyColumns && (
             <colgroup>
               {visibleColumns.map((column) => {
                 const w = columnWidths[column.key as string];
