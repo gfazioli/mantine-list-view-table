@@ -44,7 +44,11 @@
   -webkit-user-select: none;
 }
 
-.root:focus-visible {
+/* Show the wrapper-wide focus ring only while no row is focused yet
+ * (e.g. right after the user tabs into the table). Once arrow keys move
+ * focus into a specific row, that row's `.focusedRow` outline takes
+ * over so we don't end up with two overlapping outlines. */
+.root:focus-visible:not(:has(.focusedRow)) {
   outline: 2px solid var(--mantine-primary-color-filled);
   outline-offset: -2px;
 }
