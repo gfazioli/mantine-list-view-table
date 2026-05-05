@@ -680,12 +680,20 @@ export const ListViewTable = factory<ListViewTableFactory>((_props) => {
   });
 
   // Dynamic table-layout (resolves Issue #4)
+  // While resize is active we explicitly use `auto` even though the
+  // intuition is "lock to fixed for stability". Reason: under
+  // `table-layout: fixed` Chromium re-distributes track widths evenly
+  // when any cell is `position: sticky` (the whole pinned-column case)
+  // and the explicit `width` / `min-width` / `max-width` set inline by
+  // `useColumnResize` is silently ignored. With `auto` the inline cell
+  // widths are honored, and stability is preserved by the locked table
+  // width returned from `getTableStyle()`.
   const tableLayout = useMemo(() => {
     if (layout) {
       return layout;
     }
     if (isResizeActive) {
-      return 'fixed' as const;
+      return 'auto' as const;
     }
     return undefined;
   }, [layout, isResizeActive]);
