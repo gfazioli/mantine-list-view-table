@@ -26,7 +26,9 @@ The component supports context menus via Mantine’s `Menu` component, column vi
 
 All dimension and typography props (`height`, `width`, spacing, font size/weight) support **responsive breakpoint values** via Mantine's `StyleProp`, resolved purely through CSS media queries with zero JavaScript re-renders.
 
-It provides fine-grained typography control — via ellipsis and noWrap — and allows distinct header vs. cell presentation using cellStyle. It supports wide datasets through Table.ScrollContainer for horizontal scrolling, with optional sticky identifier columns, and works seamlessly inside ScrollArea with sticky headers and adjustable offsets.
+It provides fine-grained typography control — via ellipsis and noWrap — and allows distinct header vs. cell presentation using cellStyle. It supports wide datasets through the built-in `scrollProps` API (or `Table.ScrollContainer`) for horizontal scrolling, with optional sticky identifier columns. Pinned columns and `stickyHeader` both ship with subtle drop-shadow indicators that fade in only while there is content scrolled past the edge — a clear visual cue inspired by spreadsheet-style data grids — and the component works seamlessly inside `ScrollArea` with adjustable sticky header offsets.
+
+The outer wrapper also exposes `withTableBorder`, `borderRadius`, and `borderWidth` props: the border is rendered on the non-scrolling outer container so it stays fixed at the edges regardless of horizontal/vertical scroll, even with sticky columns and rounded corners.
 
 For UX polish, it ships with configurable loading overlays (including custom loaders) and rich empty states ranging from simple messages to fully styled components with actions. These features make ListViewTable ideal for applications that need a clear, scalable, and highly interactive tabular list experience.
 

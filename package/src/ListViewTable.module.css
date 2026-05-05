@@ -58,10 +58,16 @@
  * The `box-shadow` fades in via `--lvt-header-shadow-opacity` (driven by
  * `useStickyHeaderShadow`) once the thead becomes stuck. The same
  * pattern as the sticky-column shadow: zero CSS rules to enable, no
- * React re-renders during scroll. */
+ * React re-renders during scroll.
+ *
+ * To fully customize the shadow (color, blur, spread) override
+ * `.mantine-ListViewTable-header` via the Styles API (`classNames` /
+ * `styles`) — the `--lvt-header-shadow-opacity` driver continues to
+ * control the fade in/out independently of the shadow shape. */
 .header {
   background: var(--mantine-color-white);
-  box-shadow: 0 rem(4) rem(6) rem(-2) rgb(0 0 0 / calc(0.15 * var(--lvt-header-shadow-opacity, 0)));
+  box-shadow: 0 rem(4) rem(6) rem(-2)
+    rgba(0, 0, 0, calc(0.15 * var(--lvt-header-shadow-opacity, 0)));
   transition: box-shadow 200ms ease;
 }
 
@@ -231,7 +237,7 @@
 [data-mantine-color-scheme='dark'] .header {
   background: var(--mantine-color-dark-7);
   border: none;
-  box-shadow: 0 rem(4) rem(6) rem(-2) rgb(0 0 0 / calc(0.4 * var(--lvt-header-shadow-opacity, 0)));
+  box-shadow: 0 rem(4) rem(6) rem(-2) rgba(0, 0, 0, calc(0.4 * var(--lvt-header-shadow-opacity, 0)));
 }
 
 [data-mantine-color-scheme='dark'] .headerCell {
@@ -346,8 +352,8 @@
 .stickyHeaderColumn[data-sticky-shadow='left']::after {
   right: calc(-1 * var(--lvt-shadow-width, 8px));
   background:
-    linear-gradient(to right, rgba(0, 0, 0, 0.05), rgba(0, 0, 0, 0)),
-    linear-gradient(to right, rgba(0, 0, 0, 0.05), rgba(0, 0, 0, 0) 30%);
+    linear-gradient(to right, var(--lvt-shadow-color, rgba(0, 0, 0, 0.05)), transparent),
+    linear-gradient(to right, var(--lvt-shadow-color, rgba(0, 0, 0, 0.05)), transparent 30%);
   opacity: var(--lvt-shadow-left-opacity, 0);
 }
 
@@ -355,21 +361,21 @@
 .stickyHeaderColumn[data-sticky-shadow='right']::after {
   left: calc(-1 * var(--lvt-shadow-width, 8px));
   background:
-    linear-gradient(to left, rgba(0, 0, 0, 0.05), rgba(0, 0, 0, 0)),
-    linear-gradient(to left, rgba(0, 0, 0, 0.05), rgba(0, 0, 0, 0) 30%);
+    linear-gradient(to left, var(--lvt-shadow-color, rgba(0, 0, 0, 0.05)), transparent),
+    linear-gradient(to left, var(--lvt-shadow-color, rgba(0, 0, 0, 0.05)), transparent 30%);
   opacity: var(--lvt-shadow-right-opacity, 0);
 }
 
 [data-mantine-color-scheme='dark'] .stickyColumn[data-sticky-shadow='left']::after,
 [data-mantine-color-scheme='dark'] .stickyHeaderColumn[data-sticky-shadow='left']::after {
   background:
-    linear-gradient(to right, rgba(0, 0, 0, 0.25), rgba(0, 0, 0, 0)),
-    linear-gradient(to right, rgba(0, 0, 0, 0.25), rgba(0, 0, 0, 0) 30%);
+    linear-gradient(to right, var(--lvt-shadow-color, rgba(0, 0, 0, 0.25)), transparent),
+    linear-gradient(to right, var(--lvt-shadow-color, rgba(0, 0, 0, 0.25)), transparent 30%);
 }
 
 [data-mantine-color-scheme='dark'] .stickyColumn[data-sticky-shadow='right']::after,
 [data-mantine-color-scheme='dark'] .stickyHeaderColumn[data-sticky-shadow='right']::after {
   background:
-    linear-gradient(to left, rgba(0, 0, 0, 0.25), rgba(0, 0, 0, 0)),
-    linear-gradient(to left, rgba(0, 0, 0, 0.25), rgba(0, 0, 0, 0) 30%);
+    linear-gradient(to left, var(--lvt-shadow-color, rgba(0, 0, 0, 0.25)), transparent),
+    linear-gradient(to left, var(--lvt-shadow-color, rgba(0, 0, 0, 0.25)), transparent 30%);
 }

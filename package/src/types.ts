@@ -170,7 +170,8 @@ export type ListViewTableCssVariables = {
     | '--lvt-shadow-color'
     | '--lvt-shadow-width'
     | '--lvt-shadow-left-opacity'
-    | '--lvt-shadow-right-opacity';
+    | '--lvt-shadow-right-opacity'
+    | '--lvt-header-shadow-opacity';
 };
 
 // Note: ListViewTableBaseProps, ListViewTableProps, and ListViewTableFactory
