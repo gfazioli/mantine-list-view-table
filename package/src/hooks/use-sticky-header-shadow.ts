@@ -63,8 +63,6 @@ export function useStickyHeaderShadow({
       return;
     }
 
-    const offsetN = typeof offset === 'number' ? offset : parseFloat(String(offset)) || 0;
-
     const scroller = findVerticalScrollAncestor(table);
     const isWindow = scroller === window;
 
@@ -81,9 +79,14 @@ export function useStickyHeaderShadow({
       if (isWindow) {
         // Page-scrolled mode: rely on the thead's viewport position to
         // detect when sticky has taken over. Before the page scrolls
-        // far enough, `thead.top > offsetN`; once stuck, they match.
+        // far enough, `thead.top > resolvedOffset`; once stuck, they
+        // match. We read the resolved sticky offset from
+        // `getComputedStyle(thead).top` — this is always in pixels,
+        // regardless of whether the user supplied a number, `'2rem'`,
+        // `'1em'`, or any other CSS length to `stickyHeaderOffset`.
+        const resolvedOffset = parseFloat(getComputedStyle(thead).top) || 0;
         const rectTop = thead.getBoundingClientRect().top;
-        stuck = Math.abs(rectTop - offsetN) < 1;
+        stuck = Math.abs(rectTop - resolvedOffset) < 1;
       } else {
         // Container-scrolled mode: the thead is permanently at the top
         // of the viewport, so the only useful signal is "has the user
