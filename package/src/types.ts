@@ -54,8 +54,9 @@ export interface ListViewTableColumn<T = any> {
    * When the table scrolls horizontally, an opacity-driven gradient shadow
    * appears on the inner edge of the **last** sticky column on each side
    * to indicate that there is hidden content underneath. Customize via the
-   * `--lvt-shadow-color` and `--lvt-shadow-width` CSS variables, or via the
-   * `stickyColumnShadow` Styles API selector.
+   * `--lvt-shadow-color` and `--lvt-shadow-width` CSS variables, or by
+   * targeting the `stickyColumn` / `stickyHeaderColumn` Styles API
+   * selectors (the shadow is rendered as their `::after` pseudo-element).
    */
   sticky?: boolean | 'left' | 'right';
 
@@ -167,6 +168,7 @@ export type ListViewTableCssVariables = {
     | '--list-view-cell-font-size'
     | '--list-view-cell-font-weight'
     | '--list-view-selected-row-color'
+    | '--lvt-border-color'
     | '--lvt-shadow-color'
     | '--lvt-shadow-width'
     | '--lvt-shadow-left-opacity'

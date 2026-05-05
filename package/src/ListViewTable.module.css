@@ -24,18 +24,29 @@
  * border on this element remains untouched.
  */
 .root[data-with-table-border='true'] {
-  border: rem(0.0625) solid var(--mantine-color-default-border);
+  /* `--lvt-border-color` is set by the `varsResolver` from the public
+   * `borderColor` prop (resolved through Mantine's `getThemeColor`); we
+   * fall back to the same default border color Mantine's table would
+   * have used so omitting `borderColor` keeps the original look. */
+  border: rem(0.0625) solid var(--lvt-border-color, var(--mantine-color-default-border));
 }
 
 [data-mantine-color-scheme='dark'] .root[data-with-table-border='true'] {
-  border-color: var(--mantine-color-dark-4);
+  border-color: var(--lvt-border-color, var(--mantine-color-dark-4));
 }
 
 .scrollViewport {
-  /* Inline `overflow` and `maxHeight` set by the renderer when
-     `scrollProps` is provided; otherwise this element uses
-     `display: contents` and disappears from the layout entirely so the
-     no-internal-scroll case is unaffected. */
+  /* Always rendered as a real `<div>`. The renderer sets inline styles
+     conditionally:
+       - `overflow: auto` + `maxHeight` when `scrollProps` is provided
+         (this element becomes the native scroll viewport)
+       - `clip-path: inset(0 round X)` when `withTableBorder` is set
+         (clips the table content to the wrapper's rounded corners
+         without making `.root` a scroll containing block, which would
+         break `position: sticky` on the thead)
+     When neither prop is set the element is a transparent block
+     wrapper (no width/height styles) and has no measurable layout
+     impact since the inner `<table>` already fills it. */
 }
 
 .root[data-dragging='true'],

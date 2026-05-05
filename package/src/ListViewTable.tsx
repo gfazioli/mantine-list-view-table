@@ -12,6 +12,8 @@ import {
   createVarsResolver,
   factory,
   Factory,
+  getRadius,
+  getThemeColor,
   Group,
   Loader,
   MantineColor,
@@ -84,12 +86,12 @@ export interface ListViewTableBaseProps<T = any> {
   layout?: React.CSSProperties['tableLayout'];
 
   /**
-   * Whether to show table borders. When `scrollProps` is set the border is
-   * rendered on the outer (non-scrolling) container so it stays fixed during
-   * horizontal scroll, even with sticky columns. When `scrollProps` is not
-   * set the border falls back to Mantine's native `<table>` border (which
-   * scrolls with the content if the table is wrapped in
-   * `Table.ScrollContainer`).
+   * Whether to draw the table border. When set, the border is always
+   * rendered on the outer (non-scrolling) `.root` container — never on
+   * the inner `<table>` — so it stays fixed during horizontal/vertical
+   * scroll even with sticky columns. Use `borderRadius` and
+   * `borderWidth` to customize its shape, and `borderColor` to recolor
+   * it.
    */
   withTableBorder?: boolean;
 
@@ -410,32 +412,39 @@ const defaultProps: Partial<ListViewTableProps> = {
 // Most CSS variables are set to undefined here because they are managed by
 // ListViewTableMediaVariables via InlineStyles + CSS media queries to support
 // responsive breakpoint values. Only non-responsive variables are resolved here.
-const varsResolver = createVarsResolver<ListViewTableFactory>((_, { selectedRowColor }) => ({
-  root: {
-    '--list-view-height': undefined,
-    '--list-view-width': undefined,
-    '--list-view-horizontal-spacing': undefined,
-    '--list-view-vertical-spacing': undefined,
-    '--list-view-header-title-font-size': undefined,
-    '--list-view-header-title-font-weight': undefined,
-    '--list-view-cell-font-size': undefined,
-    '--list-view-cell-font-weight': undefined,
-    '--list-view-selected-row-color': selectedRowColor || undefined,
-    // Sticky-column shadow vars — `*-opacity` are written by
-    // `useStickyShadow` on every horizontal scroll. `*-color` and
-    // `*-width` use CSS fallbacks (declared via `var(name, fallback)` in
-    // the stylesheet) so consumers can override them through `vars` or
-    // external CSS without us hard-coding a value here.
-    '--lvt-shadow-color': undefined,
-    '--lvt-shadow-width': undefined,
-    '--lvt-shadow-left-opacity': undefined,
-    '--lvt-shadow-right-opacity': undefined,
-    // Sticky-header shadow opacity is written by `useStickyHeaderShadow`
-    // on vertical scroll. To customize the shadow shape/color, override
-    // `.mantine-ListViewTable-header` via the Styles API.
-    '--lvt-header-shadow-opacity': undefined,
-  },
-}));
+const varsResolver = createVarsResolver<ListViewTableFactory>(
+  (theme, { selectedRowColor, borderColor }) => ({
+    root: {
+      '--list-view-height': undefined,
+      '--list-view-width': undefined,
+      '--list-view-horizontal-spacing': undefined,
+      '--list-view-vertical-spacing': undefined,
+      '--list-view-header-title-font-size': undefined,
+      '--list-view-header-title-font-weight': undefined,
+      '--list-view-cell-font-size': undefined,
+      '--list-view-cell-font-weight': undefined,
+      '--list-view-selected-row-color': selectedRowColor || undefined,
+      // Resolved value of the `borderColor` prop. Used by the wrapper
+      // border (since `withTableBorder` is always rendered on `.root`,
+      // not on Mantine's native `<table>`). Falls back in the CSS to
+      // the default border color when not provided.
+      '--lvt-border-color': borderColor ? getThemeColor(borderColor, theme) : undefined,
+      // Sticky-column shadow vars — `*-opacity` are written by
+      // `useStickyShadow` on every horizontal scroll. `*-color` and
+      // `*-width` use CSS fallbacks (declared via `var(name, fallback)` in
+      // the stylesheet) so consumers can override them through `vars` or
+      // external CSS without us hard-coding a value here.
+      '--lvt-shadow-color': undefined,
+      '--lvt-shadow-width': undefined,
+      '--lvt-shadow-left-opacity': undefined,
+      '--lvt-shadow-right-opacity': undefined,
+      // Sticky-header shadow opacity is written by `useStickyHeaderShadow`
+      // on vertical scroll. To customize the shadow shape/color, override
+      // `.mantine-ListViewTable-header` via the Styles API.
+      '--lvt-header-shadow-opacity': undefined,
+    },
+  })
+);
 
 export const ListViewTable = factory<ListViewTableFactory>((_props) => {
   const props = useProps('ListViewTable', defaultProps, _props);
@@ -1111,7 +1120,7 @@ export const ListViewTable = factory<ListViewTableFactory>((_props) => {
         className: responsiveClassName,
         style: withTableBorder
           ? {
-              borderRadius: `var(--mantine-radius-${borderRadius || 'sm'})`,
+              borderRadius: getRadius(borderRadius ?? 'sm'),
               ...(borderWidth !== undefined
                 ? {
                     borderWidth: typeof borderWidth === 'number' ? `${borderWidth}px` : borderWidth,
@@ -1149,7 +1158,7 @@ export const ListViewTable = factory<ListViewTableFactory>((_props) => {
             ...(scrollEnabled ? { overflow: 'auto', maxHeight: scrollProps?.maxHeight } : null),
             ...(withTableBorder
               ? {
-                  clipPath: `inset(0 round var(--mantine-radius-${borderRadius || 'sm'}))`,
+                  clipPath: `inset(0 round ${getRadius(borderRadius ?? 'sm')})`,
                 }
               : null),
           }

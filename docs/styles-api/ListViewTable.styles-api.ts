@@ -42,6 +42,8 @@ export const ListViewTableStylesApi: StylesApiData<ListViewTableFactory> = {
       '--list-view-cell-font-weight':
         'Controls font weight of cell content — supports responsive values',
       '--list-view-selected-row-color': 'Controls background color of selected rows',
+      '--lvt-border-color':
+        'Resolved color of the outer wrapper border when `withTableBorder` is set. Set automatically by the `varsResolver` from the `borderColor` prop; override directly to bypass the prop',
       '--lvt-shadow-color':
         'Color of the sticky-column gradient shadow. Default: `rgba(0, 0, 0, 0.05)` (light) / `rgba(0, 0, 0, 0.25)` (dark)',
       '--lvt-shadow-width':
