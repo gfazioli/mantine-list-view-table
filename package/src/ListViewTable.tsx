@@ -421,15 +421,19 @@ const varsResolver = createVarsResolver<ListViewTableFactory>((_, { selectedRowC
     '--list-view-cell-font-size': undefined,
     '--list-view-cell-font-weight': undefined,
     '--list-view-selected-row-color': selectedRowColor || undefined,
-    // Sticky-column shadow vars — `*-opacity` are written by `useStickyShadow`
-    // on every horizontal scroll. `*-color` and `*-width` use CSS fallbacks
-    // (declared via `var(name, fallback)` in the stylesheet) so consumers can
-    // override them through `vars` or external CSS without us hard-coding a
-    // value here.
+    // Sticky-column shadow vars — `*-opacity` are written by
+    // `useStickyShadow` on every horizontal scroll. `*-color` and
+    // `*-width` use CSS fallbacks (declared via `var(name, fallback)` in
+    // the stylesheet) so consumers can override them through `vars` or
+    // external CSS without us hard-coding a value here.
     '--lvt-shadow-color': undefined,
     '--lvt-shadow-width': undefined,
     '--lvt-shadow-left-opacity': undefined,
     '--lvt-shadow-right-opacity': undefined,
+    // Sticky-header shadow opacity is written by `useStickyHeaderShadow`
+    // on vertical scroll. To customize the shadow shape/color, override
+    // `.mantine-ListViewTable-header` via the Styles API.
+    '--lvt-header-shadow-opacity': undefined,
   },
 }));
 
