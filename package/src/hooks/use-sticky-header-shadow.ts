@@ -36,14 +36,21 @@ function findVerticalScrollAncestor(el: HTMLElement): HTMLElement | Window {
  * `<thead>` — no React re-renders during scroll. Updates are throttled
  * via `requestAnimationFrame`.
  *
- * Detection compares `thead.getBoundingClientRect().top` to the
- * resolved sticky position. When the scroll ancestor is the page,
- * the sticky position is `stickyHeaderOffset` (in viewport coords).
- * When the scroll ancestor is an element (Mantine `ScrollArea`,
- * `scrollProps.maxHeight`, or any custom container), the sticky
- * position is `scrollerRect.top + stickyHeaderOffset`. The hook
- * normalizes both into the same comparison so the shadow fades in
- * regardless of which container the table is scrolling inside.
+ * Detection differs by scroll container:
+ *
+ * - **Page-scrolled** (no fixed-height container): the thead is at its
+ *   natural position until the page scrolls enough to engage sticky.
+ *   The hook compares `thead.getBoundingClientRect().top` to
+ *   `stickyHeaderOffset` — they only match once sticky takes over.
+ * - **Container-scrolled** (Mantine `ScrollArea`,
+ *   `scrollProps.maxHeight`, or any custom scroller): the thead's
+ *   natural position already coincides with the sticky position
+ *   (because the table starts at the top of the viewport), so a
+ *   position check would always be true. Instead the hook checks
+ *   `scroller.scrollTop > 0` — i.e., the user has actually scrolled
+ *   content underneath the thead. This mirrors the visual cue users
+ *   expect: the shadow only appears once there is content to "hide
+ *   behind" the header.
  */
 export function useStickyHeaderShadow({
   tableRef,
@@ -70,15 +77,20 @@ export function useStickyHeaderShadow({
       if (!thead) {
         return;
       }
-      const rect = thead.getBoundingClientRect();
-      // The thead is "stuck" when its top sits exactly at the resolved
-      // sticky position. The sticky position is the offset relative to
-      // the scroll containing block: the viewport itself when the
-      // scroller is `window`, or the scroller's own top edge otherwise
-      // (Mantine `ScrollArea`, `scrollProps.maxHeight`, etc.).
-      const scrollerTop = isWindow ? 0 : (scroller as HTMLElement).getBoundingClientRect().top;
-      const stickyTop = scrollerTop + offsetN;
-      const stuck = Math.abs(rect.top - stickyTop) < 1;
+      let stuck: boolean;
+      if (isWindow) {
+        // Page-scrolled mode: rely on the thead's viewport position to
+        // detect when sticky has taken over. Before the page scrolls
+        // far enough, `thead.top > offsetN`; once stuck, they match.
+        const rectTop = thead.getBoundingClientRect().top;
+        stuck = Math.abs(rectTop - offsetN) < 1;
+      } else {
+        // Container-scrolled mode: the thead is permanently at the top
+        // of the viewport, so the only useful signal is "has the user
+        // scrolled the inner content?". `scrollTop > 0` means there is
+        // content currently hidden above the thead.
+        stuck = (scroller as HTMLElement).scrollTop > 0;
+      }
       const val = stuck ? 1 : 0;
       if (val !== lastVal) {
         table.style.setProperty('--lvt-header-shadow-opacity', String(val));
