@@ -37,13 +37,13 @@ function findVerticalScrollAncestor(el: HTMLElement): HTMLElement | Window {
  * via `requestAnimationFrame`.
  *
  * Detection compares `thead.getBoundingClientRect().top` to the
- * resolved `stickyHeaderOffset`: when they match (within a 1px
- * tolerance) the header is stuck. This is reliable across both modes:
- * sticky-to-page (no `scrollProps`) and sticky-to-internal-viewport
- * (with `scrollProps.maxHeight`), because the rect is always relative
- * to the viewport while the offset is page-relative or
- * scroller-relative depending on the sticky containing block — both
- * collapse to the same numeric `top` when stuck.
+ * resolved sticky position. When the scroll ancestor is the page,
+ * the sticky position is `stickyHeaderOffset` (in viewport coords).
+ * When the scroll ancestor is an element (Mantine `ScrollArea`,
+ * `scrollProps.maxHeight`, or any custom container), the sticky
+ * position is `scrollerRect.top + stickyHeaderOffset`. The hook
+ * normalizes both into the same comparison so the shadow fades in
+ * regardless of which container the table is scrolling inside.
  */
 export function useStickyHeaderShadow({
   tableRef,
@@ -72,10 +72,13 @@ export function useStickyHeaderShadow({
       }
       const rect = thead.getBoundingClientRect();
       // The thead is "stuck" when its top sits exactly at the resolved
-      // sticky offset. While unstuck (page not yet scrolled enough) the
-      // top is below the offset; once sticky releases at the bottom of
-      // its containing block, the top moves up past the offset.
-      const stuck = Math.abs(rect.top - offsetN) < 1;
+      // sticky position. The sticky position is the offset relative to
+      // the scroll containing block: the viewport itself when the
+      // scroller is `window`, or the scroller's own top edge otherwise
+      // (Mantine `ScrollArea`, `scrollProps.maxHeight`, etc.).
+      const scrollerTop = isWindow ? 0 : (scroller as HTMLElement).getBoundingClientRect().top;
+      const stickyTop = scrollerTop + offsetN;
+      const stuck = Math.abs(rect.top - stickyTop) < 1;
       const val = stuck ? 1 : 0;
       if (val !== lastVal) {
         table.style.setProperty('--lvt-header-shadow-opacity', String(val));
