@@ -593,7 +593,6 @@ export const ListViewTable = factory<ListViewTableFactory>((_props) => {
   });
 
   const {
-    columnWidths,
     isResizeActive,
     getColumnStyle,
     getTableStyle,
@@ -680,14 +679,7 @@ export const ListViewTable = factory<ListViewTableFactory>((_props) => {
     onSelectAll: selectionMode === 'multiple' ? selectAll : undefined,
   });
 
-  // Dynamic table-layout (resolves Issue #4).
-  //
-  // While resize is active we use `fixed` so the explicit pixel widths
-  // the hook writes are honored exactly with no proportional
-  // auto-distribution and no content-driven track expansion. Track
-  // widths are sourced from a `<colgroup>` we render below — this
-  // works even with `position: sticky` cells (where Chromium would
-  // ignore inline `<th>`/`<td>` widths under fixed layout).
+  // Dynamic table-layout (resolves Issue #4)
   const tableLayout = useMemo(() => {
     if (layout) {
       return layout;
@@ -1200,29 +1192,6 @@ export const ListViewTable = factory<ListViewTableFactory>((_props) => {
           {...tableProps}
           ref={tableRef}
         >
-          {/* `<colgroup>` is rendered only when both resize is active
-              AND a pinned column exists. Cell-level inline `width` on
-              a `position: sticky` `<th>` is ignored by Chromium under
-              `table-layout: fixed`, but `<col>` widths are always
-              honored — so we use the colgroup as the override layer
-              specifically for pinned tables. Non-sticky resize keeps
-              the original `<th>` width path unchanged so its layout
-              behavior (table width clamped by `min-width: 100%`,
-              standard/finder mode column distribution) is identical
-              to what it was before this fix landed. */}
-          {isResizeActive && hasStickyColumns && (
-            <colgroup>
-              {visibleColumns.map((column) => {
-                const w = columnWidths[column.key as string];
-                return (
-                  <col
-                    key={column.key as React.Key}
-                    style={w ? { width: `${w}px` } : undefined}
-                  />
-                );
-              })}
-            </colgroup>
-          )}
           <Table.Thead
             {...getStyles('header')}
             onContextMenu={enableColumnVisibilityToggle ? handleHeaderContextMenu : undefined}
