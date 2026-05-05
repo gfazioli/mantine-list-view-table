@@ -15,19 +15,14 @@ const data = [
   { id: 9, name: 'Script.js', kind: 'JavaScript File', modified: '2024-06-09' },
 ];
 
-// Two columns are enough to exercise the bulk of the Styles API
-// selectors listed below: a sticky-left first column (renders
-// `stickyColumn` / `stickyHeaderColumn`) plus a regular column with a
-// custom `renderCell`. Reordering renders `dragHandle`,
-// multi-selection plus keyboard nav exercise `selectedRow` /
-// `focusedRow`, and `scrollProps.maxHeight` puts the table inside a
-// vertical `scrollViewport` so the `header` drop shadow can engage on
-// scroll. Column resizing is intentionally *not* enabled here:
-// Chromium ignores explicit `<th>` widths on `position: sticky` cells
-// under `table-layout: fixed`, so the resize handle doesn't reflect
-// the dragged width on this configuration. The other resize-focused
-// demos (`Resize Mode`, `Auto-Fit Columns`, `Configurator`) cover the
-// `resizeHandle` selector instead.
+// Two columns are enough to exercise every Styles API selector listed
+// below: a sticky-left first column (renders `stickyColumn` /
+// `stickyHeaderColumn`) plus a regular column with a custom
+// `renderCell`. Reordering + resizing render `dragHandle` /
+// `resizeHandle`, multi-selection plus keyboard nav exercise
+// `selectedRow` / `focusedRow`, and `scrollProps.maxHeight` puts the
+// table inside a vertical `scrollViewport` so the `header` drop
+// shadow can engage on scroll.
 const columns = [
   {
     key: 'name',
@@ -91,6 +86,7 @@ function Demo() {
         stickyHeader
         selectionMode="multiple"
         enableColumnReordering
+        enableColumnResizing
         scrollProps={{ maxHeight: 280 }}
       />
   );
@@ -109,6 +105,7 @@ function Demo(props: any) {
       stickyHeader
       selectionMode="multiple"
       enableColumnReordering
+      enableColumnResizing
       scrollProps={{ maxHeight: 280 }}
       {...props}
     />

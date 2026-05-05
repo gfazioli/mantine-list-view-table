@@ -593,6 +593,7 @@ export const ListViewTable = factory<ListViewTableFactory>((_props) => {
   });
 
   const {
+    columnWidths,
     isResizeActive,
     getColumnStyle,
     getTableStyle,
@@ -1208,6 +1209,26 @@ export const ListViewTable = factory<ListViewTableFactory>((_props) => {
           {...tableProps}
           ref={tableRef}
         >
+          {/* Resize-active sticky tables get an explicit `<colgroup>`
+              because Chromium ignores inline `<th>` widths on
+              `position: sticky` cells under `table-layout: fixed` —
+              `<col>` widths are honored regardless. The colgroup is
+              gated on `hasStickyColumns` so non-sticky resize keeps
+              the original `<th>`-only path (preserving the exact
+              Finder/Standard column distribution). */}
+          {isResizeActive && hasStickyColumns && (
+            <colgroup>
+              {visibleColumns.map((column) => {
+                const w = columnWidths[column.key as string];
+                return (
+                  <col
+                    key={column.key as React.Key}
+                    style={w ? { width: `${w}px` } : undefined}
+                  />
+                );
+              })}
+            </colgroup>
+          )}
           <Table.Thead
             {...getStyles('header')}
             onContextMenu={enableColumnVisibilityToggle ? handleHeaderContextMenu : undefined}
