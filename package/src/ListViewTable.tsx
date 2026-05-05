@@ -1095,8 +1095,10 @@ export const ListViewTable = factory<ListViewTableFactory>((_props) => {
               // `.root` a scroll containing block — using `overflow:
               // hidden` here would break `position: sticky` on the
               // table header (it would pin to `.root` instead of the
-              // page viewport).
-              clipPath: `inset(0 round var(--mantine-radius-${borderRadius || 'sm'}))`,
+              // page viewport). The `padding-box` reference keeps the
+              // clip strictly inside the wrapper's border so the border
+              // line is rendered intact at the corners.
+              clipPath: `inset(0 round var(--mantine-radius-${borderRadius || 'sm'})) padding-box`,
             }
           : undefined,
       })}
