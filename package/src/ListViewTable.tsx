@@ -1141,27 +1141,32 @@ export const ListViewTable = factory<ListViewTableFactory>((_props) => {
       <div
         {...getStyles('scrollViewport')}
         style={
-          /* The wrapper carries `clip-path` (when `withTableBorder` is
-             set) so the table content is clipped to the rounded shape
-             of `.root`. The border lives on `.root` and is left
-             untouched by this clip, so the corners stay crisp.
-             `clip-path` does NOT establish a scroll containing block,
-             which keeps `position: sticky` on the table header working
-             correctly relative to the page viewport.
+          /* When `scrollProps` is set, this `<div>` becomes the native
+             scroll viewport (`overflow: auto` + `maxHeight`). When
+             `withTableBorder` is set, it also carries the `clip-path`
+             that clips the table content to the wrapper's rounded
+             corners (using `clip-path` instead of `overflow: hidden`
+             keeps `.root` from becoming a sticky containing block,
+             which would break `stickyHeader`).
 
-             In `scrollEnabled` mode this same `<div>` becomes the
-             native scroll viewport; the `clip-path` continues to
-             clip the rounded corners during horizontal/vertical
-             scroll so the wrapper's rounded border always frames the
-             scrolled content. */
-          {
-            ...(scrollEnabled ? { overflow: 'auto', maxHeight: scrollProps?.maxHeight } : null),
-            ...(withTableBorder
-              ? {
-                  clipPath: `inset(0 round ${getRadius(borderRadius ?? 'sm')})`,
-                }
-              : null),
-          }
+             When neither is active, fall back to `display: contents`
+             so the wrapper is invisible to layout — the `<table>`
+             then relates directly to `.root`, identical to the
+             pre-`scrollProps` rendering. Without this fallback, the
+             extra block-level `<div>` would subtly change column
+             distribution for resize / Finder / Standard modes
+             (because `<table>` width would resolve against the inner
+             div instead of `.root`). */
+          scrollEnabled || withTableBorder
+            ? {
+                ...(scrollEnabled
+                  ? { overflow: 'auto', maxHeight: scrollProps?.maxHeight }
+                  : null),
+                ...(withTableBorder
+                  ? { clipPath: `inset(0 round ${getRadius(borderRadius ?? 'sm')})` }
+                  : null),
+              }
+            : { display: 'contents' }
         }
       >
         <Table
