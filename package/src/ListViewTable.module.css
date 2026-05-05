@@ -75,6 +75,19 @@
   transition: box-shadow 200ms ease;
 }
 
+/* Mantine's sticky thead defaults to `z-index: 3` (or `4` with
+ * `withTableBorder`), while our sticky body cells use `z-index: 10`
+ * (see `.stickyColumn`). Without this override, body cells in a
+ * sticky-left/right column would render *above* the thead while the
+ * user scrolls vertically — visible as a duplicated first-row peek
+ * next to the pinned column. Match Mantine's selector specificity
+ * (`.classname[attr]`) so we win the cascade and bump the thead above
+ * the body sticky-column z-index. The rule only applies when the
+ * thead is in sticky mode, so it has no effect on non-sticky tables. */
+.header[data-sticky] {
+  z-index: 12;
+}
+
 .headerCell {
   /* No overflow:hidden here — it would clip the resize handle that extends beyond the th */
   padding: var(--list-view-vertical-spacing) var(--list-view-horizontal-spacing);
