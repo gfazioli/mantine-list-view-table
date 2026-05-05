@@ -1160,9 +1160,7 @@ export const ListViewTable = factory<ListViewTableFactory>((_props) => {
              div instead of `.root`). */
           scrollEnabled || withTableBorder
             ? {
-                ...(scrollEnabled
-                  ? { overflow: 'auto', maxHeight: scrollProps?.maxHeight }
-                  : null),
+                ...(scrollEnabled ? { overflow: 'auto', maxHeight: scrollProps?.maxHeight } : null),
                 ...(withTableBorder
                   ? { clipPath: `inset(0 round ${getRadius(borderRadius ?? 'sm')})` }
                   : null),
@@ -1180,9 +1178,7 @@ export const ListViewTable = factory<ListViewTableFactory>((_props) => {
               // Finder/Standard resize and let the CSS-class
               // `min-width: 100%` take over (which forces the table back
               // to the parent width and redistributes columns evenly).
-              ...(scrollProps?.minWidth !== undefined
-                ? { minWidth: scrollProps.minWidth }
-                : null),
+              ...(scrollProps?.minWidth !== undefined ? { minWidth: scrollProps.minWidth } : null),
             },
           })}
           /* Border lives on the outer `<Box>` wrapper (see CSS rule on
@@ -1221,10 +1217,7 @@ export const ListViewTable = factory<ListViewTableFactory>((_props) => {
               {visibleColumns.map((column) => {
                 const w = columnWidths[column.key as string];
                 return (
-                  <col
-                    key={column.key as React.Key}
-                    style={w ? { width: `${w}px` } : undefined}
-                  />
+                  <col key={column.key as React.Key} style={w ? { width: `${w}px` } : undefined} />
                 );
               })}
             </colgroup>
