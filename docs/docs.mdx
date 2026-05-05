@@ -51,13 +51,15 @@ The sticky header feature works both with the document scroll and when the table
 
 You can also use the `stickyHeaderOffset` prop to adjust the sticky header position when your page has a fixed navigation bar or header. This ensures the table header doesn't overlap with other fixed elements on the page.
 
+A subtle drop shadow fades in below the thead while it is stuck at `stickyHeaderOffset` and fades back out when sticky releases — the same visual cue used by spreadsheet apps to signal that content is scrolling underneath. The fade is driven by the `--lvt-header-shadow-opacity` CSS variable, with **no React re-renders** during scroll.
+
 <Demo data={demos.stickyHeader} />
 
 ## Pinned Columns
 
 Set `column.sticky` to `'left'` or `'right'` to pin a column to the corresponding edge of the table when the user scrolls horizontally. The legacy `sticky: true` is preserved as an alias for `'left'`.
 
-A subtle gradient shadow (`::after` pseudo-element on the cell) appears on the inner edge of the **last** sticky-left column and the **first** sticky-right column whenever there is content scrolled past the edge — the same visual cue users expect from spreadsheet-style data grids. The shadow fades smoothly when the table is scrolled fully to the relevant side and is hidden entirely on tables that fit within the viewport. Opacity is driven by `--lvt-shadow-left-opacity` / `--lvt-shadow-right-opacity` CSS variables that the internal `useStickyShadow` hook updates on horizontal scroll — **no React re-renders** during scroll.
+A subtle gradient shadow (`::after` pseudo-element on the cell) appears on the inner edge of the **last** sticky-left column and the **first** sticky-right column whenever there is content scrolled past the edge — the same visual cue users expect from spreadsheet-style data grids. The shadow fades smoothly when the table is scrolled fully to the relevant side and is hidden entirely on tables that fit within the viewport. Opacity is driven by `--lvt-shadow-left-opacity` / `--lvt-shadow-right-opacity` CSS variables that the internal `useStickyShadow` hook updates on horizontal scroll — **no React re-renders** during scroll. The shadow color and width can be customized via `--lvt-shadow-color` and `--lvt-shadow-width`.
 
 ```tsx
 const columns = [
@@ -68,9 +70,11 @@ const columns = [
 ];
 ```
 
-### Recommended setup with scrollProps
+<Demo data={demos.pinnedColumns} />
 
-When combining sticky columns with `withTableBorder` and/or `borderRadius`, prefer the built-in `scrollProps` over `Mantine.Table.ScrollContainer`. The `scrollProps` API tells `ListViewTable` to render its own scroll wrapper, with the **outer container non-scrolling** — the border and rounded corners stay fixed regardless of scroll position. With `Table.ScrollContainer`, the entire table (including its border) is translated during scroll, so the outer borders briefly disappear at the edges.
+## Horizontal Scrolling
+
+When your table content is wider than the available container width, set `scrollProps={{ minWidth }}` to enable smooth horizontal scrolling. The recommended pattern is the built-in `scrollProps` API: it renders a non-scrolling outer wrapper that keeps `withTableBorder`, `borderRadius`, and `borderWidth` fixed at the edges regardless of scroll position. This is especially important when combining horizontal scroll with **sticky columns** — Mantine's [`Table.ScrollContainer`](https://mantine.dev/core/table/#scroll-container) is also supported (just wrap `<ListViewTable>`), but the table border will move with the scroll content because the entire table is translated during scroll.
 
 ```tsx
 <ListViewTable
@@ -88,9 +92,27 @@ When combining sticky columns with `withTableBorder` and/or `borderRadius`, pref
 - `minWidth?: number | string` — minimum width that forces horizontal scroll
 - `maxHeight?: number | string` — maximum height that enables vertical scroll
 
-If both `scrollProps` and an outer `Table.ScrollContainer` are used, `scrollProps` wins — the table will scroll inside its own viewport. You can omit `scrollProps` and continue using `Table.ScrollContainer`, but the outer borders will move with the table during scroll.
+If both `scrollProps` and an outer `Table.ScrollContainer` are used, `scrollProps` wins — the table will scroll inside its own viewport.
 
-<Demo data={demos.pinnedColumns} />
+### Basic Horizontal Scrolling
+
+Set `scrollProps={{ minWidth }}` to enable horizontal scrolling when the content exceeds the container width. All non-sticky columns scroll together horizontally; the outer border and rounded corners stay put.
+
+<Demo data={demos.scrollContainer} />
+
+### Horizontal Scrolling with Sticky Columns
+
+Combine `scrollProps` with `sticky: 'left'` (or `'right'`) on individual columns to keep important identifier columns visible while other columns scroll horizontally. The legacy `sticky: true` is preserved as an alias for `'left'`.
+
+<Demo data={demos.scrollContainerWithSticky} />
+
+## Scroll Area Integration
+
+The `ListViewTable` works seamlessly with Mantine's `ScrollArea` component. This is useful when you want to create a fixed-height table with scrollable content while maintaining the table's sticky header functionality.
+
+When used inside a `ScrollArea`, the `stickyHeader` prop will make the table header stick to the top of the scroll area, providing a consistent user experience during scrolling.
+
+<Demo data={demos.scrollArea} />
 
 ## Row Selection
 
@@ -108,7 +130,7 @@ For full control over the selection state, use the `selectedRows` and `onSelecti
 
 <Demo data={demos.controlledSelection} />
 
-## Keyboard Navigation
+### Keyboard Navigation
 
 When `selectionMode` is set, keyboard navigation is automatically enabled. You can also explicitly control it with the `enableKeyboardNavigation` prop.
 
@@ -193,7 +215,7 @@ When column resizing is enabled, double-click on a resize handle to auto-fit the
 The `resizeMode` prop controls how column resizing behaves:
 
 - **`standard`** (default): dragging the resize handle trades width between the left column and its right neighbor. The total table width stays fixed.
-- **`finder`**: dragging only changes the left column width. The table grows or shrinks freely, similar to macOS Finder. Use with `Table.ScrollContainer` for horizontal scrolling when the table exceeds its container.
+- **`finder`**: dragging only changes the left column width. The table grows or shrinks freely, similar to macOS Finder. Use with `scrollProps` (or `Table.ScrollContainer`) for horizontal scrolling when the table exceeds its container.
 
 <Demo data={demos.resizeMode} />
 
@@ -270,30 +292,6 @@ The `cellStyle` property can be either a static style object or a function that 
 - **Consistency**: Maintain header layout while customizing cell presentation
 
 This approach is particularly useful when building data-heavy interfaces where header clarity and cell readability have different requirements.
-
-## Horizontal Scrolling
-
-When your table content is wider than the available container width, set `scrollProps={{ minWidth }}` to enable smooth horizontal scrolling. The recommended pattern is the built-in `scrollProps` API: it renders a non-scrolling outer wrapper that keeps `withTableBorder` and `borderRadius` fixed at the edges regardless of scroll position. Mantine's [`Table.ScrollContainer`](https://mantine.dev/core/table/#scroll-container) is also supported (just wrap `<ListViewTable>`), but the table border will move with the scroll content — see the **Pinned Columns** section above for the trade-off.
-
-### Basic Horizontal Scrolling
-
-Set `scrollProps={{ minWidth }}` to enable horizontal scrolling when the content exceeds the container width. All non-sticky columns scroll together horizontally; the outer border and rounded corners stay put.
-
-<Demo data={demos.scrollContainer} />
-
-### Horizontal Scrolling with Sticky Columns
-
-Combine `scrollProps` with `sticky: 'left'` (or `'right'`) on individual columns to keep important identifier columns visible while other columns scroll horizontally. The legacy `sticky: true` is preserved as an alias for `'left'`.
-
-<Demo data={demos.scrollContainerWithSticky} />
-
-## Scroll Area Integration
-
-The `ListViewTable` works seamlessly with Mantine's `ScrollArea` component. This is useful when you want to create a fixed-height table with scrollable content while maintaining the table's sticky header functionality.
-
-When used inside a `ScrollArea`, the `stickyHeader` prop will make the table header stick to the top of the scroll area, providing a consistent user experience during scrolling.
-
-<Demo data={demos.scrollArea} />
 
 ## Table States
 
