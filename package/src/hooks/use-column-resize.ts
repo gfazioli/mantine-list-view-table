@@ -93,10 +93,20 @@ export function useColumnResize({
   const getColumnStyle = useCallback(
     (col: ListViewTableColumn, _idx: number): React.CSSProperties => {
       if (isResizeActive && columnWidths[col.key as string]) {
+        // Pin both `min-width` and `max-width` to the resize width.
+        // Chromium ignores explicit `width` on table cells with
+        // `position: sticky` when `table-layout: fixed` is in effect
+        // (the auto-distributed track width wins), so without these the
+        // pinned-column resize would silently redistribute back to the
+        // even split. The resize logic already clamps against the
+        // column's `minWidth` / `maxWidth` constraints before writing
+        // `columnWidths[key]`, so locking min/max to the same value
+        // here is safe.
+        const width = `${columnWidths[col.key as string]}px`;
         return {
-          width: `${columnWidths[col.key as string]}px`,
-          minWidth: resolveSize(col.minWidth),
-          maxWidth: resolveSize(col.maxWidth),
+          width,
+          minWidth: width,
+          maxWidth: width,
         };
       }
       return {
