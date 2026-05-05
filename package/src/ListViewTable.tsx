@@ -773,7 +773,7 @@ export const ListViewTable = factory<ListViewTableFactory>((_props) => {
               left: 0,
               right: 'auto' as const,
               zIndex: 11,
-              // Allow the shadow span to extend outside the cell border.
+              // Allow the shadow `::after` pseudo to extend outside the cell border.
               overflow: 'visible' as const,
             }
           : stickySide === 'right'

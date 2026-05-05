@@ -39,10 +39,10 @@ function findHorizontalScrollAncestor(el: HTMLElement): HTMLElement | Window {
  * these variables to fade their gradient in and out — no React re-renders
  * on scroll. Updates are throttled via `requestAnimationFrame`.
  *
- * RTL: `scrollLeft` is negative on modern browsers under `direction: rtl`,
- * so the absolute value is used and the meaning of "left" / "right"
- * flips with the writing direction (handled at the CSS layer via
- * `[dir="rtl"]` rules — the hook just reports the magnitude).
+ * Note: the hook reports the magnitude of `scrollLeft` (which is negative
+ * on modern browsers under `direction: rtl`); RTL-specific styling is
+ * not currently shipped — consumers using `dir="rtl"` should override the
+ * shadow CSS as needed.
  */
 export function useStickyShadow({ tableRef, enabled = true }: UseStickyShadowOptions): void {
   useEffect(() => {
