@@ -6,6 +6,65 @@ This page collects the **breaking changes** and **migration steps** for each maj
 
 New features introduced in a release (that do not break anything) are **not** listed here. See the [GitHub Releases](https://github.com/gfazioli/mantine-list-view-table/releases) page for the full changelog.
 
+## v4.1
+
+v4.1 is a minor release and is a drop-in upgrade for the public component API — `column.sticky: true` keeps working as an alias for `'left'`, every prop signature is unchanged, and no exports were removed. The only adjustment is for code that types against `vars`.
+
+### Removed: `--list-view-sticky-blur`
+
+The `--list-view-sticky-blur` CSS variable has been **removed** from the `ListViewTableCssVariables` type. It was tied to the previous `backdrop-filter: blur(...)` overlay on sticky cells, which has been replaced by an opacity-driven gradient shadow that fades in only when there is content scrolled past the edge — driven by `useStickyShadow` with no React re-renders during scroll.
+
+If your code looked like this:
+
+```tsx
+<ListViewTable
+  vars={{
+    root: {
+      '--list-view-sticky-blur': '8px',
+    },
+  }}
+/>
+```
+
+Replace it with the new sticky-shadow variables:
+
+```tsx
+<ListViewTable
+  vars={{
+    root: {
+      '--lvt-shadow-color': 'rgba(0, 0, 0, 0.15)',
+      '--lvt-shadow-width': '12px',
+    },
+  }}
+/>
+```
+
+The two new variables are:
+
+- `--lvt-shadow-color` — color of the gradient shadow rendered on the inner edge of pinned columns. Defaults to `rgba(0, 0, 0, 0.05)` (light) / `rgba(0, 0, 0, 0.25)` (dark).
+- `--lvt-shadow-width` — width of the gradient shadow. Accepts any CSS length. Defaults to `8px`.
+
+If your application never set `--list-view-sticky-blur`, no migration is required.
+
+### Recommended (not required): migrate to the `scrollProps` API
+
+This is **not** a breaking change — wrapping `<ListViewTable>` in `Table.ScrollContainer` still works as before. But if you combine horizontal scroll with `withTableBorder` and `borderRadius`, you may have noticed the border drifting with the scroll content. The new built-in `scrollProps` API renders ListViewTable's own non-scrolling outer wrapper, so the border and rounded corners stay fixed at the edges:
+
+```diff
+- <Table.ScrollContainer minWidth={1300}>
+-   <ListViewTable columns={columns} data={data} withTableBorder borderRadius="md" />
+- </Table.ScrollContainer>
++ <ListViewTable
++   columns={columns}
++   data={data}
++   withTableBorder
++   borderRadius="md"
++   scrollProps={{ minWidth: 1300 }}
++ />
+```
+
+`scrollProps` accepts `minWidth` (forces horizontal scroll) and `maxHeight` (enables vertical scroll). It is the recommended setup whenever you mix sticky columns with a bordered/rounded outer container.
+
 ## v4
 
 Version 4 unifies the column reorder drag system around a single pointer-event codepath, replacing the dual HTML5 drag-and-drop (desktop) + custom touch-pointer (mobile) implementation that shipped in v3.
