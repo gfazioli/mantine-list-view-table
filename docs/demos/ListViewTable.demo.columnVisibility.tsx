@@ -1,7 +1,7 @@
-import { useState } from 'react';
 import { ListViewTable } from '@gfazioli/mantine-list-view-table';
 import { Badge, Button, Code, Group, Stack, Text } from '@mantine/core';
 import { MantineDemo } from '@mantinex/demo';
+import { useState } from 'react';
 import { data } from './data-files';
 
 const columns = [

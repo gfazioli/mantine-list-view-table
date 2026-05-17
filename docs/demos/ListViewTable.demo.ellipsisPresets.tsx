@@ -1,7 +1,7 @@
 import { ListViewTable } from '@gfazioli/mantine-list-view-table';
-import { IconFile, IconFolder } from '@tabler/icons-react';
 import { Badge, Group, Table, Text, ThemeIcon } from '@mantine/core';
 import { MantineDemo } from '@mantinex/demo';
+import { IconFile, IconFolder } from '@tabler/icons-react';
 import { dataProjects, dataProjectsCode } from './data-projects';
 
 // Import our text truncation utilities

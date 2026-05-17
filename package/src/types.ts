@@ -1,5 +1,5 @@
-import React from 'react';
 import { MantineStyleProp } from '@mantine/core';
+import React from 'react';
 
 // === Column ===
 

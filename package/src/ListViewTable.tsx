@@ -1,10 +1,3 @@
-import React, { useCallback, useMemo, useRef, useState } from 'react';
-import {
-  IconChevronDown,
-  IconChevronUp,
-  IconGripVertical,
-  IconSelector,
-} from '@tabler/icons-react';
 import {
   Box,
   BoxProps,
@@ -31,6 +24,13 @@ import {
   useStyles,
   type StyleProp,
 } from '@mantine/core';
+import {
+  IconChevronDown,
+  IconChevronUp,
+  IconGripVertical,
+  IconSelector,
+} from '@tabler/icons-react';
+import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { useColumnReorder } from './hooks/use-column-reorder';
 import { useColumnResize } from './hooks/use-column-resize';
 import { useColumnVisibility } from './hooks/use-column-visibility';

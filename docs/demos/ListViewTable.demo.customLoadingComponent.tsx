@@ -1,7 +1,7 @@
 import { ListViewTable } from '@gfazioli/mantine-list-view-table';
-import { IconRefresh } from '@tabler/icons-react';
 import { Button, Stack, Text, ThemeIcon, Title } from '@mantine/core';
 import { MantineDemo } from '@mantinex/demo';
+import { IconRefresh } from '@tabler/icons-react';
 
 // Custom loading component
 const CustomLoadingScreen = ({

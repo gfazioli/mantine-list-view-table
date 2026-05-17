@@ -1,7 +1,7 @@
 import { ListViewTable } from '@gfazioli/mantine-list-view-table';
-import { IconFolderOpen } from '@tabler/icons-react';
 import { Group, Text, ThemeIcon } from '@mantine/core';
 import { MantineDemo } from '@mantinex/demo';
+import { IconFolderOpen } from '@tabler/icons-react';
 
 function Demo() {
   return (
