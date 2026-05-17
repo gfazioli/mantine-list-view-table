@@ -1,5 +1,5 @@
-import React, { useCallback } from 'react';
 import { Box } from '@mantine/core';
+import React, { useCallback } from 'react';
 import { useDoubleTap } from './hooks/use-double-tap';
 
 interface ResizeHandleProps {

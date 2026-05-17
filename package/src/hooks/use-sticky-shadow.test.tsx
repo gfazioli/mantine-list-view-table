@@ -1,5 +1,5 @@
-import React, { useRef } from 'react';
 import { render } from '@mantine-tests/core';
+import React, { useRef } from 'react';
 import { useStickyShadow } from './use-sticky-shadow';
 
 function Host({ enabled = true }: { enabled?: boolean }) {

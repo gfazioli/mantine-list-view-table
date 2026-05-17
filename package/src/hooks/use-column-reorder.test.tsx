@@ -1,6 +1,6 @@
-import React from 'react';
-import { act } from '@testing-library/react';
 import { render } from '@mantine-tests/core';
+import { act } from '@testing-library/react';
+import React from 'react';
 import { useColumnReorder } from './use-column-reorder';
 
 const COLUMNS = [

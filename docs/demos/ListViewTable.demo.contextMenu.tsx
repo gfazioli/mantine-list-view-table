@@ -1,7 +1,7 @@
 import { ListViewTable } from '@gfazioli/mantine-list-view-table';
-import { IconCopy, IconDownload, IconTrash } from '@tabler/icons-react';
 import { Badge, Menu } from '@mantine/core';
 import { MantineDemo } from '@mantinex/demo';
+import { IconCopy, IconDownload, IconTrash } from '@tabler/icons-react';
 import { data } from './data-files';
 
 const columns = [

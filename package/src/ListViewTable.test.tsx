@@ -1,6 +1,6 @@
-import React from 'react';
-import { fireEvent } from '@testing-library/react';
 import { render, screen } from '@mantine-tests/core';
+import { fireEvent } from '@testing-library/react';
+import React from 'react';
 import { ListViewTable } from './ListViewTable';
 
 interface TestData {

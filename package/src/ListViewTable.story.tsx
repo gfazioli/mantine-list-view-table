@@ -1,5 +1,3 @@
-import React from 'react';
-import { IconRefresh } from '@tabler/icons-react';
 import {
   Badge,
   Box,
@@ -15,6 +13,8 @@ import {
   Title,
 } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
+import { IconRefresh } from '@tabler/icons-react';
+import React from 'react';
 import { ListViewTable } from './ListViewTable';
 import type { ListViewTableColumn, ListViewTableSortStatus } from './types';
 

@@ -1,7 +1,7 @@
 import { ListViewTable } from '@gfazioli/mantine-list-view-table';
-import { IconFileX, IconFolderOpen, IconPlus } from '@tabler/icons-react';
 import { Button, Group, Stack, Text, ThemeIcon } from '@mantine/core';
 import { MantineDemo } from '@mantinex/demo';
+import { IconFileX, IconFolderOpen, IconPlus } from '@tabler/icons-react';
 
 // Custom empty state component with icon and action buttons
 const CustomEmptyState = () => (

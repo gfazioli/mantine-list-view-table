@@ -1,5 +1,5 @@
-import React, { useRef } from 'react';
 import { render } from '@mantine-tests/core';
+import React, { useRef } from 'react';
 import { useStickyHeaderShadow } from './use-sticky-header-shadow';
 
 function Host({

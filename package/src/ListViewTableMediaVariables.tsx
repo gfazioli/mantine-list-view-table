@@ -1,4 +1,3 @@
-import React from 'react';
 import {
   filterProps,
   getBaseValue,
@@ -10,6 +9,7 @@ import {
   type MantineSpacing,
   type StyleProp,
 } from '@mantine/core';
+import React from 'react';
 
 function toCssValue(value: string | number | undefined): string | undefined {
   if (value === undefined) {
