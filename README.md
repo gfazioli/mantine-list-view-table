@@ -144,9 +144,3 @@ Your help truly matters.
 https://github.com/user-attachments/assets/f4b7281c-eea0-41f9-b168-80d0f8374929
 
 https://github.com/user-attachments/assets/a220d834-6787-429a-aab3-15e0c504f39c
-
----
-[![Star History Chart](https://api.star-history.com/svg?repos=gfazioli/mantine-list-view-table&type=Timeline)](https://www.star-history.com/#gfazioli/mantine-list-view-table&Timeline)
-
-
-
