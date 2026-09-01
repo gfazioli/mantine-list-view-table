@@ -130,6 +130,14 @@ For full control over the selection state, use the `selectedRows` and `onSelecti
 
 <Demo data={demos.controlledSelection} />
 
+### Bulk Actions on the Selection
+
+Mantine 9.6 added the `ActionBar` component: a fixed bottom bar built to be driven by a table selection. It pairs with `ListViewTable` without any extra API — `opened` follows the length of `selectedRows`, the actions operate on the records handed to `onSelectionChange`, and `ActionBar.CloseButton` clears the selection through `onClose`.
+
+Select a few rows below and the bar appears at the bottom of the window. It is anchored to the viewport rather than to this box, which is how a real bulk-action bar behaves; `withinPortal` and `position` are there if you need it somewhere else. Requires `@mantine/core` 9.6 or later.
+
+<Demo data={demos.actionBarSelection} />
+
 ### Keyboard Navigation
 
 When `selectionMode` is set, keyboard navigation is automatically enabled. You can also explicitly control it with the `enableKeyboardNavigation` prop.

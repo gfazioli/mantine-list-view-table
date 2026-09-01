@@ -28,6 +28,7 @@ export { responsiveProps } from './ListViewTable.demo.responsiveProps';
 export { scrollArea } from './ListViewTable.demo.scrollArea';
 export { scrollContainer } from './ListViewTable.demo.scrollContainer';
 export { scrollContainerWithSticky } from './ListViewTable.demo.scrollContainerWithSticky';
+export { actionBarSelection } from './ListViewTable.demo.actionBarSelection';
 export { selection } from './ListViewTable.demo.selection';
 export { simpleEmptyText } from './ListViewTable.demo.simpleEmptyText';
 export { stickyHeader } from './ListViewTable.demo.stickyHeader';
