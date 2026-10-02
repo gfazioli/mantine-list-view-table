@@ -18,14 +18,14 @@
 | `yarn storybook` | Start Storybook dev server |
 | `yarn clean` | Remove build artifacts |
 | `yarn release:patch` | Bump patch version and deploy docs |
-| `diny yolo` | AI-assisted commit (stage all, generate message, commit + push) |
+| `diny yolo` | AI-assisted commit (stage all, generate message, commit + push); it needs a TTY, so from Claude Code commit with `git commit` + `git push` |
 
 > **Important**: After changing the public API, always run `yarn clean && yarn build` before `yarn test`.
 
 ## Architecture
 
 ### Workspace Layout
-Yarn workspaces monorepo with two workspaces: `package/` (npm package) and `docs/` (Next.js 15 documentation site).
+Yarn workspaces monorepo with two workspaces: `package/` (npm package) and `docs/` (Next.js 16 documentation site).
 
 ### Package Source (`package/src/`)
 Main component (`ListViewTable.tsx`) using Mantine's `factory` pattern: `factory<ListViewTableFactory> -> useProps -> useStyles -> varsResolver`. Exports a single `ListViewTable` component with no compound components. Responsive CSS variables are managed by `ListViewTableMediaVariables.tsx` following the Mantine-native pattern (`InlineStyles` + CSS media queries).
@@ -67,8 +67,7 @@ Dimension/size props (`height`, `width`, `horizontalSpacing`, `verticalSpacing`,
 Jest with `jsdom`, `esbuild-jest` transform, CSS mocked via `identity-obj-proxy`. Tests use `@mantine-tests/core` render helper. Test file: `package/src/ListViewTable.test.tsx`.
 
 ## Ecosystem
-This repo is part of the Mantine Extensions ecosystem, derived from the `mantine-base-component` template. See the workspace CLAUDE.md at `../CLAUDE.md` for:
-- Development checklist (code -> test -> build -> docs -> release)
-- Cross-cutting patterns (compound components, responsive CSS, GitHub sync)
-- Update packages workflow
-- Release process
+This repo is part of the Mantine Extensions ecosystem, derived from the `mantine-base-component` template. See the workspace at `../` for:
+- Development checklist and cross-cutting patterns (compound components, responsive CSS, GitHub sync): the workspace's `.claude/rules/component-development.md`, which loads with this repo's files
+- Update packages workflow: the workspace's `fleet-maintenance` skill
+- Release process: the workspace's `/release` command
