@@ -45,7 +45,13 @@ Column widths are measured from the DOM on first render, then tracked in state f
 Sticky columns use inline `position: sticky` with z-index layering (11 for header, 10 for body cells).
 
 ### Data Access
-`getNestedValue()` supports dot-notation keys for nested data access (e.g., `"user.name"`).
+`getNestedValue()` supports dot-notation keys for nested data access (e.g., `"user.name"`). Types are generic over the record (`<T = any>`), and a column `key` is typed `keyof T | (string & NonNullable<unknown>)`, so dot-notation paths type-check next to real keys.
+
+### Icons
+Icons come from `@tabler/icons-react`, a peer dependency: `IconSelector`, `IconChevronUp`, `IconChevronDown`, `IconGripVertical`.
+
+### No virtualization
+Rows are not virtualized, on purpose: a long table relies on the browser's own scrolling.
 
 ### Styles API
 All visual parts are targetable via `stylesNames`: `root`, `table`, `header`, `headerCell`, `headerButton`, `headerTitle`, `sortIcon`, `dragHandle`, `resizeHandle`, `body`, `row`, `cell`, `emptyState`, `loader`, `stickyColumn`, `stickyHeaderColumn`.
@@ -60,7 +66,7 @@ Dimension/size props (`height`, `width`, `horizontalSpacing`, `verticalSpacing`,
 2. Add default in `defaultProps` if applicable
 3. Destructure in the component and implement
 4. Run `yarn docgen` to regenerate API docs
-5. Create demo in `docs/demos/`
+5. Create demo in `docs/demos/`. Shared demo data lives in `docs/demos/columns-*.tsx` and `docs/demos/data-*.ts`, and each file exports the value and its source as a string (`columns` + `columnsCode`, `data` + `dataCode`): keep the two in sync, since the string is the code the demo shows
 6. Add test coverage
 
 ## Testing
